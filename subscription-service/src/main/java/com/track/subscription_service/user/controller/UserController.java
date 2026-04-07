@@ -1,7 +1,8 @@
-package com.track.subscription_service.user.Controller;
+package com.track.subscription_service.user.controller;
 
 import com.track.subscription_service.user.entity.User;
 import com.track.subscription_service.user.repository.UserRepository;
+import com.track.subscription_service.user.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,20 +11,20 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    private final UserRepository userRepo;
+    private final UserService service;
 
-    public UserController(UserRepository user) {
-        this.userRepo = user;
+    public UserController(UserService service) {
+        this.service = service;
     }
 
     @GetMapping
     public List<User> getAll(){
-        return userRepo.findAll();
+        return service.getAll();
     }
 
     @PostMapping
     public User createUser(@RequestBody User user){
-        return userRepo.save(user);
+        return service.create(user);
     }
 
 }
