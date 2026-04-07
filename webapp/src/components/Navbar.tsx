@@ -159,15 +159,6 @@ export default function Navbar() {
           <IconButton size="large" edge="start" color="inherit" aria-label="open drawer" sx={{ mr: 2 }}>
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ display: { xs: "none", sm: "block" } }}>
-            MUI
-          </Typography>
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase placeholder="Search…" inputProps={{ "aria-label": "search" }} />
-          </Search>
           <Button color="inherit" component={Link} to="/page1">
             Page 1
           </Button>
@@ -176,27 +167,26 @@ export default function Navbar() {
           </Button>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={4} color="error">
-                <MailIcon />
-              </Badge>
-            </IconButton>
-            <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
-              <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls={menuId}
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
+            <Button
+              variant="contained"
+              sx={{
+                ml: 2,
+                px: 3,
+                py: 1,
+                borderRadius: "999px",
+                textTransform: "none",
+                fontWeight: 600,
+                fontSize: "0.9rem",
+                background: "#d880f1",
+                boxShadow: "0 6px 16px rgba(100, 0, 239, 0.3)",
+                "&:hover": {
+                  background: "linear-gradient(135deg, #5a00d6, #c96be8)",
+                  boxShadow: "0 8px 20px rgba(100, 0, 239, 0.4)",
+                },
+              }}
             >
-              <AccountCircle />
-            </IconButton>
+              Login
+            </Button>
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton
