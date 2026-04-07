@@ -22,7 +22,7 @@ public class SubscriptionController {
     }
 
     @PostMapping
-    public Subscription create(@RequestBody Subscription subscription){
+    public Subscription createSubscription(@RequestBody Subscription subscription){
         return repo.save(subscription);
     }
 }
