@@ -1,8 +1,7 @@
-package com.track.subscription_service.subscription;
+package com.track.subscription_service.subscription.entity;
 
+import com.track.subscription_service.subscription.repository.SubscriptionRepository;
 import jakarta.persistence.*;
-
-import java.sql.Time;
 
 @Entity
 @Table(name = "subscription")
@@ -17,6 +16,7 @@ public class Subscription {
     private String duration;
     private Double cost;
 
+    public Subscription(){}
     public Subscription(String name, String type, String duration, Double cost) {
         this.name = name;
         this.type = type;
@@ -39,7 +39,7 @@ public class Subscription {
     public void setType(String type) {
         this.type = type;
     }
-    
+
     public String getName() {
         return name;
     }
