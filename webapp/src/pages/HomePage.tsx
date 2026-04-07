@@ -1,69 +1,91 @@
+import { Box, Button, Typography, Container, Stack, Chip } from "@mui/material";
 import Navbar from "../components/Navbar";
-import { Box, Button, Typography } from "@mui/material";
-import { useSnackbar } from "../utils/Snackbar";
-import { useLoader } from "../utils/Loading";
 
 export default function HomePage() {
-  const snackbar = useSnackbar();
-  const loader = useLoader();
-
-  const handleAlert = () => {
-    snackbar.success("You have successfully triggered an alert!");
-  };
-
-  const handleLoading = () => {
-    loader.showLoader("Loading the template...");
-  };
-
   return (
-    <Box
-      sx={{
-        width: "100%",
-        minHeight: "100vh",
-        flexDirection: "column",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
+    <Box sx={{ minHeight: "100vh", backgroundColor: "background.default" }}>
       <Navbar />
-      <Box
-        sx={{
-          width: "100%",
-          minHeight: "100vh",
-          flexDirection: "column",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Typography variant="h3">Welcome to the Front End template</Typography>
-        <p>Lets start building on top of it!</p>
-        <Box
+
+      {/* HERO SECTION */}
+      <Container maxWidth="md">
+        <Stack
+          spacing={4}
+          alignItems="center"
+          justifyContent="center"
           sx={{
-            flexDirection: "row",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 2,
+            minHeight: "90vh",
+            textAlign: "center",
           }}
         >
-          <Button
-            sx={{ backgroundColor: "red", "&:hover": { backgroundColor: "darkred" } }}
-            variant="contained"
-            onClick={handleAlert}
+          {/* Badge */}
+          <Chip
+            label="✨ 100% Free Forever"
+            sx={{
+              backgroundColor: "#E6F9F0",
+              color: "#6400ef",
+              fontWeight: 600,
+            }}
+          />
+
+          {/* Main Heading */}
+          <Typography
+            variant="h2"
+            sx={{
+              fontWeight: 700,
+              lineHeight: 1.2,
+            }}
           >
-            Alert
-          </Button>
-          <Button
-            sx={{ backgroundColor: "blue", "&:hover": { backgroundColor: "darkblue" } }}
-            variant="contained"
-            onClick={handleLoading}
+            Never Miss a Free Trial Expiry
+          </Typography>
+
+          {/* Highlight text */}
+          <Typography
+            variant="h3"
+            sx={{
+              fontWeight: 700,
+              color: "#6400ef",
+            }}
           >
-            Loading
+            Track Subscriptions Effortlessly
+          </Typography>
+
+          {/* Subtext */}
+          <Typography
+            variant="body1"
+            sx={{
+              maxWidth: "600px",
+              color: "text.secondary",
+            }}
+          >
+            Get notified before your trials end. Avoid unexpected charges and stay in control of your subscriptions.
+          </Typography>
+
+          {/* CTA Button */}
+          <Button
+            variant="contained"
+            size="large"
+            sx={{
+              px: 4,
+              py: 1.5,
+              borderRadius: "999px",
+              background: "linear-gradient(135deg, #6400ef, #d880f1)",
+              boxShadow: "0 8px 20px rgba(100, 0, 239, 0.3)",
+              textTransform: "none",
+              fontSize: "1rem",
+              "&:hover": {
+                background: "linear-gradient(135deg, #6400ef, #d880f1)",
+              },
+            }}
+          >
+            Register Now!
           </Button>
-        </Box>
-      </Box>
+
+          {/* Small text */}
+          <Typography variant="caption" color="text.secondary">
+            No ads • No credit card • 100% free
+          </Typography>
+        </Stack>
+      </Container>
     </Box>
   );
 }
