@@ -1,6 +1,10 @@
 package com.track.subscription_service.user.entity;
 
+import com.track.subscription_service.subscription.entity.Subscription;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="users")
@@ -23,6 +27,9 @@ public class User {
 
     private Long createdAt;
     private Long updatedAt;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Subscription> subscriptions;
 
     public User(String googleId, String email, String name, String provider, Long createdAt, Long updatedAt) {
         this.googleId = googleId;
@@ -89,5 +96,15 @@ public class User {
 
     public void setUpdatedAt(Long updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public void addSubscription(Subscription subscription){
+
+        if (subscriptions == null){
+            subscriptions = new ArrayList<>();
+        }
+
+        subscriptions.add(subscription);
+        subscription.setUser(this);
     }
 }

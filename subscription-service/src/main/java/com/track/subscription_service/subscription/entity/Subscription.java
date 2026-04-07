@@ -1,6 +1,7 @@
 package com.track.subscription_service.subscription.entity;
 
 import com.track.subscription_service.subscription.repository.SubscriptionRepository;
+import com.track.subscription_service.user.entity.User;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,6 +16,10 @@ public class Subscription {
     private String type;
     private String duration;
     private Double cost;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Subscription(){}
     public Subscription(String name, String type, String duration, Double cost) {
@@ -63,6 +68,15 @@ public class Subscription {
     public void setCost(Double cost) {
         this.cost = cost;
     }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
 
 
 }
