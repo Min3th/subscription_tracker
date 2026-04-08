@@ -4,12 +4,6 @@ import GoogleAuthButton from "../components/GoogleAuthButton";
 import { jwtDecode } from "jwt-decode";
 
 export default function HomePage() {
-  const handleGoogleSuccess = (credentialResponse: any) => {
-    if (credentialResponse.credential) {
-      const user = jwtDecode(credentialResponse.credential);
-      console.log(user);
-    }
-  };
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "background.default" }}>
       <Navbar />
@@ -25,6 +19,27 @@ export default function HomePage() {
             textAlign: "center",
           }}
         >
+          {/* Badge */}
+          <Chip
+            label="✨ 100% Free Forever"
+            sx={{
+              backgroundColor: "#E6F9F0",
+              color: "#6400ef",
+              fontWeight: 600,
+            }}
+          />
+
+          {/* Main Heading */}
+          <Typography
+            variant="h2"
+            sx={{
+              fontWeight: 700,
+              lineHeight: 1.2,
+            }}
+          >
+            Never Miss a Free Trial Expiry
+          </Typography>
+
           {/* Highlight text */}
           <Typography
             variant="h3"
