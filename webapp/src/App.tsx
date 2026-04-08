@@ -14,32 +14,35 @@ import { LoaderProvider } from "./utils/Loading.tsx";
 import PageTwo from "./pages/PageTwo.tsx";
 import PageOne from "./pages/PageOne.tsx";
 import Layout from "./layout/Layout.tsx";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 function App() {
   const [mode, setMode] = useState<"light" | "dark">("light");
   const theme = React.useMemo(() => getTheme(mode), [mode]);
 
   return (
-    <LoaderProvider>
-      <SnackbarProvider>
-        <Provider store={store}>
-          <ThemeProvider theme={theme}>
-            <ThemeContextProvider>
-              <CssBaseline />
-              <BrowserRouter>
-                <Routes>
-                  <Route element={<Layout />}>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/page1" element={<PageOne />} />
-                    <Route path="/page2" element={<PageTwo />} />
-                  </Route>
-                </Routes>
-              </BrowserRouter>
-            </ThemeContextProvider>
-          </ThemeProvider>
-        </Provider>
-      </SnackbarProvider>
-    </LoaderProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <LoaderProvider>
+        <SnackbarProvider>
+          <Provider store={store}>
+            <ThemeProvider theme={theme}>
+              <ThemeContextProvider>
+                <CssBaseline />
+                <BrowserRouter>
+                  <Routes>
+                    <Route element={<Layout />}>
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/page1" element={<PageOne />} />
+                      <Route path="/page2" element={<PageTwo />} />
+                    </Route>
+                  </Routes>
+                </BrowserRouter>
+              </ThemeContextProvider>
+            </ThemeProvider>
+          </Provider>
+        </SnackbarProvider>
+      </LoaderProvider>
+    </GoogleOAuthProvider>
   );
 }
 

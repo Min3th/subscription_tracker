@@ -1,7 +1,15 @@
 import { Box, Button, Typography, Container, Stack, Chip } from "@mui/material";
 import Navbar from "../components/Navbar";
+import GoogleAuthButton from "../components/GoogleAuthButton";
+import { jwtDecode } from "jwt-decode";
 
 export default function HomePage() {
+  const handleGoogleSuccess = (credentialResponse: any) => {
+    if (credentialResponse.credential) {
+      const user = jwtDecode(credentialResponse.credential);
+      console.log(user);
+    }
+  };
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "background.default" }}>
       <Navbar />
@@ -79,6 +87,7 @@ export default function HomePage() {
           >
             Register Now!
           </Button>
+          <GoogleAuthButton onSuccess={handleGoogleSuccess} />
 
           {/* Small text */}
           <Typography variant="caption" color="text.secondary">
