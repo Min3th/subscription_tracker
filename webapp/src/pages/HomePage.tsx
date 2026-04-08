@@ -87,7 +87,6 @@ export default function HomePage() {
           >
             Register Now!
           </Button>
-          <GoogleAuthButton onSuccess={handleGoogleSuccess} />
 
           {/* Small text */}
           <Typography variant="caption" color="text.secondary">

@@ -17,6 +17,7 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { Link } from "react-router-dom";
 import { Button } from "@mui/material";
+import LoginDialog from "./LoginDialog";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -61,6 +62,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export default function Navbar() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [openLogin, setOpenLogin] = React.useState(false);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -169,6 +171,7 @@ export default function Navbar() {
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <Button
               variant="contained"
+              onClick={() => setOpenLogin(true)}
               sx={{
                 ml: 2,
                 px: 3,
@@ -178,11 +181,6 @@ export default function Navbar() {
                 fontWeight: 600,
                 fontSize: "0.9rem",
                 background: "#d880f1",
-                boxShadow: "0 6px 16px rgba(100, 0, 239, 0.3)",
-                "&:hover": {
-                  background: "linear-gradient(135deg, #5a00d6, #c96be8)",
-                  boxShadow: "0 8px 20px rgba(100, 0, 239, 0.4)",
-                },
               }}
             >
               Login
@@ -199,6 +197,7 @@ export default function Navbar() {
             >
               <MoreIcon />
             </IconButton>
+            <LoginDialog open={openLogin} onClose={() => setOpenLogin(false)} />
           </Box>
         </Toolbar>
       </AppBar>
