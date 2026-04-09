@@ -1,11 +1,23 @@
 import { useState } from "react";
-import { Box, Grid, Card, CardContent, Typography, Button, LinearProgress, Stack } from "@mui/material";
+import {
+  Box,
+  Grid,
+  Card,
+  CardContent,
+  Typography,
+  Button,
+  LinearProgress,
+  Stack,
+  Avatar,
+  IconButton,
+  Chip,
+} from "@mui/material";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AddIcon from "@mui/icons-material/Add";
-
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import SideDrawer from "./SideDrawer";
 
@@ -212,16 +224,60 @@ export default function Dashboard() {
       <Grid container spacing={2}>
         {subscriptions.map((sub) => (
           <Grid item xs={12} md={6} key={sub.id}>
-            <Card sx={{ borderRadius: 3 }}>
-              <CardContent>
-                <Typography fontWeight="bold">{sub.name}</Typography>
+            <Card
+              sx={{
+                borderRadius: 3,
+                p: 2,
+                boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+                width: "500px",
+              }}
+            >
+              <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                {/* LEFT SIDE */}
+                <Box display="flex" gap={2}>
+                  {/* ICON */}
+                  <Avatar
+                    sx={{
+                      width: 48,
+                      height: 48,
+                      fontWeight: "bold",
+                      background: "linear-gradient(135deg, #6366F1, #9333EA)",
+                    }}
+                  >
+                    {sub.name[0]}
+                  </Avatar>
 
-                <Typography>
-                  ${sub.cost} / {sub.billingCycle}
-                </Typography>
+                  {/* TEXT */}
+                  <Box>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <Typography fontWeight="600">{sub.name}</Typography>
 
-                <Typography variant="caption">Next: {sub.nextBillingDate}</Typography>
-              </CardContent>
+                      <Chip
+                        label={sub.category}
+                        size="small"
+                        sx={{
+                          fontSize: "0.7rem",
+                          height: 22,
+                        }}
+                      />
+                    </Box>
+
+                    <Typography variant="body2" mt={0.5}>
+                      $ {sub.cost} / {sub.billingCycle}
+                    </Typography>
+
+                    <Box display="flex" alignItems="center" gap={1} mt={0.5}>
+                      <CalendarTodayIcon sx={{ fontSize: 14 }} />
+                      <Typography variant="caption">Next billing: {sub.nextBillingDate}</Typography>
+                    </Box>
+                  </Box>
+                </Box>
+
+                {/* RIGHT SIDE MENU */}
+                <IconButton size="small">
+                  <MoreVertIcon />
+                </IconButton>
+              </Box>
             </Card>
           </Grid>
         ))}
