@@ -2,9 +2,11 @@ package com.track.subscription_service.user.service;
 
 import com.track.subscription_service.user.entity.User;
 import com.track.subscription_service.user.repository.UserRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class UserService {
 
     private final UserRepository repo;
