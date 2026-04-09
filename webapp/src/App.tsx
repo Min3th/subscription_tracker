@@ -15,6 +15,7 @@ import PageTwo from "./pages/PageTwo.tsx";
 import PageOne from "./pages/PageOne.tsx";
 import Layout from "./layout/Layout.tsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import Dashboard from "./pages/Dashboard.tsx";
 
 function App() {
   const [mode, setMode] = useState<"light" | "dark">("light");
@@ -34,6 +35,7 @@ function App() {
                       <Route path="/" element={<HomePage />} />
                       <Route path="/page1" element={<PageOne />} />
                       <Route path="/page2" element={<PageTwo />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
                     </Route>
                   </Routes>
                 </BrowserRouter>
