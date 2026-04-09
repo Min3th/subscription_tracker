@@ -104,7 +104,18 @@ export default function Dashboard() {
           <Typography color="text.secondary">Manage all your subscriptions</Typography>
         </Box>
 
-        <Button variant="contained" startIcon={<AddIcon />}>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          sx={{
+            px: 1,
+            py: 1,
+            fontSize: "0.7rem",
+            height: "32px",
+            textTransform: "none",
+            fontFamily: "Inter, sans-serif",
+          }}
+        >
           Add Subscription
         </Button>
       </Box>
@@ -136,7 +147,7 @@ export default function Dashboard() {
             <CardContent>
               <Typography variant="h6">Monthly Spending</Typography>
 
-              <Box sx={{ height: 300 }}>
+              <Box sx={{ height: 300, width: "600px" }}>
                 <ResponsiveContainer>
                   <BarChart data={monthlySpendingData}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -154,7 +165,7 @@ export default function Dashboard() {
         {/* Category */}
         <Grid item xs={12} md={4}>
           <Card sx={{ borderRadius: 3 }}>
-            <CardContent>
+            <CardContent sx={{ width: "300px" }}>
               <Typography variant="h6" mb={2}>
                 Categories
               </Typography>
@@ -232,6 +243,7 @@ function StatCard({ title, value, icon }: any) {
         "&:hover": {
           transform: "translateY(-4px)",
         },
+        width: "250px",
       }}
     >
       <Box display="flex" justifyContent="space-between">
