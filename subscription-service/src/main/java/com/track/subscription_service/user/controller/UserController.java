@@ -3,6 +3,7 @@ package com.track.subscription_service.user.controller;
 import com.track.subscription_service.user.entity.User;
 import com.track.subscription_service.user.repository.UserRepository;
 import com.track.subscription_service.user.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

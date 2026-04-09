@@ -12,8 +12,6 @@ export default function HomePage() {
   };
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "background.default" }}>
-      <Navbar />
-
       {/* HERO SECTION */}
       <Container maxWidth="md">
         <Stack
