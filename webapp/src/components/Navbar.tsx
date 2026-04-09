@@ -18,6 +18,7 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import { Link } from "react-router-dom";
 import { Button } from "@mui/material";
 import LoginDialog from "./LoginDialog";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -59,7 +60,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function Navbar() {
+export default function Navbar({ onClick, open }: { onClick: () => void; open: boolean }) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
   const [openLogin, setOpenLogin] = React.useState(false);
@@ -156,10 +157,29 @@ export default function Navbar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed">
+      <AppBar
+        position="fixed"
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          transition: "margin 0.3s, width 0.3s",
+          ml: open ? "240px" : "64px",
+          width: open ? "calc(100% - 240px)" : "100%",
+        }}
+      >
         <Toolbar>
-          <IconButton size="large" edge="start" color="inherit" aria-label="open drawer" sx={{ mr: 2 }}>
-            <MenuIcon />
+          <IconButton
+            color="inherit"
+            aria-label="open drawer"
+            onClick={onClick}
+            edge="start"
+            sx={[
+              {
+                marginRight: 5,
+              },
+              open && { display: "none" },
+            ]}
+          >
+            {open ? <ChevronLeftIcon /> : <MenuIcon />}
           </IconButton>
           <Button color="inherit" component={Link} to="/page1">
             Page 1

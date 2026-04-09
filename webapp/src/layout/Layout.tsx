@@ -1,37 +1,40 @@
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import Navbar from "../components/Navbar";
 import { Outlet } from "react-router-dom";
 import { Box, Toolbar } from "@mui/material";
 import Footer from "../components/Footer";
 import ThemeToggleButton from "../components/ThemeToggleButton";
+import SideDrawer from "../pages/SideDrawer";
 
 export default function Layout() {
+  const [open, setOpen] = useState(false);
   return (
     <Box
       sx={{
         minHeight: "100vh",
         display: "flex",
-        flexDirection: "column",
       }}
     >
-      <Navbar />
-      <Toolbar />
-      <Box
-        sx={{
-          flex: 1,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "column",
-          px: 2,
-        }}
-      >
-        <Suspense fallback={null}>
-          <Outlet />
-        </Suspense>
+      <SideDrawer />
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <Toolbar />
+        <Box
+          sx={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+            px: 2,
+          }}
+        >
+          <Suspense fallback={null}>
+            <Outlet />
+          </Suspense>
+        </Box>
+        <ThemeToggleButton />
+        <Footer />
       </Box>
-      <ThemeToggleButton />
-      <Footer />
     </Box>
   );
 }

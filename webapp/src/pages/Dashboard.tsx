@@ -89,7 +89,6 @@ export default function Dashboard() {
         mx: "auto", // centers everything
       }}
     >
-      <SideDrawer />
       {/* HEADER */}
       <Box
         sx={{
