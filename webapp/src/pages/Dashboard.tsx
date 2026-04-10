@@ -23,8 +23,8 @@ import SideDrawer from "./SideDrawer";
 import SubscriptionForm from "../components/SubscriptionForm";
 import { CreditCard, DollarSign, TrendingUp } from "lucide-react";
 import StatCard from "../components/StatCard";
-
-// ---------------- MOCK DATA ----------------
+import { getSubscriptions } from "../api/subscription";
+import { useEffect } from "react";
 
 const mockSubscriptions = [
   {
@@ -68,7 +68,7 @@ const monthlySpendingData = [
 // ---------------- COMPONENT ----------------
 
 export default function Dashboard() {
-  const [subscriptions] = useState(mockSubscriptions);
+  const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
 
   const handleOpen = () => setOpen(true);
@@ -99,6 +99,18 @@ export default function Dashboard() {
       {} as Record<string, number>,
     ),
   );
+
+  useEffect(() => {
+    const fetchSubscriptions = async () => {
+      try {
+        const res = await getSubscriptions();
+        setSubscriptions(res.data);
+      } catch (error) {
+        console.error("Error fetching subscriptions:", error);
+      }
+    };
+    fetchSubscriptions();
+  }, []);
 
   return (
     <Box

@@ -150,7 +150,7 @@ export default function Navbar({ onClick, open }: { onClick: () => void; open: b
                 textTransform: "none",
                 fontWeight: 600,
                 fontSize: "0.9rem",
-                background: "#d880f1",
+                background: "#b484c1",
               }}
             >
               Login

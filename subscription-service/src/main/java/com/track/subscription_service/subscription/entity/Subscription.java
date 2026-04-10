@@ -7,6 +7,13 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "subscription")
 public class Subscription {
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,17 +23,19 @@ public class Subscription {
     private String type;
     private String duration;
     private Double cost;
+    private String category;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     public Subscription(){}
-    public Subscription(String name, String type, String duration, Double cost) {
+    public Subscription(String name, String type, String duration, Double cost,String category) {
         this.name = name;
         this.type = type;
         this.duration = duration;
         this.cost = cost;
+        this.category = category;
     }
 
     public Long getId() {
@@ -76,7 +85,5 @@ public class Subscription {
     public void setUser(User user) {
         this.user = user;
     }
-
-
 
 }
