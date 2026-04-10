@@ -21,6 +21,8 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import SideDrawer from "./SideDrawer";
 import SubscriptionForm from "../components/SubscriptionForm";
+import { CreditCard, DollarSign, TrendingUp } from "lucide-react";
+import StatCard from "../components/StatCard";
 
 // ---------------- MOCK DATA ----------------
 
@@ -140,15 +142,15 @@ export default function Dashboard() {
       {/* STATS */}
       <Grid container spacing={2} mb={3}>
         <Grid item xs={12} md={3}>
-          <StatCard title="Monthly" value={`$${totalMonthly.toFixed(2)}`} icon={<AttachMoneyIcon />} />
+          <StatCard title="Monthly" value={`$${totalMonthly.toFixed(2)}`} icon={<DollarSign />} />
         </Grid>
 
         <Grid item xs={12} md={3}>
-          <StatCard title="Yearly" value={`$${totalYearly.toFixed(2)}`} icon={<TrendingUpIcon />} />
+          <StatCard title="Yearly" value={`$${totalYearly.toFixed(2)}`} icon={<TrendingUp />} />
         </Grid>
 
         <Grid item xs={12} md={3}>
-          <StatCard title="Subscriptions" value={subscriptions.length} icon={<CreditCardIcon />} />
+          <StatCard title="Subscriptions" value={subscriptions.length} icon={<CreditCard />} />
         </Grid>
 
         <Grid item xs={12} md={3}>
@@ -292,43 +294,3 @@ export default function Dashboard() {
 }
 
 // ---------------- STAT CARD ----------------
-
-function StatCard({ title, value, icon }: any) {
-  return (
-    <Card
-      sx={{
-        borderRadius: 3,
-        p: 2,
-        boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-        transition: "0.2s",
-        "&:hover": {
-          transform: "translateY(-4px)",
-        },
-        width: "250px",
-      }}
-    >
-      <Box display="flex" justifyContent="space-between">
-        <Box>
-          <Typography variant="body2" color="text.secondary">
-            {title}
-          </Typography>
-
-          <Typography variant="h5" fontWeight="bold">
-            {value}
-          </Typography>
-        </Box>
-
-        <Box
-          sx={{
-            background: "linear-gradient(135deg, #7C3AED, #A78BFA)",
-            borderRadius: "50%",
-            p: 1.5,
-            color: "white",
-          }}
-        >
-          {icon}
-        </Box>
-      </Box>
-    </Card>
-  );
-}
