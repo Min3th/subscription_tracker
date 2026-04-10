@@ -84,7 +84,7 @@ public class User {
         this.provider = provider;
     }
 
-    public Long getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 

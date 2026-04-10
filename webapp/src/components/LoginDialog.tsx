@@ -1,6 +1,8 @@
 import { Dialog, DialogTitle, DialogContent, Box, Typography } from "@mui/material";
 import GoogleAuthButton from "./GoogleAuthButton";
 import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   open: boolean;
@@ -8,7 +10,18 @@ type Props = {
 };
 
 export default function LoginDialog({ open, onClose }: Props) {
-  const handleGoogleSuccess = (credentialResponse: any) => {
+  const navigate = useNavigate();
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    try {
+      const res = await axios.post("http://localhost:8080/auth/google", {
+        credential: credentialResponse.credential,
+      });
+      console.log("Server response:", res.data);
+      localStorage.setItem("token", res.data.token);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Error decoding JWT:", error);
+    }
     if (credentialResponse.credential) {
       const user = jwtDecode(credentialResponse.credential);
       console.log(user);
