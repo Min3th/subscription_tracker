@@ -10,13 +10,19 @@ import com.track.subscription_service.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Optional;
 
 @Service
 public class AuthService {
+
     @Value("${google.client.id}")
     private String clientId;
+
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+
     private GoogleIdToken.Payload verifyGoogleToken(String idTokenString) {
 
         try {
@@ -36,12 +42,11 @@ public class AuthService {
             }
 
         } catch (Exception e) {
-            throw new RuntimeException("Token verification failed", e);
+            throw new RuntimeException("Token verification failed: ", e);
         }
     }
 
-    private final UserRepository userRepository;
-    private final JwtService jwtService;
+
 
     public AuthService(UserRepository userRepository, JwtService jwtService) {
         this.userRepository = userRepository;
@@ -50,35 +55,32 @@ public class AuthService {
 
     public AuthResponse handleGoogleLogin(String credential) {
 
-        // 1. VERIFY GOOGLE TOKEN
         GoogleIdToken.Payload payload = verifyGoogleToken(credential);
 
         String googleId = payload.getSubject();
         String email = payload.getEmail();
         String name = (String) payload.get("name");
 
-        // 2. CHECK DB
         Optional<User> existingUser = userRepository.findByGoogleId(googleId);
 
         User user;
 
         if (existingUser.isPresent()) {
-            // LOGIN
+
             user = existingUser.get();
-            user.setUpdatedAt(System.currentTimeMillis());
+            user.setUpdatedAt(Instant.now());
         } else {
-            // REGISTER
+
             user = new User();
             user.setGoogleId(googleId);
             user.setEmail(email);
             user.setName(name);
-            user.setCreatedAt(System.currentTimeMillis());
-            user.setUpdatedAt(System.currentTimeMillis());
+            user.setCreatedAt(Instant.now());
+            user.setUpdatedAt(Instant.now());
         }
 
         userRepository.save(user);
 
-        // 3. GENERATE APP JWT
         String token = jwtService.generateToken(user);
 
         return new AuthResponse(token, user);

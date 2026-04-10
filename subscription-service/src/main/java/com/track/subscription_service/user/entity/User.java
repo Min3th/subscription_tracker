@@ -2,7 +2,9 @@ package com.track.subscription_service.user.entity;
 
 import com.track.subscription_service.subscription.entity.Subscription;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,13 +27,13 @@ public class User {
     // for future proofness.
     private String provider = "Google";
 
-    private Long createdAt;
-    private Long updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Subscription> subscriptions;
 
-    public User(String googleId, String email, String name, String provider, Long createdAt, Long updatedAt) {
+    public User(String googleId, String email, String name, String provider, Instant createdAt, Instant updatedAt) {
         this.googleId = googleId;
         this.email = email;
         this.name = name;
@@ -86,15 +88,15 @@ public class User {
         return createdAt;
     }
 
-    public void setCreatedAt(Long createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Long getUpdatedAt() {
+    public Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Long updatedAt) {
+    public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 
