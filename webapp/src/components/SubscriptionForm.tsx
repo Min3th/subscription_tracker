@@ -1,4 +1,13 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, MenuItem } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  MenuItem,
+  duration,
+} from "@mui/material";
 import { useState } from "react";
 import { createSubscription } from "../api/subscription";
 
@@ -21,19 +30,17 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
 
   const handleSubmit = () => {
     console.log("Form Data:", form);
-    try{
+    try {
       const payload = {
-        ...form,
-        amount: parseFloat(form.amount),
-      }
+        name: form.name,
+        cost: Number(form.amount),
+        duration: form.billingCycle,
+        type: form.category,
+      };
       createSubscription(payload);
-    }catch(error){
+    } catch (error) {
       console.error("Error creating subscription:", error);
-      }
     }
-    // TODO: call backend here
-    // await api.post("/subscriptions", form);
-
     handleClose();
   };
   return (
