@@ -10,6 +10,8 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { createSubscription } from "../api/subscription";
+import * as Yup from "yup";
+import { useFormik } from "formik";
 
 type Props = {
   open: boolean;
@@ -24,6 +26,44 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
     category: "",
     nextBillingDate: "",
   });
+
+  const validationSchema = Yup.object({
+    name: Yup.string().required("Name is required"),
+    amount: Yup.number()
+      .typeError("Amount must be a number")
+      .positive("Must be positive")
+      .required("Amount is required"),
+    billingCycle: Yup.string().required("Billing cycle required"),
+    category: Yup.string().required("Category is required"),
+    nextBillingDate: Yup.date().required("Date is required"),
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      amount: "",
+      billingCycle: "monthly",
+      category: "",
+      nextBillingDate: "",
+    },
+    validationSchema,
+    onSubmit: async (values) => {
+      try {
+        const payload = {
+          name: values.name,
+          cost: Number(values.amount),
+          duration: values.billingCycle,
+          type: values.category,
+        };
+
+        await createSubscription(payload);
+        handleClose();
+      } catch (error) {
+        console.error("Error creating subscription:", error);
+      }
+    },
+  });
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -54,8 +94,11 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
             margin="normal"
             label="Subscription Name"
             name="name"
-            value={form.name}
-            onChange={handleChange}
+            value={formik.values.name}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.name && Boolean(formik.errors.name)}
+            helperText={formik.touched.name && formik.errors.name}
           />
 
           <TextField
@@ -64,8 +107,11 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
             label="Amount ($)"
             name="amount"
             type="number"
-            value={form.amount}
-            onChange={handleChange}
+            value={formik.values.amount}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.amount && Boolean(formik.errors.amount)}
+            helperText={formik.touched.amount && formik.errors.amount}
           />
 
           <TextField
@@ -74,8 +120,8 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
             margin="normal"
             label="Billing Cycle"
             name="billingCycle"
-            value={form.billingCycle}
-            onChange={handleChange}
+            value={formik.values.billingCycle}
+            onChange={formik.handleChange}
           >
             <MenuItem value="monthly">Monthly</MenuItem>
             <MenuItem value="yearly">Yearly</MenuItem>
@@ -86,8 +132,11 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
             margin="normal"
             label="Category"
             name="category"
-            value={form.category}
-            onChange={handleChange}
+            value={formik.values.category}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.category && Boolean(formik.errors.category)}
+            helperText={formik.touched.category && formik.errors.category}
           />
 
           <TextField
@@ -96,15 +145,18 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
             type="date"
             label="Next Billing Date"
             name="nextBillingDate"
-            value={form.nextBillingDate}
-            onChange={handleChange}
+            value={formik.values.nextBillingDate}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.nextBillingDate && Boolean(formik.errors.nextBillingDate)}
+            helperText={formik.touched.nextBillingDate && formik.errors.nextBillingDate}
             InputLabelProps={{ shrink: true }}
           />
         </DialogContent>
 
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button variant="contained" onClick={handleSubmit}>
+          <Button variant="contained" onClick={() => formik.handleSubmit()}>
             Add
           </Button>
         </DialogActions>
