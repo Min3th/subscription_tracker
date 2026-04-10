@@ -13,6 +13,7 @@ export default function LoginDialog({ open, onClose }: Props) {
       const user = jwtDecode(credentialResponse.credential);
       console.log(user);
     }
+    console.log(credentialResponse.credential);
   };
   return (
     <Dialog open={open} onClose={onClose}>
