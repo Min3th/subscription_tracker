@@ -1,5 +1,6 @@
 import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, MenuItem } from "@mui/material";
 import { useState } from "react";
+import { createSubscription } from "../api/subscription";
 
 type Props = {
   open: boolean;
@@ -20,7 +21,16 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
 
   const handleSubmit = () => {
     console.log("Form Data:", form);
-
+    try{
+      const payload = {
+        ...form,
+        amount: parseFloat(form.amount),
+      }
+      createSubscription(payload);
+    }catch(error){
+      console.error("Error creating subscription:", error);
+      }
+    }
     // TODO: call backend here
     // await api.post("/subscriptions", form);
 
