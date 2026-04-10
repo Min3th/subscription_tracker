@@ -20,6 +20,7 @@ import AddIcon from "@mui/icons-material/Add";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import SideDrawer from "./SideDrawer";
+import SubscriptionForm from "../components/SubscriptionForm";
 
 // ---------------- MOCK DATA ----------------
 
@@ -66,6 +67,10 @@ const monthlySpendingData = [
 
 export default function Dashboard() {
   const [subscriptions] = useState(mockSubscriptions);
+  const [open, setOpen] = useState(false);
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   const totalMonthly = subscriptions.reduce(
     (sum, sub) => sum + (sub.billingCycle === "monthly" ? sub.cost : sub.cost / 12),
@@ -101,7 +106,6 @@ export default function Dashboard() {
         mx: "auto", // centers everything
       }}
     >
-      {/* HEADER */}
       <Box
         sx={{
           display: "flex",
@@ -127,6 +131,7 @@ export default function Dashboard() {
             textTransform: "none",
             fontFamily: "Inter, sans-serif",
           }}
+          onClick={handleOpen}
         >
           Add Subscription
         </Button>
@@ -150,7 +155,7 @@ export default function Dashboard() {
           <StatCard title="Next Billing" value={nextBilling?.nextBillingDate || "N/A"} icon={<CalendarTodayIcon />} />
         </Grid>
       </Grid>
-
+      <SubscriptionForm handleClose={handleClose} open={open} />
       {/* CHART + CATEGORY */}
       <Grid container spacing={2} mb={3}>
         {/* Chart */}
