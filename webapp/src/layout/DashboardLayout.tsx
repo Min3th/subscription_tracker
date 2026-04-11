@@ -4,9 +4,9 @@ import { Outlet } from "react-router-dom";
 import { Box, Toolbar } from "@mui/material";
 import Footer from "../components/Footer";
 import ThemeToggleButton from "../components/ThemeToggleButton";
-import SideDrawer from "../pages/SideDrawer";
+import SideDrawer from "../components/SideDrawer";
 
-export default function Layout() {
+export default function DashboardLayout() {
   const [open, setOpen] = useState(false);
   return (
     <Box
@@ -15,8 +15,9 @@ export default function Layout() {
         display: "flex",
       }}
     >
-      <SideDrawer />
+      <SideDrawer open={open} onClose={() => setOpen(false)} />
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        <Navbar onClick={() => setOpen(true)} open={open} />
         <Toolbar />
         <Box
           sx={{
