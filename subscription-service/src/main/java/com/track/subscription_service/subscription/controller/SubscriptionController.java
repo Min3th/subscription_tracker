@@ -1,5 +1,6 @@
 package com.track.subscription_service.subscription.controller;
 
+import com.track.subscription_service.auth.service.JwtService;
 import com.track.subscription_service.subscription.entity.Subscription;
 import com.track.subscription_service.subscription.repository.SubscriptionRepository;
 import com.track.subscription_service.subscription.service.SubscriptionService;
@@ -12,14 +13,19 @@ import java.util.List;
 public class SubscriptionController {
 
     private final SubscriptionService service;
+    private JwtService jwtService;
 
     public SubscriptionController(SubscriptionService service){
         this.service = service;
     }
 
     @GetMapping
-    public List<Subscription> getAll(){
-        return service.getAll();
+    public List<Subscription> getUserSubscriptions(@RequestHeader("Authorization") String authHeader){
+        String token = authHeader.replace("Bearer ","");
+        String googleId = jwtService.extractGoogleId(token);
+
+        return service.getByGoogleId(googleId);
+
     }
 
     @PostMapping

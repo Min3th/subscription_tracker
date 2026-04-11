@@ -22,4 +22,8 @@ public class SubscriptionService {
     public Subscription create(Subscription subscription){
         return repo.save(subscription);
     }
+
+    public List<Subscription> getByGoogleId(String googleId){
+        return repo.findByUser_GoogleId(googleId);
+    }
 }
