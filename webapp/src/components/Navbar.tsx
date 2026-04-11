@@ -16,7 +16,15 @@ import { Button } from "@mui/material";
 import LoginDialog from "./LoginDialog";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 
-export default function Navbar({ onClick, open }: { onClick: () => void; open: boolean }) {
+export default function Navbar({
+  onClick,
+  open,
+  showDrawerButton = false,
+}: {
+  onClick: () => void;
+  open: boolean;
+  showDrawerButton?: boolean;
+}) {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
   const [openLogin, setOpenLogin] = React.useState(false);
@@ -123,20 +131,17 @@ export default function Navbar({ onClick, open }: { onClick: () => void; open: b
         }}
       >
         <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={onClick}
-            edge="start"
-            sx={[
-              {
-                marginRight: 5,
-              },
-              open && { display: "none" },
-            ]}
-          >
-            {open ? <ChevronLeftIcon /> : <MenuIcon />}
-          </IconButton>
+          {showDrawerButton && (
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={onClick}
+              edge="start"
+              sx={[{ marginRight: 5 }, open && { display: "none" }]}
+            >
+              {open ? <ChevronLeftIcon /> : <MenuIcon />}
+            </IconButton>
+          )}
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <Button

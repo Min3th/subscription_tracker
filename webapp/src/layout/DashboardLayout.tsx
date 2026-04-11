@@ -17,7 +17,7 @@ export default function DashboardLayout() {
     >
       <SideDrawer open={open} onClose={() => setOpen(false)} />
       <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <Navbar onClick={() => setOpen(true)} open={open} />
+        <Navbar onClick={() => setOpen(true)} open={open} showDrawerButton={true} />
         <Toolbar />
         <Box
           sx={{
