@@ -13,10 +13,11 @@ import java.util.List;
 public class SubscriptionController {
 
     private final SubscriptionService service;
-    private JwtService jwtService;
+    private final JwtService jwtService;
 
-    public SubscriptionController(SubscriptionService service){
+    public SubscriptionController(SubscriptionService service, JwtService jwtService){
         this.service = service;
+        this.jwtService = jwtService;
     }
 
     @GetMapping

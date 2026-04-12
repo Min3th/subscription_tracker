@@ -4,6 +4,7 @@ import com.track.subscription_service.user.entity.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
@@ -42,5 +43,11 @@ public class JwtService {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    @PostConstruct
+    public void debugSecret() {
+        System.out.println("JWT SECRET LENGTH: " + key.getEncoded().length);
+        System.out.println("JWT SECRET RAW: " + new String(key.getEncoded()));
     }
 }
