@@ -15,6 +15,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@mui/material";
 import LoginDialog from "./LoginDialog";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import { useEffect } from "react";
 
 export default function Navbar({
   onClick,
@@ -28,6 +29,7 @@ export default function Navbar({
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
   const [openLogin, setOpenLogin] = React.useState(false);
+  const [user, setUser] = React.useState<any>(null);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -48,6 +50,14 @@ export default function Navbar({
   const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    console.log("Stored user in localStorage:", storedUser);
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -144,22 +154,37 @@ export default function Navbar({
           )}
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <Button
-              variant="contained"
-              onClick={() => setOpenLogin(true)}
-              sx={{
-                ml: 2,
-                px: 3,
-                py: 1,
-                borderRadius: "999px",
-                textTransform: "none",
-                fontWeight: 600,
-                fontSize: "0.9rem",
-                background: "#b484c1",
-              }}
-            >
-              Login
-            </Button>
+            {user ? (
+              <IconButton onClick={handleProfileMenuOpen}>
+                <img
+                  src={user.picture}
+                  alt="profile"
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: "50%",
+                    objectFit: "cover",
+                  }}
+                />
+              </IconButton>
+            ) : (
+              <Button
+                variant="contained"
+                onClick={() => setOpenLogin(true)}
+                sx={{
+                  ml: 2,
+                  px: 3,
+                  py: 1,
+                  borderRadius: "999px",
+                  textTransform: "none",
+                  fontWeight: 600,
+                  fontSize: "0.9rem",
+                  background: "#b484c1",
+                }}
+              >
+                Login
+              </Button>
+            )}
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton

@@ -18,6 +18,8 @@ export default function LoginDialog({ open, onClose }: Props) {
       });
       console.log("Server response:", res.data);
       localStorage.setItem("token", res.data.token);
+      const user: any = jwtDecode(credentialResponse.credential);
+      localStorage.setItem("user", JSON.stringify(user));
       navigate("/dashboard");
     } catch (error) {
       console.error("Error decoding JWT:", error);
