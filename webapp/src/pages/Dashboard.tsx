@@ -26,36 +26,6 @@ import StatCard from "../components/StatCard";
 import { getSubscriptions } from "../api/subscription";
 import { useEffect } from "react";
 
-const mockSubscriptions = [
-  {
-    id: "1",
-    name: "Netflix",
-    cost: 15.99,
-    billingCycle: "monthly",
-    nextBillingDate: "Apr 15, 2026",
-    category: "Entertainment",
-    status: "active",
-  },
-  {
-    id: "2",
-    name: "Spotify",
-    cost: 10.99,
-    billingCycle: "monthly",
-    nextBillingDate: "Apr 12, 2026",
-    category: "Music",
-    status: "active",
-  },
-  {
-    id: "3",
-    name: "Adobe CC",
-    cost: 54.99,
-    billingCycle: "monthly",
-    nextBillingDate: "Apr 20, 2026",
-    category: "Productivity",
-    status: "active",
-  },
-];
-
 const monthlySpendingData = [
   { month: "Oct", amount: 98 },
   { month: "Nov", amount: 102 },

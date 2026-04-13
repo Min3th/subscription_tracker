@@ -156,14 +156,6 @@ export default function Navbar({
               {open ? <ChevronLeftIcon /> : <MenuIcon />}
             </IconButton>
           )}
-          <Button
-            onClick={() => {
-              dispatch(logout());
-              localStorage.clear();
-            }}
-          >
-            Log Out
-          </Button>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             {user ? (

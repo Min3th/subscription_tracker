@@ -20,6 +20,7 @@ import ProtectedRoute from "./routes/ProtectedRoutes.tsx";
 import PublicLayout from "./layout/PublicLayout.tsx";
 import { setAuth } from "./app/authSlice.ts";
 import AppContent from "./AppContent.tsx";
+import Subscriptions from "./pages/Subscriptions.tsx";
 
 function App() {
   const [mode, setMode] = useState<"light" | "dark">("light");
@@ -47,6 +48,14 @@ function App() {
                           element={
                             // <ProtectedRoute>
                             <Dashboard />
+                            // </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/subscriptions"
+                          element={
+                            // <ProtectedRoute>
+                            <Subscriptions />
                             // </ProtectedRoute>
                           }
                         />
