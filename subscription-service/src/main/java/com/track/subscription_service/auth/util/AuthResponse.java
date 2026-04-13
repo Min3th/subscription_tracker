@@ -1,4 +1,4 @@
-package com.track.subscription_service.auth;
+package com.track.subscription_service.auth.util;
 
 import com.track.subscription_service.user.entity.User;
 
