@@ -19,14 +19,6 @@ type Props = {
 };
 
 export default function SubscriptionForm({ open, handleClose }: Props) {
-  const [form, setForm] = useState({
-    name: "",
-    amount: "",
-    billingCycle: "monthly",
-    category: "",
-    nextBillingDate: "",
-  });
-
   const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
     amount: Yup.number()
@@ -63,27 +55,6 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
       }
     },
   });
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = () => {
-    console.log("Form Data:", form);
-    try {
-      const payload = {
-        name: form.name,
-        cost: Number(form.amount),
-        duration: form.billingCycle,
-        type: form.category,
-      };
-      createSubscription(payload);
-    } catch (error) {
-      console.error("Error creating subscription:", error);
-    }
-    formik.resetForm();
-    handleClose();
-  };
 
   const handleDialogClose = () => {
     formik.resetForm();

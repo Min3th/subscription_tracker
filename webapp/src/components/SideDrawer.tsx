@@ -3,7 +3,6 @@ import type { Theme } from "@mui/material/styles";
 import type { CSSObject } from "@mui/system";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
-import MuiAppBar from "@mui/material/AppBar";
 import type { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import List from "@mui/material/List";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -95,7 +94,7 @@ export default function MiniDrawer({ open, onClose }: Props) {
   const handleLogout = () => {
     dispatch(logout());
     localStorage.clear();
-    navigate("/login");
+    navigate("/");
   };
 
   return (

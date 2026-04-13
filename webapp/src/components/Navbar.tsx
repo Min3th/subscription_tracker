@@ -52,14 +52,6 @@ export default function Navbar({
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  // useEffect(() => {
-  //   const storedUser = localStorage.getItem("user");
-  //   console.log("Stored user in localStorage:", storedUser);
-  //   if (storedUser) {
-  //     setUser(JSON.parse(storedUser));
-  //   }
-  // }, []);
-
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
