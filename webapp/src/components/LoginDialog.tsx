@@ -1,10 +1,12 @@
-import { Dialog, DialogTitle, DialogContent, Box, Typography } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, Box, Typography, Stack } from "@mui/material";
 import GoogleAuthButton from "./GoogleAuthButton";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAuth } from "../app/authSlice";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 type Props = {
   open: boolean;
@@ -41,35 +43,63 @@ export default function LoginDialog({ open, onClose }: Props) {
   };
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle
-        sx={{
-          textAlign: "center",
-          fontWeight: 700,
-          color: "#6400ef",
-        }}
-      >
-        Welcome Back 👋
-      </DialogTitle>
-
       <DialogContent>
         <Box
           sx={{
-            py: 2,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 2,
-            minWidth: "300px",
+            p: 4,
+            width: 400,
+            borderRadius: 4,
+            textAlign: "center",
           }}
         >
-          <Typography variant="body2" color="text.secondary">
-            Sign in to continue
+          {/* ICON */}
+          <Box
+            sx={{
+              width: 64,
+              height: 64,
+              mx: "auto",
+              mb: 2,
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, #7C3AED, #9333EA)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <CreditCardIcon sx={{ color: "white", fontSize: 32 }} />
+          </Box>
+
+          {/* TITLE */}
+          <Typography variant="h5" fontWeight="bold" mb={1}>
+            Subscription Tracker
           </Typography>
 
-          <GoogleAuthButton onSuccess={handleGoogleSuccess} />
+          <Typography variant="body2" color="text.secondary" mb={3}>
+            Manage all your subscriptions in one place
+          </Typography>
 
+          {/* GOOGLE BUTTON */}
+          <Box mb={3}>
+            <GoogleAuthButton onSuccess={handleGoogleSuccess} />
+          </Box>
+
+          {/* FEATURES */}
+          <Stack spacing={1.5} alignItems="flex-start" mb={3}>
+            {[
+              "Track all your subscriptions in one place",
+              "Get notified before billing dates",
+              "Visualize your spending trends",
+            ].map((text) => (
+              <Box key={text} display="flex" alignItems="center" gap={1}>
+                <CheckCircleIcon sx={{ color: "#22C55E", fontSize: 18 }} />
+                <Typography variant="body2">{text}</Typography>
+              </Box>
+            ))}
+          </Stack>
+
+          {/* FOOTER */}
           <Typography variant="caption" color="text.secondary">
-            Secure login powered by Google
+            By continuing, you agree to our Terms of Service and Privacy Policy
           </Typography>
         </Box>
       </DialogContent>
