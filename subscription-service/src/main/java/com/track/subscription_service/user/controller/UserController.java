@@ -18,14 +18,10 @@ public class UserController {
         this.service = service;
     }
 
-    @GetMapping
-    public List<User> getAll(){
-        return service.getAll();
-    }
+//    @GetMapping
+//    public List<User> getAll(){
+//        return service.getAll();
+//    }
 
-    @PostMapping
-    public User createUser(@RequestBody User user){
-        return service.create(user);
-    }
 
 }
