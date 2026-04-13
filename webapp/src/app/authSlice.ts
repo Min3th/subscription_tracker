@@ -1,5 +1,4 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { logout } from "../features/counter/auth/authSlice";
 
 type User = {
   name: string;

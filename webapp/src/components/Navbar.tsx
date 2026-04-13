@@ -17,7 +17,8 @@ import LoginDialog from "./LoginDialog";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../app/authSlice";
 
 export default function Navbar({
   onClick,
@@ -33,6 +34,7 @@ export default function Navbar({
   const [openLogin, setOpenLogin] = React.useState(false);
   const user = useSelector((state: any) => state.auth.user);
   console.log("User state in Navbar:", user?.picture);
+  const dispatch = useDispatch();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -154,11 +156,24 @@ export default function Navbar({
               {open ? <ChevronLeftIcon /> : <MenuIcon />}
             </IconButton>
           )}
+          <Button
+            onClick={() => {
+              dispatch(logout());
+              localStorage.clear();
+            }}
+          >
+            Log Out
+          </Button>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             {user ? (
               <IconButton onClick={handleProfileMenuOpen}>
-                <Avatar src={user.picture} alt={user?.name} sx={{ width: 36, height: 36 }} />
+                <Avatar
+                  src={user.picture}
+                  alt={user?.name}
+                  sx={{ width: 36, height: 36 }}
+                  imgProps={{ referrerPolicy: "no-referrer" }}
+                />
               </IconButton>
             ) : (
               <Button

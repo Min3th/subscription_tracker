@@ -19,54 +19,43 @@ import Dashboard from "./pages/Dashboard.tsx";
 import ProtectedRoute from "./routes/ProtectedRoutes.tsx";
 import PublicLayout from "./layout/PublicLayout.tsx";
 import { setAuth } from "./app/authSlice.ts";
+import AppContent from "./AppContent.tsx";
 
 function App() {
   const [mode, setMode] = useState<"light" | "dark">("light");
   const theme = React.useMemo(() => getTheme(mode), [mode]);
-  const dispatch = useDispatch();
 
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
-
-    if (user && token) {
-      dispatch(
-        setAuth({
-          user: JSON.parse(user),
-          token,
-        }),
-      );
-    }
-  }, []);
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <LoaderProvider>
         <SnackbarProvider>
           <Provider store={store}>
-            <ThemeProvider theme={theme}>
-              <ThemeContextProvider>
-                <CssBaseline />
-                <BrowserRouter>
-                  <Routes>
-                    <Route element={<PublicLayout />}>
-                      <Route path="/" element={<HomePage />} />
-                      <Route path="/page1" element={<PageOne />} />
-                      <Route path="/page2" element={<PageTwo />} />
-                    </Route>
-                    <Route element={<DashboardLayout />}>
-                      <Route
-                        path="/dashboard"
-                        element={
-                          // <ProtectedRoute>
-                          <Dashboard />
-                          // </ProtectedRoute>
-                        }
-                      />
-                    </Route>
-                  </Routes>
-                </BrowserRouter>
-              </ThemeContextProvider>
-            </ThemeProvider>
+            <AppContent>
+              <ThemeProvider theme={theme}>
+                <ThemeContextProvider>
+                  <CssBaseline />
+                  <BrowserRouter>
+                    <Routes>
+                      <Route element={<PublicLayout />}>
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/page1" element={<PageOne />} />
+                        <Route path="/page2" element={<PageTwo />} />
+                      </Route>
+                      <Route element={<DashboardLayout />}>
+                        <Route
+                          path="/dashboard"
+                          element={
+                            // <ProtectedRoute>
+                            <Dashboard />
+                            // </ProtectedRoute>
+                          }
+                        />
+                      </Route>
+                    </Routes>
+                  </BrowserRouter>
+                </ThemeContextProvider>
+              </ThemeProvider>
+            </AppContent>
           </Provider>
         </SnackbarProvider>
       </LoaderProvider>
