@@ -16,6 +16,8 @@ import { Button } from "@mui/material";
 import LoginDialog from "./LoginDialog";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import { useEffect } from "react";
+import Avatar from "@mui/material/Avatar";
+import { useSelector } from "react-redux";
 
 export default function Navbar({
   onClick,
@@ -29,8 +31,8 @@ export default function Navbar({
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
   const [openLogin, setOpenLogin] = React.useState(false);
-  const [user, setUser] = React.useState<any>(null);
-
+  const user = useSelector((state: any) => state.auth.user);
+  console.log("User state in Navbar:", user?.picture);
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -51,13 +53,13 @@ export default function Navbar({
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    console.log("Stored user in localStorage:", storedUser);
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem("user");
+  //   console.log("Stored user in localStorage:", storedUser);
+  //   if (storedUser) {
+  //     setUser(JSON.parse(storedUser));
+  //   }
+  // }, []);
 
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -156,16 +158,7 @@ export default function Navbar({
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             {user ? (
               <IconButton onClick={handleProfileMenuOpen}>
-                <img
-                  src={user.picture}
-                  alt="profile"
-                  style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                  }}
-                />
+                <Avatar src={user.picture} alt={user?.name} sx={{ width: 36, height: 36 }} />
               </IconButton>
             ) : (
               <Button

@@ -3,6 +3,8 @@ import GoogleAuthButton from "./GoogleAuthButton";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setAuth } from "../app/authSlice";
 
 type Props = {
   open: boolean;
@@ -11,14 +13,21 @@ type Props = {
 
 export default function LoginDialog({ open, onClose }: Props) {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const handleGoogleSuccess = async (credentialResponse: any) => {
     try {
       const res = await axios.post("http://localhost:8080/auth/google", {
         credential: credentialResponse.credential,
       });
-      console.log("Server response:", res.data);
-      localStorage.setItem("token", res.data.token);
+
       const user: any = jwtDecode(credentialResponse.credential);
+      dispatch(
+        setAuth({
+          user,
+          token: res.data.token,
+        }),
+      );
+      localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(user));
       navigate("/dashboard");
     } catch (error) {

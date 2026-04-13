@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import { getTheme } from "./theme/theme";
-import { Provider } from "react-redux";
+import { Provider, useDispatch } from "react-redux";
 import { store } from "./app/store.ts";
 import { SnackbarProvider } from "./utils/Snackbar.tsx";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -18,11 +18,26 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import Dashboard from "./pages/Dashboard.tsx";
 import ProtectedRoute from "./routes/ProtectedRoutes.tsx";
 import PublicLayout from "./layout/PublicLayout.tsx";
+import { setAuth } from "./app/authSlice.ts";
 
 function App() {
   const [mode, setMode] = useState<"light" | "dark">("light");
   const theme = React.useMemo(() => getTheme(mode), [mode]);
+  const dispatch = useDispatch();
 
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+
+    if (user && token) {
+      dispatch(
+        setAuth({
+          user: JSON.parse(user),
+          token,
+        }),
+      );
+    }
+  }, []);
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <LoaderProvider>
