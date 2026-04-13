@@ -30,7 +30,24 @@ public class SubscriptionController {
     }
 
     @PostMapping
-    public Subscription createSubscription(@RequestBody Subscription subscription){
-        return service.create(subscription);
+    public Subscription createSubscription(
+            @RequestBody Subscription subscription,
+            @RequestHeader("Authorization") String authHeader){
+
+        String token = authHeader.replace("Bearer ",""); // to remove Bearer part in token
+        String googleId = jwtService.extractGoogleId(token);
+        return service.create(subscription,googleId);
+    }
+
+    @PutMapping("/{id}")
+    public Subscription updateSubscription(
+            @PathVariable Long id,
+            @RequestBody Subscription updated,
+            @RequestHeader("Authorization") String authHeader
+    ){
+        String token = authHeader.replace("Bearer ","");
+        String googleId = jwtService.extractGoogleId(token);
+
+        return service.update(id,updated,googleId);
     }
 }
