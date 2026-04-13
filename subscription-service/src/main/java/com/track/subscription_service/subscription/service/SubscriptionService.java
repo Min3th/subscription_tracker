@@ -50,4 +50,9 @@ public class SubscriptionService {
 
         return repo.save(existing);
     }
+
+    public void delete(Long id,String googleId){
+        Subscription existing = getByIdAndGoogleId(id,googleId);
+        repo.delete(existing);
+    }
 }

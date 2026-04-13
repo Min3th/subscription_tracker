@@ -50,4 +50,14 @@ public class SubscriptionController {
 
         return service.update(id,updated,googleId);
     }
+
+    @DeleteMapping("/{id}")
+    public void deleteSubscription(
+            @PathVariable Long id,
+            @RequestHeader("Authorization") String authHeader
+    ){
+        String token = authHeader.replace("Bearer ","");
+        String googleId = jwtService.extractGoogleId(token);
+        service.delete(id,googleId);
+    }
 }
