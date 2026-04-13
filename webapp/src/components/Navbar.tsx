@@ -11,14 +11,11 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
-import { Link } from "react-router-dom";
 import { Button } from "@mui/material";
 import LoginDialog from "./LoginDialog";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../app/authSlice";
 
 export default function Navbar({
   onClick,

@@ -12,14 +12,10 @@ import {
   IconButton,
   Chip,
 } from "@mui/material";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import CreditCardIcon from "@mui/icons-material/CreditCard";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AddIcon from "@mui/icons-material/Add";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import SideDrawer from "../components/SideDrawer";
 import SubscriptionForm from "../components/SubscriptionForm";
 import { CreditCard, DollarSign, TrendingUp } from "lucide-react";
 import StatCard from "../components/StatCard";

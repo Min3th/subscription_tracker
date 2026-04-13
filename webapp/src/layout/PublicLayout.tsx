@@ -4,7 +4,6 @@ import { Outlet } from "react-router-dom";
 import { Box, Toolbar } from "@mui/material";
 import Footer from "../components/Footer";
 import ThemeToggleButton from "../components/ThemeToggleButton";
-import SideDrawer from "../components/SideDrawer";
 
 export default function PublicLayout() {
   const [open, setOpen] = useState(false);

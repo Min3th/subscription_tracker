@@ -81,11 +81,17 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
     } catch (error) {
       console.error("Error creating subscription:", error);
     }
+    formik.resetForm();
+    handleClose();
+  };
+
+  const handleDialogClose = () => {
+    formik.resetForm();
     handleClose();
   };
   return (
     <>
-      <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
+      <Dialog open={open} onClose={handleDialogClose} fullWidth maxWidth="sm">
         <DialogTitle>Add Subscription</DialogTitle>
 
         <DialogContent>
@@ -112,6 +118,15 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
             onBlur={formik.handleBlur}
             error={formik.touched.amount && Boolean(formik.errors.amount)}
             helperText={formik.touched.amount && formik.errors.amount}
+            sx={{
+              "& input[type=number]": {
+                MozAppearance: "textfield", // Firefox
+              },
+              "& input[type=number]::-webkit-outer-spin-button, & input[type=number]::-webkit-inner-spin-button": {
+                WebkitAppearance: "none", // Chrome, Safari
+                margin: 0,
+              },
+            }}
           />
 
           <TextField
@@ -155,7 +170,7 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
         </DialogContent>
 
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleDialogClose}>Cancel</Button>
           <Button variant="contained" onClick={() => formik.handleSubmit()}>
             Add
           </Button>

@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./App.css";
 import { getTheme } from "./theme/theme";
-import { Provider, useDispatch } from "react-redux";
+import { Provider } from "react-redux";
 import { store } from "./app/store.ts";
 import { SnackbarProvider } from "./utils/Snackbar.tsx";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -18,7 +18,6 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import Dashboard from "./pages/Dashboard.tsx";
 import ProtectedRoute from "./routes/ProtectedRoutes.tsx";
 import PublicLayout from "./layout/PublicLayout.tsx";
-import { setAuth } from "./app/authSlice.ts";
 import AppContent from "./AppContent.tsx";
 import Subscriptions from "./pages/Subscriptions.tsx";
 
