@@ -17,7 +17,9 @@ import AddIcon from "@mui/icons-material/Add";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import SubscriptionForm from "../components/SubscriptionForm";
-import { CreditCard, DollarSign, TrendingUp } from "lucide-react";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import StatCard from "../components/StatCard";
 import { getSubscriptions } from "../api/subscription";
 import { useEffect } from "react";
@@ -70,7 +72,7 @@ export default function Dashboard() {
     const fetchSubscriptions = async () => {
       try {
         const res = await getSubscriptions();
-        console.log("Fetched subscriptions:", res.data);
+        console.log("Fetched subscriptions:", res);
         setSubscriptions(res.data);
       } catch (error) {
         console.error("Error fetching subscriptions:", error);
@@ -83,8 +85,9 @@ export default function Dashboard() {
     <Box
       sx={{
         p: 3,
+        maxWidth: "1400px",
         width: "100%",
-        mx: "auto", // centers everything
+        mx: "auto",
       }}
     >
       <Box
@@ -121,15 +124,15 @@ export default function Dashboard() {
       {/* STATS */}
       <Grid container spacing={2} mb={3}>
         <Grid item xs={12} md={3}>
-          <StatCard title="Monthly" value={`$${totalMonthly.toFixed(2)}`} icon={<DollarSign />} />
+          <StatCard title="Monthly" value={`$${totalMonthly.toFixed(2)}`} icon={<AttachMoneyIcon />} />
         </Grid>
 
         <Grid item xs={12} md={3}>
-          <StatCard title="Yearly" value={`$${totalYearly.toFixed(2)}`} icon={<TrendingUp />} />
+          <StatCard title="Yearly" value={`$${totalYearly.toFixed(2)}`} icon={<TrendingUpIcon />} />
         </Grid>
 
         <Grid item xs={12} md={3}>
-          <StatCard title="Subscriptions" value={subscriptions.length} icon={<CreditCard />} />
+          <StatCard title="Subscriptions" value={subscriptions.length} icon={<CreditCardIcon />} />
         </Grid>
 
         <Grid item xs={12} md={3}>
@@ -138,15 +141,15 @@ export default function Dashboard() {
       </Grid>
       <SubscriptionForm handleClose={handleClose} open={open} />
       {/* CHART + CATEGORY */}
-      <Grid container spacing={2} mb={3}>
+      <Grid container spacing={3} mb={3}>
         {/* Chart */}
         <Grid item xs={12} md={8}>
           <Card sx={{ borderRadius: 3 }}>
-            <CardContent>
+            <CardContent sx={{ width: "600px" }}>
               <Typography variant="h6">Monthly Spending</Typography>
 
-              <Box sx={{ height: 300, width: "600px" }}>
-                <ResponsiveContainer>
+              <Box sx={{ height: 300, width: "100%" }}>
+                <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={monthlySpendingData}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
@@ -163,7 +166,7 @@ export default function Dashboard() {
         {/* Category */}
         <Grid item xs={12} md={4}>
           <Card sx={{ borderRadius: 3 }}>
-            <CardContent sx={{ width: "300px" }}>
+            <CardContent>
               <Typography variant="h6" mb={2}>
                 Categories
               </Typography>
@@ -215,7 +218,7 @@ export default function Dashboard() {
                 borderRadius: 3,
                 p: 2,
                 boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
-                width: "500px",
+                width: "100%",
               }}
             >
               <Box display="flex" justifyContent="space-between" alignItems="flex-start">
@@ -271,5 +274,3 @@ export default function Dashboard() {
     </Box>
   );
 }
-
-// ---------------- STAT CARD ----------------
