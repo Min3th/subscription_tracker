@@ -1,4 +1,4 @@
-import { Box, Typography, Chip, Stack, Avatar, Button, Divider } from "@mui/material";
+import { Box, Typography, Chip, Stack, Avatar, Button, Switch } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { deepOrange } from "@mui/material/colors";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
@@ -12,81 +12,97 @@ export default function SubscriptionCard() {
   return (
     <Box
       sx={{
-        p: 2,
+        p: 3,
         borderRadius: 3,
         border: "1px solid",
         borderColor: "divider",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "flex-start",
+        maxWidth: "1200px",
       }}
     >
-      <Stack direction="row" spacing={2}>
-        <Avatar
-          sx={{
-            bgcolor: deepOrange[500],
-            width: 48,
-            height: 48,
-          }}
-          variant="rounded"
-        >
-          A
-        </Avatar>
+      <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+        <Stack direction="row" spacing={2}>
+          <Avatar variant="rounded" sx={{ bgcolor: deepOrange[500], width: 48, height: 48 }}>
+            A
+          </Avatar>
 
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "start" }}>
+          <Box>
+            <Stack direction="row" spacing={1} alignItems="center">
+              <Typography fontWeight="bold">Adobe Creative Cloud</Typography>
+
+              <Chip label="active" size="small" color="success" />
+              <Chip label="Productivity" size="small" />
+            </Stack>
+            <Typography variant="body2" color="text.secondary" mt={0.5}>
+              Complete suite of creative apps including Photoshop, Illustrator, and Premiere Pro
+            </Typography>
+          </Box>
+        </Stack>
+
+        <Box textAlign="right">
+          <Typography variant="body2" display="flex" alignItems="center" gap={1}>
+            Auto-renew:
+            <Switch defaultChecked />
+          </Typography>
+        </Box>
+      </Box>
+
+      <Box mt={3} display="grid" gridTemplateColumns="1fr 1fr" gap={2}>
+        <Box>
           <Stack direction="row" spacing={1} alignItems="center">
-            <Typography fontWeight="bold">Adobe Creative Cloud</Typography>
-
-            <Chip label="active" size="small" color="success" />
-            <Chip label="Productivity" size="small" />
+            <AttachMoneyIcon fontSize="small" />
+            <Typography>
+              <b>$54.99</b> / month
+            </Typography>
           </Stack>
 
-          <Typography variant="body2" color="text.secondary" mt={0.5}>
-            Complete suite of creative apps including Photoshop, Illustrator, and Premiere Pro
-          </Typography>
-          <Box sx={{ display: "flex", flexDirection: "row", justifyContent: "space-between", width: "100%", mt: 2 }}>
-            <Box>
-              <Typography mt={1}>
-                <AttachMoneyIcon />
-                <b>$54.99</b> / month
-              </Typography>
+          <Stack direction="row" spacing={1} alignItems="center" mt={1}>
+            <CreditCardIcon fontSize="small" />
+            <Typography variant="body2" color="text.secondary">
+              Visa •••• 4242
+            </Typography>
+          </Stack>
 
-              <Typography variant="body2" color="text.secondary">
-                <CreditCardIcon />
-                Visa •••• 4242
-              </Typography>
+          <Stack direction="row" spacing={1} alignItems="center" mt={1}>
+            <TrendingUpIcon fontSize="small" />
+            <Typography variant="body2" color="text.secondary">
+              Total Paid: $1649.76
+            </Typography>
+          </Stack>
+        </Box>
 
-              <Typography variant="body2" color="text.secondary">
-                <TrendingUpIcon />
-                Total Paid: $1649.76
-              </Typography>
-            </Box>
-            <Box>
-              <Typography variant="body2" mt={1}>
-                <CalendarMonthOutlinedIcon />
-                Next: Apr 20, 2026
-              </Typography>
+        <Box>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <CalendarMonthOutlinedIcon fontSize="small" />
+            <Typography variant="body2">Next: Apr 20, 2026</Typography>
+          </Stack>
 
-              <Typography variant="body2">
-                <QueryBuilderOutlinedIcon />
-                Started: Aug 20, 2023
-              </Typography>
+          <Stack direction="row" spacing={1} alignItems="center" mt={1}>
+            <QueryBuilderOutlinedIcon fontSize="small" />
+            <Typography variant="body2">Started: Aug 20, 2023</Typography>
+          </Stack>
 
-              <Typography variant="body2" color="primary" sx={{ cursor: "pointer", mt: 1 }}>
-                <LanguageOutlinedIcon />
+          <Box display="flex" justifyContent="space-between" alignItems="center" mt={1}>
+            <Stack direction="row" spacing={1} alignItems="center" sx={{ cursor: "pointer" }}>
+              <LanguageOutlinedIcon fontSize="small" color="primary" />
+              <Typography variant="body2" color="primary">
                 Visit website
               </Typography>
-            </Box>
+            </Stack>
+
+            <Button
+              sx={{
+                color: "black",
+                borderColor: "black",
+                textTransform: "none",
+              }}
+              size="small"
+              variant="outlined"
+              startIcon={<MoreVertIcon />}
+            >
+              Actions
+            </Button>
           </Box>
         </Box>
-      </Stack>
-      <Box textAlign="right">
-        <Typography variant="body2">
-          Auto-renew: <b>ON</b>
-        </Typography>
-        <Button size="small" variant="outlined" startIcon={<MoreVertIcon />} sx={{ mt: 1 }}>
-          Actions
-        </Button>
       </Box>
     </Box>
   );
