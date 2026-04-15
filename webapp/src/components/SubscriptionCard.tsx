@@ -1,94 +1,215 @@
-import { Box, Typography, Chip, Stack, Avatar, Button, Switch } from "@mui/material";
+import { Card, CardContent, Box, Typography, Chip, IconButton, Menu, MenuItem, Divider, Link } from "@mui/material";
+import { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { deepOrange } from "@mui/material/colors";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import CreditCardIcon from "@mui/icons-material/CreditCard";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
-import CalendarMonthOutlinedIcon from "@mui/icons-material/CalendarMonthOutlined";
-import QueryBuilderOutlinedIcon from "@mui/icons-material/QueryBuilderOutlined";
-import LanguageOutlinedIcon from "@mui/icons-material/LanguageOutlined";
+import CreditCardIcon from "@mui/icons-material/CreditCard";
+import LanguageIcon from "@mui/icons-material/Language";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 
-interface Props {
-  view?: "grid" | "list";
+export interface DetailedSubscription {
+  id: string;
+  name: string;
+  cost: number;
+  billingCycle: "monthly" | "yearly";
+  nextBillingDate: string;
+  category: string;
+  status: "active" | "cancelled" | "paused";
+  paymentMethod: string;
+  startDate: string;
+  description: string;
+  website: string;
+  autoRenew: boolean;
+  totalPaid: number;
 }
 
-export default function SubscriptionCard({ view = "list" }: Props) {
-  const isGrid = view === "grid";
+interface Props {
+  subscription: DetailedSubscription;
+  onEdit?: (id: string) => void;
+  onCancel?: (id: string) => void;
+  onPause?: (id: string) => void;
+}
+
+export default function SubscriptionCard({ subscription, onEdit, onCancel, onPause }: Props) {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(e.currentTarget);
+  };
+
+  const handleClose = () => setAnchorEl(null);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "active":
+        return { bg: "#e8f5e9", color: "#2e7d32" };
+      case "cancelled":
+        return { bg: "#ffebee", color: "#c62828" };
+      case "paused":
+        return { bg: "#fff8e1", color: "#f9a825" };
+      default:
+        return { bg: "#eee", color: "#555" };
+    }
+  };
+
+  const getCategoryColor = (category: string) => {
+    const map: Record<string, { bg: string; color: string }> = {
+      Entertainment: { bg: "#f3e5f5", color: "#7b1fa2" },
+      Productivity: { bg: "#e3f2fd", color: "#1565c0" },
+      Music: { bg: "#fce4ec", color: "#c2185b" },
+    };
+    return map[category] || { bg: "#eee", color: "#555" };
+  };
+
+  const statusStyle = getStatusColor(subscription.status);
+  const categoryStyle = getCategoryColor(subscription.category);
 
   return (
-    <Box
-      sx={{
-        p: 3,
-        borderRadius: 3,
-        border: "1px solid",
-        borderColor: "divider",
-        maxWidth: "1200px",
-      }}
-    >
-      <Box
-        display="flex"
-        flexDirection={isGrid ? "column" : "row"}
-        justifyContent="space-between"
-        alignItems={isGrid ? "flex-start" : "flex-start"}
-        gap={isGrid ? 2 : 0}
-      >
-        <Stack direction={isGrid ? "column" : "row"} spacing={2}>
-          <Avatar variant="rounded" sx={{ bgcolor: deepOrange[500], width: 48, height: 48 }}>
-            A
-          </Avatar>
+    <Card sx={{ "&:hover": { boxShadow: 6 }, transition: "0.3s" }}>
+      <CardContent>
+        <Box display="flex" flexDirection={{ xs: "column", lg: "row" }} gap={3}>
+          {/* LEFT SIDE */}
+          <Box display="flex" gap={2} flex={1}>
+            {/* Avatar */}
+            <Box
+              sx={{
+                width: 64,
+                height: 64,
+                borderRadius: 2,
+                background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#fff",
+                fontWeight: "bold",
+                fontSize: 24,
+              }}
+            >
+              {subscription.name.charAt(0)}
+            </Box>
 
-          <Box>
-            <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-              <Typography fontWeight="bold">Adobe Creative Cloud</Typography>
-              <Chip label="active" size="small" color="success" />
-            </Stack>
-            {!isGrid && (
-              <Typography variant="body2" color="text.secondary" mt={0.5}>
-                Complete suite of creative apps...
-              </Typography>
-            )}
+            {/* DETAILS */}
+            <Box flex={1} display="flex" flexDirection="column">
+              {/* TOP ROW */}
+              <Box flex={1} display="flex" flexDirection="column" sx={{ alignItems: "start" }}>
+                <Box display="flex" gap={1} alignItems="center">
+                  <Typography variant="h6">{subscription.name}</Typography>
+
+                  <Chip
+                    label={subscription.status}
+                    size="small"
+                    sx={{
+                      backgroundColor: statusStyle.bg,
+                      color: statusStyle.color,
+                    }}
+                  />
+
+                  <Chip
+                    label={subscription.category}
+                    size="small"
+                    sx={{
+                      backgroundColor: categoryStyle.bg,
+                      color: categoryStyle.color,
+                    }}
+                  />
+                </Box>
+
+                <Box>
+                  <Typography variant="body2" color="text.secondary" mt={0.5} mb={2}>
+                    {subscription.description}
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* GRID DETAILS */}
+              <Box display="grid" gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }} gap={1}>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <AttachMoneyIcon fontSize="small" />
+                  <Typography fontWeight="bold">${subscription.cost.toFixed(2)}</Typography>
+                  <Typography variant="body2">
+                    / {subscription.billingCycle === "monthly" ? "month" : "year"}
+                  </Typography>
+                </Box>
+
+                <Box display="flex" alignItems="center" gap={1}>
+                  <CalendarTodayIcon fontSize="small" />
+                  <Typography variant="body2">Next: {subscription.nextBillingDate}</Typography>
+                </Box>
+
+                <Box display="flex" alignItems="center" gap={1}>
+                  <CreditCardIcon fontSize="small" />
+                  <Typography variant="body2">{subscription.paymentMethod}</Typography>
+                </Box>
+
+                <Box display="flex" alignItems="center" gap={1}>
+                  <AccessTimeIcon fontSize="small" />
+                  <Typography variant="body2">Started: {subscription.startDate}</Typography>
+                </Box>
+
+                <Box display="flex" alignItems="center" gap={1}>
+                  <TrendingUpIcon fontSize="small" />
+                  <Typography variant="body2">Total Paid: ${subscription.totalPaid.toFixed(2)}</Typography>
+                </Box>
+
+                <Box display="flex" alignItems="center" gap={1}>
+                  <LanguageIcon fontSize="small" />
+                  <Link href={subscription.website} target="_blank" underline="hover">
+                    Visit Website
+                  </Link>
+                </Box>
+              </Box>
+            </Box>
           </Box>
-        </Stack>
 
-        {/* Hide complex toggle in small grid view to save space if desired */}
-        <Box textAlign={isGrid ? "left" : "right"}>
-          <Typography variant="caption" display="flex" alignItems="center" gap={1}>
-            Auto-renew: <Switch size="small" defaultChecked />
-          </Typography>
-        </Box>
-      </Box>
+          {/* RIGHT SIDE */}
+          <Box display="flex" flexDirection="column" alignItems="flex-end" gap={2}>
+            <Chip
+              label={subscription.autoRenew ? "Auto-renew ON" : "Auto-renew OFF"}
+              color={subscription.autoRenew ? "success" : "default"}
+            />
 
-      {/* Details Section */}
-      <Box
-        mt={3}
-        display="grid"
-        // Logic: 1 column for Grid view, 2 columns for List view
-        gridTemplateColumns={isGrid ? "1fr" : "1fr 1fr"}
-        gap={2}
-      >
-        <Box>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <AttachMoneyIcon fontSize="small" />
-            <Typography>
-              <b>$54.99</b> / month
-            </Typography>
-          </Stack>
-          {/* ... other info ... */}
-        </Box>
+            <IconButton onClick={handleOpen}>
+              <MoreVertIcon />
+            </IconButton>
 
-        <Box>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <CalendarMonthOutlinedIcon fontSize="small" />
-            <Typography variant="body2">Next: Apr 20, 2026</Typography>
-          </Stack>
+            <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+              <MenuItem
+                onClick={() => {
+                  onEdit?.(subscription.id);
+                  handleClose();
+                }}
+              >
+                Edit
+              </MenuItem>
 
-          <Box display="flex" justifyContent="space-between" alignItems="center" mt={isGrid ? 2 : 1}>
-            <Button size="small" variant="outlined" fullWidth={isGrid}>
-              Actions
-            </Button>
+              {subscription.status === "active" && (
+                <MenuItem
+                  onClick={() => {
+                    onPause?.(subscription.id);
+                    handleClose();
+                  }}
+                >
+                  Pause
+                </MenuItem>
+              )}
+
+              <Divider />
+
+              <MenuItem
+                onClick={() => {
+                  onCancel?.(subscription.id);
+                  handleClose();
+                }}
+                sx={{ color: "error.main" }}
+              >
+                Cancel
+              </MenuItem>
+            </Menu>
           </Box>
         </Box>
-      </Box>
-    </Box>
+      </CardContent>
+    </Card>
   );
 }
