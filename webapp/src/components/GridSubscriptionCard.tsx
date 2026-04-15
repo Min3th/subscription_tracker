@@ -5,7 +5,7 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 
 export default function GridSubscriptionCard({ subscription }: any) {
   return (
-    <Card sx={{ "&:hover": { boxShadow: 6 }, transition: "0.3s" }}>
+    <Card sx={{ "&:hover": { boxShadow: 6 }, transition: "0.3s", backgroundColor: "lightgreen" }}>
       <CardContent>
         <Box display="flex" flexDirection="column" gap={2}>
           {/* TOP */}

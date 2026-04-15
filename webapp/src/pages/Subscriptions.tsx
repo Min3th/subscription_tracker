@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import { getSubscriptions } from "../api/subscription";
 import GridSubscriptionCard from "../components/GridSubscriptionCard";
+import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 
 export default function Subscriptions() {
   const [view, setView] = useState<"grid" | "list">("list");
@@ -27,13 +28,10 @@ export default function Subscriptions() {
             name: item.name,
             cost: item.cost,
 
-            // 🔥 mapping DB → UI
             billingCycle: item.duration === "yearly" ? "yearly" : "monthly",
             nextBillingDate: "2026-05-01", // temporary
             category: item.category || "General",
             status: "active",
-
-            // 🔥 missing fields (hardcoded for now)
             paymentMethod: "Visa **** 4242",
             startDate: "2024-01-01",
             description: `${item.name} subscription`,
@@ -52,7 +50,17 @@ export default function Subscriptions() {
     fetchData();
   }, []);
   return (
-    <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
+    <Box
+      sx={{
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        backgroundColor: "lightpink",
+        minHeight: "100vh",
+        paddingTop: 3,
+        paddingBottom: 3,
+      }}
+    >
       <Box sx={{ width: "100%", maxWidth: 1400 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
           <TextField
@@ -77,14 +85,22 @@ export default function Subscriptions() {
               <SwapVertOutlinedIcon fontSize="small" />
               Sort
             </Button>
-            <Stack direction="row" spacing={1}>
-              <Button onClick={() => setView("list")}>
-                <ViewListIcon />
-              </Button>
-              <Button onClick={() => setView("grid")}>
-                <GridViewIcon />
-              </Button>
-            </Stack>
+            <ToggleButtonGroup
+              value={view}
+              exclusive
+              onChange={(e, newView) => {
+                if (newView !== null) setView(newView);
+              }}
+              size="small"
+            >
+              <ToggleButton value="list">
+                <ViewListIcon fontSize="small" />
+              </ToggleButton>
+
+              <ToggleButton value="grid">
+                <GridViewIcon fontSize="small" />
+              </ToggleButton>
+            </ToggleButtonGroup>
           </Stack>
         </Stack>
 
