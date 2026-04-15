@@ -138,12 +138,14 @@ export function Settings({ user, onBack }: SettingsProps) {
   ];
 
   return (
-    <Box>
-      {/* Header */}
+    <Box
+      display="flex"
+      flexDirection="column"
+      gap={3}
+      sx={{ maxWidth: 1000, mx: "auto", p: 3 }}
+      justifyContent="center"
+    >
       <Box sx={{ mb: 4 }}>
-        <Button startIcon={<ArrowBackIcon />} onClick={onBack}>
-          Back
-        </Button>
         <Typography variant="h4" sx={{ fontWeight: "bold" }}>
           Settings
         </Typography>
@@ -160,129 +162,114 @@ export function Settings({ user, onBack }: SettingsProps) {
 
       <Grid container spacing={3}>
         {/* Profile Settings */}
-        <Grid item xs={12}>
-          <Card>
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
-                <PersonIcon sx={{ color: "#1976d2" }} />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Profile Information
-                </Typography>
-              </Box>
+        <Grid item xs={12} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
+            <PersonIcon sx={{ color: "#1976d2" }} />
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Profile Information
+            </Typography>
+          </Box>
 
-              <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 3 }}>
-                <Box sx={{ position: "relative" }}>
-                  <Avatar src={user.photoUrl} alt={user.name} sx={{ width: 100, height: 100 }} />
-                  <IconButton
-                    sx={{
-                      position: "absolute",
-                      bottom: -5,
-                      right: -5,
-                      bgcolor: "primary.main",
-                      color: "white",
-                      width: 36,
-                      height: 36,
-                      "&:hover": {
-                        bgcolor: "primary.dark",
-                      },
-                    }}
-                    size="small"
-                  >
-                    <PhotoCameraIcon sx={{ fontSize: 18 }} />
-                  </IconButton>
-                </Box>
-                <Box>
-                  <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    Profile Photo
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    PNG, JPG up to 5MB
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Full Name"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    fullWidth
-                    label="Email Address"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                  />
-                </Grid>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 3 }}>
+            <Box sx={{ position: "relative" }}>
+              <Avatar src={user.photoUrl} alt={user.name} sx={{ width: 100, height: 100 }} />
+              <IconButton
+                sx={{
+                  position: "absolute",
+                  bottom: -5,
+                  right: -5,
+                  bgcolor: "primary.main",
+                  color: "white",
+                  width: 36,
+                  height: 36,
+                  "&:hover": {
+                    bgcolor: "primary.dark",
+                  },
+                }}
+                size="small"
+              >
+                <PhotoCameraIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            </Box>
+            <Box>
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                Profile Photo
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                PNG, JPG up to 5MB
+              </Typography>
+            </Box>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth label="Full Name" name="name" value={formData.name} onChange={handleInputChange} />
               </Grid>
-            </CardContent>
-          </Card>
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Email Address"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                />
+              </Grid>
+            </Grid>
+          </Box>
         </Grid>
 
         {/* Preferences */}
-        <Grid item xs={12}>
-          <Card>
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
-                <PublicIcon sx={{ color: "#1976d2" }} />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Preferences
-                </Typography>
-              </Box>
+        <Grid item xs={12} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
+            <PublicIcon sx={{ color: "#1976d2" }} />
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
+              Preferences
+            </Typography>
+          </Box>
 
-              <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel>Currency</InputLabel>
-                    <Select name="currency" value={formData.currency} onChange={handleSelectChange} label="Currency">
-                      {currencies.map((currency) => (
-                        <MenuItem key={currency.code} value={currency.code}>
-                          {currency.symbol} {currency.name} ({currency.code})
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Currency</InputLabel>
+                <Select name="currency" value={formData.currency} onChange={handleSelectChange} label="Currency">
+                  {currencies.map((currency) => (
+                    <MenuItem key={currency.code} value={currency.code}>
+                      {currency.symbol} {currency.name} ({currency.code})
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel>Language</InputLabel>
-                    <Select name="language" value={formData.language} onChange={handleSelectChange} label="Language">
-                      {languages.map((lang) => (
-                        <MenuItem key={lang.code} value={lang.code}>
-                          {lang.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Language</InputLabel>
+                <Select name="language" value={formData.language} onChange={handleSelectChange} label="Language">
+                  {languages.map((lang) => (
+                    <MenuItem key={lang.code} value={lang.code}>
+                      {lang.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel>Timezone</InputLabel>
-                    <Select name="timezone" value={formData.timezone} onChange={handleSelectChange} label="Timezone">
-                      {timezones.map((tz) => (
-                        <MenuItem key={tz} value={tz}>
-                          {tz}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
-              </Grid>
-            </CardContent>
-          </Card>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel>Timezone</InputLabel>
+                <Select name="timezone" value={formData.timezone} onChange={handleSelectChange} label="Timezone">
+                  {timezones.map((tz) => (
+                    <MenuItem key={tz} value={tz}>
+                      {tz}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
         </Grid>
 
         {/* Appearance */}
-        <Grid item xs={12}>
+        <Grid item xs={12} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
           <Card>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
@@ -310,7 +297,7 @@ export function Settings({ user, onBack }: SettingsProps) {
         </Grid>
 
         {/* Notifications */}
-        <Grid item xs={12}>
+        <Grid item xs={12} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
           <Card>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
@@ -433,99 +420,8 @@ export function Settings({ user, onBack }: SettingsProps) {
           </Card>
         </Grid>
 
-        {/* Privacy & Security */}
-        <Grid item xs={12}>
-          <Card>
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
-                <SecurityIcon sx={{ color: "#1976d2" }} />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Privacy & Security
-                </Typography>
-              </Box>
-
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <FormControlLabel
-                  control={
-                    <Switch checked={privacy.publicProfile} onChange={handlePrivacyChange} name="publicProfile" />
-                  }
-                  label={
-                    <Box>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                        Public Profile
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Make your profile visible to others
-                      </Typography>
-                    </Box>
-                  }
-                />
-
-                <Divider />
-
-                <FormControlLabel
-                  control={<Switch checked={privacy.showEmail} onChange={handlePrivacyChange} name="showEmail" />}
-                  label={
-                    <Box>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                        Show Email Address
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Display your email on your public profile
-                      </Typography>
-                    </Box>
-                  }
-                />
-
-                <Divider />
-
-                <FormControlLabel
-                  control={
-                    <Switch checked={privacy.dataCollection} onChange={handlePrivacyChange} name="dataCollection" />
-                  }
-                  label={
-                    <Box>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                        Analytics & Data Collection
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Help us improve by sharing anonymous usage data
-                      </Typography>
-                    </Box>
-                  }
-                />
-              </Box>
-
-              <Divider sx={{ my: 3 }} />
-
-              <Box>
-                <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
-                  Password
-                </Typography>
-                <Button variant="outlined" size="small">
-                  Change Password
-                </Button>
-              </Box>
-
-              <Divider sx={{ my: 3 }} />
-
-              <Box>
-                <Typography variant="body2" sx={{ fontWeight: 500, mb: 1, color: "error.main" }}>
-                  Danger Zone
-                </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1.5 }}>
-                  Once you delete your account, there is no going back. Please be certain.
-                </Typography>
-                <Button variant="outlined" color="error" size="small">
-                  Delete Account
-                </Button>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
         {/* Payment Method */}
-        <Grid item xs={12}>
+        <Grid item xs={12} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
           <Card>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
