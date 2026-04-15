@@ -21,6 +21,7 @@ import PublicLayout from "./layout/PublicLayout.tsx";
 import AppContent from "./AppContent.tsx";
 import Subscriptions from "./pages/Subscriptions.tsx";
 import UserProfile from "./pages/UserProfile.tsx";
+import { Settings } from "./pages/Settings.tsx";
 
 function App() {
   const [mode, setMode] = useState<"light" | "dark">("light");
@@ -60,16 +61,16 @@ function App() {
                           }
                         />
                         <Route
-                          path="/profile"
+                          path="/settings"
                           element={
                             // <ProtectedRoute>
-                            <UserProfile
+                            <Settings
                               user={{
                                 name: "John Doe",
                                 email: "john.doe@example.com",
                                 photoUrl: "/path/to/photo.jpg",
                               }}
-                              onSignOut={function (): void {
+                              onBack={function (): void {
                                 throw new Error("Function not implemented.");
                               }}
                             />

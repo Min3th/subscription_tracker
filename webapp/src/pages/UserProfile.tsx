@@ -25,7 +25,7 @@ export default function UserProfile({ user, onSignOut, onSettings }: UserProfile
   };
 
   return (
-    <Box>
+    <Box sx={{ backgroundColor: "lightpink" }}>
       <Box
         onClick={handleClick}
         sx={{
