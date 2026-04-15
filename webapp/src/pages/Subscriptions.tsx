@@ -8,6 +8,7 @@ import GridViewIcon from "@mui/icons-material/GridView";
 import { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import { getSubscriptions } from "../api/subscription";
+import GridSubscriptionCard from "../components/GridSubscriptionCard";
 
 export default function Subscriptions() {
   const [view, setView] = useState<"grid" | "list">("list");
@@ -98,7 +99,7 @@ export default function Subscriptions() {
                 lg: view === "grid" ? 3 : 12,
               }}
             >
-              <SubscriptionCard subscription={sub} />
+              {view === "list" ? <SubscriptionCard subscription={sub} /> : <GridSubscriptionCard subscription={sub} />}
             </Grid>
           ))}
         </Grid>
