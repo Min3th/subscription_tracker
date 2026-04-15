@@ -23,23 +23,17 @@ import NotificationsIcon from "@mui/icons-material/Notifications";
 import PublicIcon from "@mui/icons-material/Public";
 import PaletteIcon from "@mui/icons-material/Palette";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
-import SecurityIcon from "@mui/icons-material/Security";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import SaveIcon from "@mui/icons-material/Save";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import type { SelectChangeEvent } from "@mui/material";
-import Palette from "@mui/icons-material/Palette";
+import { useSelector } from "react-redux";
+import type { RootState } from "../app/store";
 
-interface SettingsProps {
-  user: {
-    name: string;
-    email: string;
-    photoUrl: string;
-  };
-  onBack: () => void;
-}
-
-export function Settings({ user, onBack }: SettingsProps) {
+export function Settings() {
+  const { user, token } = useSelector((state: RootState) => state.auth);
+  if (!user) {
+    return <Typography>Loading...</Typography>;
+  }
   const [formData, setFormData] = useState({
     name: user.name,
     email: user.email,
@@ -86,15 +80,7 @@ export function Settings({ user, onBack }: SettingsProps) {
     });
   };
 
-  const handlePrivacyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPrivacy({
-      ...privacy,
-      [e.target.name]: e.target.checked,
-    });
-  };
-
   const handleSave = () => {
-    // Save settings logic here
     console.log("Settings saved:", { formData, notifications, privacy });
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
@@ -161,7 +147,6 @@ export function Settings({ user, onBack }: SettingsProps) {
       )}
 
       <Grid container spacing={3}>
-        {/* Profile Settings */}
         <Grid item xs={12} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
             <PersonIcon sx={{ color: "#1976d2" }} />
@@ -172,7 +157,7 @@ export function Settings({ user, onBack }: SettingsProps) {
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 3 }}>
             <Box sx={{ position: "relative" }}>
-              <Avatar src={user.photoUrl} alt={user.name} sx={{ width: 100, height: 100 }} />
+              <Avatar src={user.picture} alt={user.name} sx={{ width: 100, height: 100 }} />
               <IconButton
                 sx={{
                   position: "absolute",
@@ -420,7 +405,6 @@ export function Settings({ user, onBack }: SettingsProps) {
           </Card>
         </Grid>
 
-        {/* Payment Method */}
         <Grid item xs={12} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
           <Card>
             <CardContent sx={{ p: 3 }}>
@@ -479,12 +463,8 @@ export function Settings({ user, onBack }: SettingsProps) {
           </Card>
         </Grid>
       </Grid>
-
-      {/* Save Button */}
       <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end", gap: 2 }}>
-        <Button variant="outlined" onClick={onBack}>
-          Cancel
-        </Button>
+        <Button variant="outlined">Cancel</Button>
         <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSave}>
           Save Changes
         </Button>
