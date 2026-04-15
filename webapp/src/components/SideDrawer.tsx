@@ -21,6 +21,7 @@ import { logout } from "../app/authSlice";
 import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import { Link } from "react-router-dom";
+import SettingsIcon from "@mui/icons-material/Settings";
 
 const drawerWidth = 240;
 
@@ -108,64 +109,89 @@ export default function MiniDrawer({ open, onClose }: Props) {
         </DrawerHeader>
         <Divider />
         <List>
-          <List>
-            <ListItem disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                component={Link}
-                to="/dashboard"
+          <ListItem disablePadding sx={{ display: "block" }}>
+            <ListItemButton
+              component={Link}
+              to="/dashboard"
+              sx={{
+                minHeight: 48,
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  px: 2.5,
+                  minWidth: 0,
+                  justifyContent: "center",
+                  mr: open ? 3 : "auto",
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    justifyContent: "center",
-                    mr: open ? 3 : "auto",
-                  }}
-                >
-                  <DashboardIcon />
-                </ListItemIcon>
+                <DashboardIcon />
+              </ListItemIcon>
 
-                <ListItemText
-                  primary="Dashboard"
-                  sx={{
-                    opacity: open ? 1 : 0,
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
-          </List>
-          <List>
-            <ListItem disablePadding sx={{ display: "block" }}>
-              <ListItemButton
-                component={Link}
-                to="/subscriptions"
+              <ListItemText
+                primary="Dashboard"
                 sx={{
-                  minHeight: 48,
-                  px: 2.5,
+                  opacity: open ? 1 : 0,
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding sx={{ display: "block" }}>
+            <ListItemButton
+              component={Link}
+              to="/subscriptions"
+              sx={{
+                minHeight: 48,
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: "center",
+                  mr: open ? 3 : "auto",
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    justifyContent: "center",
-                    mr: open ? 3 : "auto",
-                  }}
-                >
-                  <SubscriptionsIcon />
-                </ListItemIcon>
+                <SubscriptionsIcon />
+              </ListItemIcon>
 
-                <ListItemText
-                  primary="Subscriptions"
-                  sx={{
-                    opacity: open ? 1 : 0,
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
-          </List>
+              <ListItemText
+                primary="Subscriptions"
+                sx={{
+                  opacity: open ? 1 : 0,
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding sx={{ display: "block" }}>
+            <ListItemButton
+              component={Link}
+              to="/settings"
+              sx={{
+                minHeight: 48,
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  justifyContent: "center",
+                  mr: open ? 3 : "auto",
+                }}
+              >
+                <SettingsIcon />
+              </ListItemIcon>
+
+              <ListItemText
+                primary="Settings"
+                sx={{
+                  opacity: open ? 1 : 0,
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
         </List>
         <Divider />
         <List>

@@ -20,6 +20,7 @@ import ProtectedRoute from "./routes/ProtectedRoutes.tsx";
 import PublicLayout from "./layout/PublicLayout.tsx";
 import AppContent from "./AppContent.tsx";
 import Subscriptions from "./pages/Subscriptions.tsx";
+import UserProfile from "./pages/UserProfile.tsx";
 
 function App() {
   const [mode, setMode] = useState<"light" | "dark">("light");
@@ -55,6 +56,23 @@ function App() {
                           element={
                             // <ProtectedRoute>
                             <Subscriptions />
+                            // </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/profile"
+                          element={
+                            // <ProtectedRoute>
+                            <UserProfile
+                              user={{
+                                name: "John Doe",
+                                email: "john.doe@example.com",
+                                photoUrl: "/path/to/photo.jpg",
+                              }}
+                              onSignOut={function (): void {
+                                throw new Error("Function not implemented.");
+                              }}
+                            />
                             // </ProtectedRoute>
                           }
                         />
