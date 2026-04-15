@@ -55,7 +55,6 @@ export default function Subscriptions() {
         width: "100%",
         display: "flex",
         justifyContent: "center",
-        backgroundColor: "lightpink",
         minHeight: "100vh",
         paddingTop: 3,
         paddingBottom: 3,

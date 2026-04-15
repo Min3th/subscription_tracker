@@ -7,6 +7,7 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import LanguageIcon from "@mui/icons-material/Language";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import { Switch, FormControlLabel } from "@mui/material";
 
 export interface DetailedSubscription {
   id: string;
@@ -70,9 +71,7 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
     <Card sx={{ "&:hover": { boxShadow: 6 }, transition: "0.3s" }}>
       <CardContent>
         <Box display="flex" flexDirection={{ xs: "column", lg: "row" }} gap={3}>
-          {/* LEFT SIDE */}
           <Box display="flex" gap={2} flex={1}>
-            {/* Avatar */}
             <Box
               sx={{
                 width: 64,
@@ -90,9 +89,7 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
               {subscription.name.charAt(0)}
             </Box>
 
-            {/* DETAILS */}
             <Box flex={1} display="flex" flexDirection="column">
-              {/* TOP ROW */}
               <Box flex={1} display="flex" flexDirection="column" sx={{ alignItems: "start" }}>
                 <Box display="flex" gap={1} alignItems="center">
                   <Typography variant="h6">{subscription.name}</Typography>
@@ -123,7 +120,6 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
                 </Box>
               </Box>
 
-              {/* GRID DETAILS */}
               <Box display="grid" gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }} gap={1}>
                 <Box display="flex" alignItems="center" gap={1}>
                   <AttachMoneyIcon fontSize="small" />
@@ -162,13 +158,17 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
               </Box>
             </Box>
           </Box>
-
-          {/* RIGHT SIDE */}
           <Box display="flex" flexDirection="column" alignItems="flex-end" gap={2}>
-            <Chip
-              label={subscription.autoRenew ? "Auto-renew ON" : "Auto-renew OFF"}
-              color={subscription.autoRenew ? "success" : "default"}
-            />
+            <Box display="flex" alignItems="center" gap={1}>
+              <Typography variant="body2">Auto-renew</Typography>
+              <Switch
+                checked={subscription.autoRenew}
+                onChange={(e) => {
+                  console.log("Auto-renew:", e.target.checked);
+                }}
+                size="small"
+              />
+            </Box>
 
             <IconButton onClick={handleOpen}>
               <MoreVertIcon />

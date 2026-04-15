@@ -4,8 +4,33 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 
 export default function GridSubscriptionCard({ subscription }: any) {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "active":
+        return { bg: "#e8f5e9", color: "#2e7d32" };
+      case "cancelled":
+        return { bg: "#ffebee", color: "#c62828" };
+      case "paused":
+        return { bg: "#fff8e1", color: "#f9a825" };
+      default:
+        return { bg: "#eee", color: "#555" };
+    }
+  };
+
+  const getCategoryColor = (category: string) => {
+    const map: Record<string, { bg: string; color: string }> = {
+      Entertainment: { bg: "#f3e5f5", color: "#7b1fa2" },
+      Productivity: { bg: "#e3f2fd", color: "#1565c0" },
+      Music: { bg: "#fce4ec", color: "#c2185b" },
+    };
+    return map[category] || { bg: "#eee", color: "#555" };
+  };
+
+  const statusStyle = getStatusColor(subscription.status);
+  const categoryStyle = getCategoryColor(subscription.category);
+
   return (
-    <Card sx={{ "&:hover": { boxShadow: 6 }, transition: "0.3s", backgroundColor: "lightgreen" }}>
+    <Card sx={{ "&:hover": { boxShadow: 6 }, transition: "0.3s" }}>
       <CardContent>
         <Box display="flex" flexDirection="column" gap={2}>
           {/* TOP */}
@@ -32,8 +57,7 @@ export default function GridSubscriptionCard({ subscription }: any) {
             </IconButton>
           </Box>
 
-          {/* TITLE */}
-          <Box>
+          <Box display="flex" flexDirection="column" alignItems="start">
             <Typography fontWeight={600}>{subscription.name}</Typography>
 
             <Typography variant="body2" color="text.secondary">
@@ -41,8 +65,16 @@ export default function GridSubscriptionCard({ subscription }: any) {
             </Typography>
 
             <Box display="flex" gap={1} mt={1}>
-              <Chip label={subscription.status} size="small" />
-              <Chip label={subscription.category} size="small" />
+              <Chip
+                label={subscription.status}
+                size="small"
+                sx={{ backgroundColor: statusStyle.bg, color: statusStyle.color }}
+              />
+              <Chip
+                label={subscription.category}
+                size="small"
+                sx={{ backgroundColor: categoryStyle.bg, color: categoryStyle.color }}
+              />
             </Box>
           </Box>
 
