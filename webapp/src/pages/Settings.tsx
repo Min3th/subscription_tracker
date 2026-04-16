@@ -124,6 +124,7 @@ export function Settings() {
     { code: "CAD", symbol: "C$", name: "Canadian Dollar" },
     { code: "AUD", symbol: "A$", name: "Australian Dollar" },
     { code: "INR", symbol: "₹", name: "Indian Rupee" },
+    { code: "LKR", symbol: "Rs", name: "Sri Lankan Rupee" },
   ];
 
   const timezones = [
@@ -135,6 +136,7 @@ export function Settings() {
     "Europe/Paris",
     "Asia/Tokyo",
     "Asia/Dubai",
+    "Asia/Colombo",
     "Australia/Sydney",
   ];
 
@@ -146,6 +148,7 @@ export function Settings() {
 
   const languages = [
     { code: "en", name: "English" },
+    { code: "lk", name: "Sinhala" },
     { code: "es", name: "Spanish" },
     { code: "fr", name: "French" },
     { code: "de", name: "German" },
