@@ -47,3 +47,23 @@ TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.users
     OWNER to postgres;
+
+-- Table: public.user_preferences
+
+-- DROP TABLE IF EXISTS public.user_preferences;
+
+CREATE TABLE user_preferences (
+    user_id BIGINT PRIMARY KEY,
+    currency VARCHAR(10) NOT NULL DEFAULT 'USD',
+    language VARCHAR(10) NOT NULL DEFAULT 'en',
+    timezone VARCHAR(50) NOT NULL DEFAULT 'UTC',
+    theme VARCHAR(10) NOT NULL DEFAULT 'light',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_user
+        FOREIGN KEY(user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE
+);
