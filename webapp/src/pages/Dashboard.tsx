@@ -89,6 +89,9 @@ export default function Dashboard() {
         width: "100%",
         mx: "auto",
       }}
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
     >
       <Box
         sx={{
@@ -97,11 +100,11 @@ export default function Dashboard() {
           mb: 3,
         }}
       >
-        <Box>
+        <Box alignItems="start" display="flex" flexDirection="column" gap={1}>
           <Typography variant="h4" fontWeight="bold">
             Subscription Tracker
           </Typography>
-          <Typography color="text.secondary">Manage all your subscriptions</Typography>
+          <Typography color="text.secondary">Manage and monitor all your subscriptions</Typography>
         </Box>
 
         <Button

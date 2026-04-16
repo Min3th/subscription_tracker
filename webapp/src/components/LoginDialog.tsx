@@ -75,7 +75,7 @@ export default function LoginDialog({ open, onClose }: Props) {
           </Typography>
 
           <Typography variant="body2" color="text.secondary" mb={3}>
-            Manage all your subscriptions in one place
+            Manage all your subscriptions in one placesdsas
           </Typography>
 
           {/* GOOGLE BUTTON */}
