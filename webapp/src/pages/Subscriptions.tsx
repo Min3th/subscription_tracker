@@ -158,7 +158,7 @@ export default function Subscriptions() {
             <ToggleButtonGroup
               value={view}
               exclusive
-              onChange={(e, newView) => {
+              onChange={(_, newView) => {
                 if (newView !== null) setView(newView);
               }}
               size="small"
@@ -193,7 +193,7 @@ export default function Subscriptions() {
               </Grid>
             ))
           ) : (
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Typography textAlign="center" mt={4}>
                 No subscriptions found
               </Typography>

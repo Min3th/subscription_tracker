@@ -147,7 +147,7 @@ export function Settings() {
       )}
 
       <Grid container spacing={3}>
-        <Grid item xs={12} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
+        <Grid size={{ xs: 12 }} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
             <PersonIcon sx={{ color: "#1976d2" }} />
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -185,10 +185,10 @@ export function Settings() {
               </Typography>
             </Box>
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField fullWidth label="Full Name" name="name" value={formData.name} onChange={handleInputChange} />
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   fullWidth
                   label="Email Address"
@@ -203,7 +203,7 @@ export function Settings() {
         </Grid>
 
         {/* Preferences */}
-        <Grid item xs={12} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
+        <Grid size={{ xs: 12 }} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
             <PublicIcon sx={{ color: "#1976d2" }} />
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -212,7 +212,7 @@ export function Settings() {
           </Box>
 
           <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControl fullWidth>
                 <InputLabel>Currency</InputLabel>
                 <Select name="currency" value={formData.currency} onChange={handleSelectChange} label="Currency">
@@ -225,7 +225,7 @@ export function Settings() {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControl fullWidth>
                 <InputLabel>Language</InputLabel>
                 <Select name="language" value={formData.language} onChange={handleSelectChange} label="Language">
@@ -238,7 +238,7 @@ export function Settings() {
               </FormControl>
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <FormControl fullWidth>
                 <InputLabel>Timezone</InputLabel>
                 <Select name="timezone" value={formData.timezone} onChange={handleSelectChange} label="Timezone">
@@ -254,7 +254,7 @@ export function Settings() {
         </Grid>
 
         {/* Appearance */}
-        <Grid item xs={12} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
+        <Grid size={{ xs: 12 }} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
           <Card>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
@@ -282,7 +282,7 @@ export function Settings() {
         </Grid>
 
         {/* Notifications */}
-        <Grid item xs={12} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
+        <Grid size={{ xs: 12 }} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
           <Card>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
@@ -405,7 +405,7 @@ export function Settings() {
           </Card>
         </Grid>
 
-        <Grid item xs={12} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
+        <Grid size={{ xs: 12 }} sx={{ width: "100%", mx: "auto", p: 3, borderRadius: 2 }}>
           <Card>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
