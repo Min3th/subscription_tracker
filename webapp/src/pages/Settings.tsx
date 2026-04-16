@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Card,
@@ -11,7 +11,6 @@ import {
   FormControl,
   InputLabel,
   Switch,
-  FormControlLabel,
   Divider,
   Avatar,
   IconButton,
@@ -26,22 +25,49 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import SaveIcon from "@mui/icons-material/Save";
 import type { SelectChangeEvent } from "@mui/material";
-import { useSelector } from "react-redux";
-import type { RootState } from "../app/store";
+import { useSelector, useDispatch } from "react-redux";
+import type { RootState, AppDispatch } from "../app/store";
+import { fetchPreferences } from "../features/preferences/preferencesSlice";
 
 export function Settings() {
-  const { user, token } = useSelector((state: RootState) => state.auth);
-  if (!user) {
-    return <Typography>Loading...</Typography>;
-  }
+  const { user } = useSelector((state: RootState) => state.auth);
+  const preferences = useSelector((state: RootState) => state.preferences);
+  const dispatch = useDispatch<AppDispatch>();
+
   const [formData, setFormData] = useState({
-    name: user.name,
-    email: user.email,
+    name: user?.name || "",
+    email: user?.email || "",
     currency: "USD",
     timezone: "America/New_York",
     theme: "light",
     language: "en",
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        name: user.name,
+        email: user.email,
+      }));
+    }
+  }, [user?.name, user?.email]);
+
+  useEffect(() => {
+    dispatch(fetchPreferences());
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (preferences.status === "succeeded") {
+      setFormData((prev) => ({
+        ...prev,
+        currency: preferences.currency,
+        language: preferences.language,
+        timezone: preferences.timezone,
+        theme: preferences.theme,
+      }));
+    }
+  }, [preferences.status, preferences.currency, preferences.language, preferences.timezone, preferences.theme]);
 
   const [notifications, setNotifications] = useState({
     emailNotifications: true,
@@ -51,13 +77,17 @@ export function Settings() {
     priceChanges: true,
   });
 
-  const [privacy, setPrivacy] = useState({
+  const [privacy] = useState({
     publicProfile: false,
     showEmail: false,
     dataCollection: true,
   });
 
   const [saved, setSaved] = useState(false);
+
+  if (!user) {
+    return <Typography>Loading...</Typography>;
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({

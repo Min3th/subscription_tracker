@@ -4,7 +4,9 @@ import com.track.subscription_service.user.entity.User;
 import com.track.subscription_service.user.entity.UserPreferences;
 import com.track.subscription_service.user.repository.UserPreferencesRepository;
 import com.track.subscription_service.user.repository.UserRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class UserPreferencesService {
 
     private final UserPreferencesRepository repo;

@@ -43,6 +43,9 @@ public class UserPreferences {
         this.theme = theme;
     }
 
+    public UserPreferences() {
+    }
+
     public String getCurrency() {
         return currency;
     }
