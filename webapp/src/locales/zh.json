@@ -1,0 +1,73 @@
+{
+  "dashboard": {
+    "title": "Subscription Tracker",
+    "subtitle": "高效管理和监控您的所有订阅",
+    "add_subscription": "添加订阅",
+    "monthly_spent": "每月支出",
+    "yearly_projected": "预计年度支出",
+    "active_subscriptions": "活跃订阅",
+    "next_billing": "下次出账",
+    "monthly_overview": "每月支出概览",
+    "spending_category": "按类别分类的支出",
+    "no_category_data": "没有可用的类别数据。",
+    "your_subscriptions": "您的订阅",
+    "next_billing_date": "下次出账日期：",
+    "no_subscriptions": "暂无订阅",
+    "click_add": "点击“添加订阅”开始使用。",
+    "add_first": "添加您的第一个订阅"
+  },
+  "subscriptions": {
+    "search": "搜索订阅...",
+    "all_categories": "所有类别",
+    "sort": "排序",
+    "sort_name": "名称",
+    "sort_price_desc": "价格（从高到低）",
+    "sort_next_billing": "下次出账日期",
+    "no_found": "未找到订阅"
+  },
+  "settings": {
+    "title": "设置",
+    "subtitle": "管理您的账户偏好和设置",
+    "profile_info": "个人资料信息",
+    "profile_photo": "头像",
+    "profile_photo_desc": "PNG、JPG格式，最大5MB",
+    "full_name": "全名",
+    "email": "电子邮件地址",
+    "preferences": "偏好",
+    "appearance": "外观",
+    "theme_desc": "选择应用程序的显示方式。",
+    "notifications": "通知",
+    "email_notif": "电子邮件通知",
+    "email_notif_desc": "接收有关您的帐户的电子邮件更新",
+    "upcoming_alerts": "即将到来的账单提醒",
+    "upcoming_alerts_desc": "在订阅续订前 3 天收到通知",
+    "renewal_reminders": "续订提醒",
+    "renewal_reminders_desc": "即将到期的订阅续订提醒",
+    "price_change": "价格变动提醒",
+    "price_change_desc": "当订阅价格发生变化时收到通知",
+    "weekly_report": "每周摘要报告",
+    "weekly_report_desc": "每周接收您的订阅摘要",
+    "payment_methods": "支付方式",
+    "edit": "编辑",
+    "add_payment": "添加支付方式",
+    "cancel": "取消",
+    "save": "保存更改",
+    "confirm_title": "确认更改",
+    "confirm_desc": "您确定要保存这些更改吗？",
+    "confirm_button": "确认",
+    "saved_success": "设置保存成功！"
+  },
+  "sidebar": {
+    "dashboard": "仪表板",
+    "subscriptions": "订阅",
+    "settings": "设置",
+    "logout": "注销"
+  },
+  "navbar": {
+    "profile": "个人资料",
+    "my_account": "我的账户",
+    "messages": "消息",
+    "notifications": "通知",
+    "login": "登录"
+  }
+}

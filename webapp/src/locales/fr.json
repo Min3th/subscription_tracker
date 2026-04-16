@@ -1,0 +1,73 @@
+{
+  "dashboard": {
+    "title": "Subscription Tracker",
+    "subtitle": "Gérez et surveillez efficacement tous vos abonnements",
+    "add_subscription": "Ajouter un abonnement",
+    "monthly_spent": "Dépenses mensuelles",
+    "yearly_projected": "Prévisions annuelles",
+    "active_subscriptions": "Abonnements actifs",
+    "next_billing": "Prochaine facturation",
+    "monthly_overview": "Aperçu des dépenses mensuelles",
+    "spending_category": "Dépenses par catégorie",
+    "no_category_data": "Aucune donnée de catégorie disponible.",
+    "your_subscriptions": "Vos abonnements",
+    "next_billing_date": "Prochaine facturation :",
+    "no_subscriptions": "Pas encore d'abonnements",
+    "click_add": "Cliquez sur \"Ajouter un abonnement\" pour commencer.",
+    "add_first": "Ajoutez votre premier abonnement"
+  },
+  "subscriptions": {
+    "search": "Rechercher des abonnements...",
+    "all_categories": "Toutes les catégories",
+    "sort": "Trier",
+    "sort_name": "Nom",
+    "sort_price_desc": "Prix (Décroissant)",
+    "sort_next_billing": "Prochaine date de facturation",
+    "no_found": "Aucun abonnement trouvé"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "subtitle": "Gérez vos préférences et paramètres de compte",
+    "profile_info": "Informations du profil",
+    "profile_photo": "Photo de profil",
+    "profile_photo_desc": "PNG, JPG jusqu'à 5 Mo",
+    "full_name": "Nom complet",
+    "email": "Adresse e-mail",
+    "preferences": "Préférences",
+    "appearance": "Apparence",
+    "theme_desc": "Choisissez l'apparence de l'application.",
+    "notifications": "Notifications",
+    "email_notif": "Notifications par e-mail",
+    "email_notif_desc": "Recevez des mises à jour par e-mail concernant votre compte",
+    "upcoming_alerts": "Alertes de facturation à venir",
+    "upcoming_alerts_desc": "Soyez averti 3 jours avant le renouvellement d'un abonnement",
+    "renewal_reminders": "Rappels de renouvellement",
+    "renewal_reminders_desc": "Rappels pour les renouvellements d'abonnements à venir",
+    "price_change": "Alertes de changement de prix",
+    "price_change_desc": "Soyez averti lorsque le prix des abonnements change",
+    "weekly_report": "Rapport résumé hebdomadaire",
+    "weekly_report_desc": "Recevez un résumé hebdomadaire de vos abonnements",
+    "payment_methods": "Méthodes de paiement",
+    "edit": "Modifier",
+    "add_payment": "Ajouter une méthode de paiement",
+    "cancel": "Annuler",
+    "save": "Enregistrer les modifications",
+    "confirm_title": "Confirmer les modifications",
+    "confirm_desc": "Êtes-vous sûr de vouloir enregistrer ces modifications ?",
+    "confirm_button": "Confirmer",
+    "saved_success": "Paramètres enregistrés avec succès !"
+  },
+  "sidebar": {
+    "dashboard": "Tableau de bord",
+    "subscriptions": "Abonnements",
+    "settings": "Paramètres",
+    "logout": "Déconnexion"
+  },
+  "navbar": {
+    "profile": "Profil",
+    "my_account": "Mon compte",
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "login": "Connexion"
+  }
+}

@@ -10,8 +10,10 @@ import Grid from "@mui/material/Grid";
 import { getSubscriptions } from "../api/subscription";
 import GridSubscriptionCard from "../components/GridSubscriptionCard";
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 export default function Subscriptions() {
+  const { t } = useTranslation();
   const [view, setView] = useState<"grid" | "list">("list");
   const [subscriptions, setSubscriptions] = useState<DetailedSubscription[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -87,7 +89,7 @@ export default function Subscriptions() {
       <Box sx={{ width: "100%", maxWidth: 1400 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
           <TextField
-            placeholder="Search subscriptions..."
+            placeholder={t("subscriptions.search", "Search subscriptions...")}
             size="small"
             sx={{ width: 300 }}
             value={searchQuery}
@@ -107,7 +109,7 @@ export default function Subscriptions() {
               onClick={(e) => setFilterAnchorEl(e.currentTarget)}
               startIcon={<FilterAltOutlinedIcon fontSize="small" />}
             >
-              {filterCategory === "all" ? "All Categories" : filterCategory}
+              {filterCategory === "all" ? t("subscriptions.all_categories", "All Categories") : filterCategory}
             </Button>
             <Menu anchorEl={filterAnchorEl} open={Boolean(filterAnchorEl)} onClose={() => setFilterAnchorEl(null)}>
               {["all", ...Array.from(new Set(subscriptions.map((s) => s.category)))].map((cat) => (
@@ -118,7 +120,7 @@ export default function Subscriptions() {
                     setFilterAnchorEl(null);
                   }}
                 >
-                  {cat === "all" ? "All Categories" : cat}
+                  {cat === "all" ? t("subscriptions.all_categories", "All Categories") : cat}
                 </MenuItem>
               ))}
             </Menu>
@@ -127,7 +129,7 @@ export default function Subscriptions() {
               onClick={(e) => setSortAnchorEl(e.currentTarget)}
               startIcon={<SwapVertOutlinedIcon fontSize="small" />}
             >
-              Sort
+              {t("subscriptions.sort", "Sort")}
             </Button>
             <Menu anchorEl={sortAnchorEl} open={Boolean(sortAnchorEl)} onClose={() => setSortAnchorEl(null)}>
               <MenuItem
@@ -136,7 +138,7 @@ export default function Subscriptions() {
                   setSortAnchorEl(null);
                 }}
               >
-                Name
+                {t("subscriptions.sort_name", "Name")}
               </MenuItem>
               <MenuItem
                 onClick={() => {
@@ -144,7 +146,7 @@ export default function Subscriptions() {
                   setSortAnchorEl(null);
                 }}
               >
-                Price (High to Low)
+                {t("subscriptions.sort_price_desc", "Price (High to Low)")}
               </MenuItem>
               <MenuItem
                 onClick={() => {
@@ -152,7 +154,7 @@ export default function Subscriptions() {
                   setSortAnchorEl(null);
                 }}
               >
-                Next Billing Date
+                {t("subscriptions.sort_next_billing", "Next Billing Date")}
               </MenuItem>
             </Menu>
             <ToggleButtonGroup
@@ -195,7 +197,7 @@ export default function Subscriptions() {
           ) : (
             <Grid size={{ xs: 12 }}>
               <Typography textAlign="center" mt={4}>
-                No subscriptions found
+                {t("subscriptions.no_found", "No subscriptions found")}
               </Typography>
             </Grid>
           )}

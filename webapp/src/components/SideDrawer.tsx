@@ -22,6 +22,7 @@ import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import { Link } from "react-router-dom";
 import SettingsIcon from "@mui/icons-material/Settings";
+import { useTranslation } from "react-i18next";
 
 const drawerWidth = 240;
 
@@ -88,6 +89,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
 }));
 
 export default function MiniDrawer({ open, onClose }: Props) {
+  const { t } = useTranslation();
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -129,7 +131,7 @@ export default function MiniDrawer({ open, onClose }: Props) {
               </ListItemIcon>
 
               <ListItemText
-                primary="Dashboard"
+                primary={t("sidebar.dashboard", "Dashboard")}
                 sx={{
                   opacity: open ? 1 : 0,
                 }}
@@ -157,7 +159,7 @@ export default function MiniDrawer({ open, onClose }: Props) {
               </ListItemIcon>
 
               <ListItemText
-                primary="Subscriptions"
+                primary={t("sidebar.subscriptions", "Subscriptions")}
                 sx={{
                   opacity: open ? 1 : 0,
                 }}
@@ -185,7 +187,7 @@ export default function MiniDrawer({ open, onClose }: Props) {
               </ListItemIcon>
 
               <ListItemText
-                primary="Settings"
+                primary={t("sidebar.settings", "Settings")}
                 sx={{
                   opacity: open ? 1 : 0,
                 }}
@@ -214,7 +216,7 @@ export default function MiniDrawer({ open, onClose }: Props) {
               </ListItemIcon>
 
               <ListItemText
-                primary="Logout"
+                primary={t("sidebar.logout", "Logout")}
                 sx={{
                   opacity: open ? 1 : 0,
                 }}

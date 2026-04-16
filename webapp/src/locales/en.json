@@ -1,0 +1,73 @@
+{
+  "dashboard": {
+    "title": "Subscription Tracker",
+    "subtitle": "Manage and monitor all your subscriptions efficiently",
+    "add_subscription": "Add Subscription",
+    "monthly_spent": "Monthly Spent",
+    "yearly_projected": "Yearly Projected",
+    "active_subscriptions": "Active Subscriptions",
+    "next_billing": "Next Billing",
+    "monthly_overview": "Monthly Spending Overview",
+    "spending_category": "Spending by Category",
+    "no_category_data": "No category data available.",
+    "your_subscriptions": "Your Subscriptions",
+    "next_billing_date": "Next billing:",
+    "no_subscriptions": "No Subscriptions Yet",
+    "click_add": "Click \"Add Subscription\" to get started.",
+    "add_first": "Add Your First Subscription"
+  },
+  "subscriptions": {
+    "search": "Search subscriptions...",
+    "all_categories": "All Categories",
+    "sort": "Sort",
+    "sort_name": "Name",
+    "sort_price_desc": "Price (High to Low)",
+    "sort_next_billing": "Next Billing Date",
+    "no_found": "No subscriptions found"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account preferences and settings",
+    "profile_info": "Profile Information",
+    "profile_photo": "Profile Photo",
+    "profile_photo_desc": "PNG, JPG up to 5MB",
+    "full_name": "Full Name",
+    "email": "Email Address",
+    "preferences": "Preferences",
+    "appearance": "Appearance",
+    "theme_desc": "Choose how the app looks to you. Select a single theme, or sync with your system.",
+    "notifications": "Notifications",
+    "email_notif": "Email Notifications",
+    "email_notif_desc": "Receive email updates about your account",
+    "upcoming_alerts": "Upcoming Billing Alerts",
+    "upcoming_alerts_desc": "Get notified 3 days before a subscription renews",
+    "renewal_reminders": "Renewal Reminders",
+    "renewal_reminders_desc": "Reminders for upcoming subscription renewals",
+    "price_change": "Price Change Alerts",
+    "price_change_desc": "Get notified when subscription prices change",
+    "weekly_report": "Weekly Summary Report",
+    "weekly_report_desc": "Receive a weekly summary of your subscriptions",
+    "payment_methods": "Payment Methods",
+    "edit": "Edit",
+    "add_payment": "Add Payment Method",
+    "cancel": "Cancel",
+    "save": "Save Changes",
+    "confirm_title": "Confirm Changes",
+    "confirm_desc": "Are you sure you want to save these preference changes? They will take effect immediately.",
+    "confirm_button": "Confirm",
+    "saved_success": "Settings saved successfully!"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "subscriptions": "Subscriptions",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "navbar": {
+    "profile": "Profile",
+    "my_account": "My account",
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "login": "Login"
+  }
+}

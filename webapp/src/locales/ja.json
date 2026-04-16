@@ -1,0 +1,73 @@
+{
+  "dashboard": {
+    "title": "Subscription Tracker",
+    "subtitle": "すべてのサブスクリプションを効率的に管理および監視する",
+    "add_subscription": "サブスクリプションを追加",
+    "monthly_spent": "月間支出",
+    "yearly_projected": "年間予測",
+    "active_subscriptions": "アクティブなサブスクリプション",
+    "next_billing": "次回の請求",
+    "monthly_overview": "月間支出の概要",
+    "spending_category": "カテゴリ別の支出",
+    "no_category_data": "カテゴリデータはありません。",
+    "your_subscriptions": "あなたのサブスクリプション",
+    "next_billing_date": "次回の請求:",
+    "no_subscriptions": "サブスクリプションはまだありません",
+    "click_add": "開始するには「サブスクリプションを追加」をクリックしてください。",
+    "add_first": "最初のサブスクリプションを追加"
+  },
+  "subscriptions": {
+    "search": "サブスクリプションを検索...",
+    "all_categories": "すべてのカテゴリ",
+    "sort": "並べ替え",
+    "sort_name": "名前",
+    "sort_price_desc": "価格 (高い順)",
+    "sort_next_billing": "次回の請求日",
+    "no_found": "サブスクリプションが見つかりません"
+  },
+  "settings": {
+    "title": "設定",
+    "subtitle": "アカウントの設定と環境設定を管理する",
+    "profile_info": "プロフィール情報",
+    "profile_photo": "プロフィール写真",
+    "profile_photo_desc": "PNG、JPGは5MBまで",
+    "full_name": "フルネーム",
+    "email": "メールアドレス",
+    "preferences": "環境設定",
+    "appearance": "外観",
+    "theme_desc": "アプリの表示方法を選択します。",
+    "notifications": "通知",
+    "email_notif": "メール通知",
+    "email_notif_desc": "アカウントに関するメール更新を受け取る",
+    "upcoming_alerts": "今後の請求アラート",
+    "upcoming_alerts_desc": "サブスクリプションが更新される3日前に通知を受け取る",
+    "renewal_reminders": "更新リマインダー",
+    "renewal_reminders_desc": "今後のサブスクリプション更新のリマインダー",
+    "price_change": "価格変更アラート",
+    "price_change_desc": "サブスクリプションの価格が変更されたときに通知を受け取る",
+    "weekly_report": "週間概要レポート",
+    "weekly_report_desc": "サブスクリプションの週間概要を受け取る",
+    "payment_methods": "支払い方法",
+    "edit": "編集",
+    "add_payment": "支払い方法を追加",
+    "cancel": "キャンセル",
+    "save": "変更を保存",
+    "confirm_title": "変更を確認",
+    "confirm_desc": "これらの変更を保存してもよろしいですか？",
+    "confirm_button": "確認",
+    "saved_success": "設定が正常に保存されました!"
+  },
+  "sidebar": {
+    "dashboard": "ダッシュボード",
+    "subscriptions": "サブスクリプション",
+    "settings": "設定",
+    "logout": "ログアウト"
+  },
+  "navbar": {
+    "profile": "プロフィール",
+    "my_account": "マイアカウント",
+    "messages": "メッセージ",
+    "notifications": "通知",
+    "login": "ログイン"
+  }
+}

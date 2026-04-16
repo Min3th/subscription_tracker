@@ -1,0 +1,73 @@
+{
+  "dashboard": {
+    "title": "Subscription Tracker",
+    "subtitle": "Gestione y supervise todas sus suscripciones de manera eficiente",
+    "add_subscription": "Añadir suscripción",
+    "monthly_spent": "Gasto mensual",
+    "yearly_projected": "Proyectado anual",
+    "active_subscriptions": "Suscripciones activas",
+    "next_billing": "Próxima facturación",
+    "monthly_overview": "Resumen de gastos mensuales",
+    "spending_category": "Gastos por categoría",
+    "no_category_data": "No hay datos de categoría disponibles.",
+    "your_subscriptions": "Sus suscripciones",
+    "next_billing_date": "Próxima facturación:",
+    "no_subscriptions": "Aún no hay suscripciones",
+    "click_add": "Haga clic en \"Añadir suscripción\" para comenzar.",
+    "add_first": "Añada su primera suscripción"
+  },
+  "subscriptions": {
+    "search": "Buscar suscripciones...",
+    "all_categories": "Todas las categorías",
+    "sort": "Ordenar",
+    "sort_name": "Nombre",
+    "sort_price_desc": "Precio (Mayor a menor)",
+    "sort_next_billing": "Próxima fecha de facturación",
+    "no_found": "No se encontraron suscripciones"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "subtitle": "Gestione las preferencias y ajustes de su cuenta",
+    "profile_info": "Información del perfil",
+    "profile_photo": "Foto de perfil",
+    "profile_photo_desc": "PNG, JPG hasta 5MB",
+    "full_name": "Nombre completo",
+    "email": "Dirección de correo electrónico",
+    "preferences": "Preferencias",
+    "appearance": "Apariencia",
+    "theme_desc": "Elija cómo se ve la aplicación. Seleccione un tema sencillo o sincronícelo con su sistema.",
+    "notifications": "Notificaciones",
+    "email_notif": "Notificaciones por correo electrónico",
+    "email_notif_desc": "Reciba actualizaciones por correo electrónico sobre su cuenta",
+    "upcoming_alerts": "Alertas de próxima facturación",
+    "upcoming_alerts_desc": "Reciba notificaciones 3 días antes de que se renueve una suscripción",
+    "renewal_reminders": "Recordatorios de renovación",
+    "renewal_reminders_desc": "Recordatorios de próximas renovaciones de suscripción",
+    "price_change": "Alertas de cambio de precio",
+    "price_change_desc": "Reciba notificaciones cuando cambien los precios de las suscripciones",
+    "weekly_report": "Informe de resumen semanal",
+    "weekly_report_desc": "Reciba un resumen semanal de sus suscripciones",
+    "payment_methods": "Métodos de pago",
+    "edit": "Editar",
+    "add_payment": "Añadir método de pago",
+    "cancel": "Cancelar",
+    "save": "Guardar cambios",
+    "confirm_title": "Confirmar cambios",
+    "confirm_desc": "¿Está seguro de que desea guardar estos cambios? Entrarán en vigor inmediatamente.",
+    "confirm_button": "Confirmar",
+    "saved_success": "¡Ajustes guardados con éxito!"
+  },
+  "sidebar": {
+    "dashboard": "Panel principal",
+    "subscriptions": "Suscripciones",
+    "settings": "Ajustes",
+    "logout": "Cerrar sesión"
+  },
+  "navbar": {
+    "profile": "Perfil",
+    "my_account": "Mi cuenta",
+    "messages": "Mensajes",
+    "notifications": "Notificaciones",
+    "login": "Iniciar sesión"
+  }
+}

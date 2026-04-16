@@ -1,0 +1,73 @@
+{
+  "dashboard": {
+    "title": "Subscription Tracker",
+    "subtitle": "Verwalten und überwachen Sie alle Ihre Abonnements effizient",
+    "add_subscription": "Abonnement hinzufügen",
+    "monthly_spent": "Monatliche Ausgaben",
+    "yearly_projected": "Jährlich prognostiziert",
+    "active_subscriptions": "Aktive Abonnements",
+    "next_billing": "Nächste Abrechnung",
+    "monthly_overview": "Monatliche Ausgabenübersicht",
+    "spending_category": "Ausgaben nach Kategorie",
+    "no_category_data": "Keine Kategoriedaten verfügbar.",
+    "your_subscriptions": "Ihre Abonnements",
+    "next_billing_date": "Nächste Abrechnung:",
+    "no_subscriptions": "Noch keine Abonnements",
+    "click_add": "Klicken Sie auf \"Abonnement hinzufügen\", um zu beginnen.",
+    "add_first": "Fügen Sie Ihr erstes Abonnement hinzu"
+  },
+  "subscriptions": {
+    "search": "Abonnements suchen...",
+    "all_categories": "Alle Kategorien",
+    "sort": "Sortieren",
+    "sort_name": "Name",
+    "sort_price_desc": "Preis (absteigend)",
+    "sort_next_billing": "Nächstes Abrechnungsdatum",
+    "no_found": "Keine Abonnements gefunden"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "subtitle": "Verwalten Sie Ihre Kontoeinstellungen",
+    "profile_info": "Profilinformationen",
+    "profile_photo": "Profilfoto",
+    "profile_photo_desc": "PNG, JPG bis zu 5MB",
+    "full_name": "Vollständiger Name",
+    "email": "E-Mail-Adresse",
+    "preferences": "Präferenzen",
+    "appearance": "Erscheinungsbild",
+    "theme_desc": "Wählen Sie, wie die App für Sie aussieht.",
+    "notifications": "Benachrichtigungen",
+    "email_notif": "E-Mail-Benachrichtigungen",
+    "email_notif_desc": "Erhalten Sie E-Mail-Updates zu Ihrem Konto",
+    "upcoming_alerts": "Benachrichtigungen über bevorstehende Abrechnungen",
+    "upcoming_alerts_desc": "Lassen Sie sich 3 Tage vor der Verlängerung eines Abonnements benachrichtigen",
+    "renewal_reminders": "Verlängerungserinnerungen",
+    "renewal_reminders_desc": "Erinnerungen an anstehende Abonnementverlängerungen",
+    "price_change": "Preisänderungsbenachrichtigungen",
+    "price_change_desc": "Lassen Sie sich benachrichtigen, wenn sich die Abonnementpreise ändern",
+    "weekly_report": "Wöchentlicher Zusammenfassungsbericht",
+    "weekly_report_desc": "Erhalten Sie eine wöchentliche Zusammenfassung Ihrer Abonnements",
+    "payment_methods": "Zahlungsmethoden",
+    "edit": "Bearbeiten",
+    "add_payment": "Zahlungsmethode hinzufügen",
+    "cancel": "Abbrechen",
+    "save": "Änderungen speichern",
+    "confirm_title": "Änderungen bestätigen",
+    "confirm_desc": "Sind Sie sicher, dass Sie diese Änderungen speichern möchten?",
+    "confirm_button": "Bestätigen",
+    "saved_success": "Einstellungen erfolgreich gespeichert!"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "subscriptions": "Abonnements",
+    "settings": "Einstellungen",
+    "logout": "Abmelden"
+  },
+  "navbar": {
+    "profile": "Profil",
+    "my_account": "Mein Konto",
+    "messages": "Nachrichten",
+    "notifications": "Benachrichtigungen",
+    "login": "Anmelden"
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "dashboard": {
+    "title": "Subscription Tracker",
+    "subtitle": "ඔබගේ සියලුම දායකත්වයන් කාර්යක්ෂමව කළමනාකරණය සහ අධීක්ෂණය කරන්න",
+    "add_subscription": "දායකත්වය එක් කරන්න",
+    "monthly_spent": "මාසික වියදම",
+    "yearly_projected": "වාර්ෂික ඇස්තමේන්තුව",
+    "active_subscriptions": "සක්‍රීය දායකත්වයන්",
+    "next_billing": "මීළඟ අයකිරීම",
+    "monthly_overview": "මාසික වියදම් සාරාංශය",
+    "spending_category": "කාණ්ඩය අනුව වියදම",
+    "no_category_data": "කාණ්ඩ දත්ත නොමැත.",
+    "your_subscriptions": "ඔබගේ දායකත්වයන්",
+    "next_billing_date": "මීළඟ අයකිරීම:",
+    "no_subscriptions": "තවමත් දායකත්වයන් නොමැත",
+    "click_add": "ආරම්භ කිරීමට \"දායකත්වය එක් කරන්න\" ක්ලික් කරන්න.",
+    "add_first": "ඔබගේ පළමු දායකත්වය එක් කරන්න"
+  },
+  "subscriptions": {
+    "search": "දායකත්වයන් සොයන්න...",
+    "all_categories": "සියලුම කාණ්ඩ",
+    "sort": "වර්ග කරන්න",
+    "sort_name": "නම",
+    "sort_price_desc": "මිල (වැඩි සිට අඩු)",
+    "sort_next_billing": "මීළඟ අයකිරීමේ දිනය",
+    "no_found": "කිසිදු දායකත්වයක් හමු නොවීය"
+  },
+  "settings": {
+    "title": "සැකසුම්",
+    "subtitle": "ඔබගේ ගිණුමේ මනාප සහ සැකසුම් කළමනාකරණය කරන්න",
+    "profile_info": "පැතිකඩ තොරතුරු",
+    "profile_photo": "පැතිකඩ ඡායාරූපය",
+    "profile_photo_desc": "PNG, JPG 5MB දක්වා",
+    "full_name": "සම්පූර්ණ නම",
+    "email": "විද්‍යුත් තැපැල් ලිපිනය",
+    "preferences": "මනාප",
+    "appearance": "පෙනුම",
+    "theme_desc": "යෙදුම ඔබට පෙනෙන්නට අවශ්‍ය ආකාරය තෝරන්න.",
+    "notifications": "දැනුම්දීම්",
+    "email_notif": "විද්‍යුත් තැපැල් දැනුම්දීම්",
+    "email_notif_desc": "ඔබගේ ගිණුම පිළිබඳ යාවත්කාලීන ලබා ගන්න",
+    "upcoming_alerts": "ඉදිරි අයකිරීම් ඇඟවීම්",
+    "upcoming_alerts_desc": "දායකත්වයක් අලුත් කිරීමට දින 3 කට පෙර දැනුම් දෙන්න",
+    "renewal_reminders": "අලුත් කිරීමේ සිහිකැඳවීම්",
+    "renewal_reminders_desc": "දායකත්වයන් අලුත් කිරීම පිළිබඳ සිහිකැඳවීම්",
+    "price_change": "මිල වෙනස්වීමේ ඇඟවීම්",
+    "price_change_desc": "මිල වෙනස් වන විට දැනුම් දෙන්න",
+    "weekly_report": "සතිපතා සාරාංශ වාර්තාව",
+    "weekly_report_desc": "ඔබගේ දායකත්වයන්ගේ සතිපතා සාරාංශයක් ලබා ගන්න",
+    "payment_methods": "ගෙවීම් ක්‍රම",
+    "edit": "සංස්කරණය කරන්න",
+    "add_payment": "ගෙවීම් ක්‍රමයක් එක් කරන්න",
+    "cancel": "අවලංගු කරන්න",
+    "save": "වෙනස්කම් සුරකින්න",
+    "confirm_title": "වෙනස්කම් තහවුරු කරන්න",
+    "confirm_desc": "ඔබට මෙම වෙනස්කම් සුරැකීමට අවශ්‍ය බව විශ්වාසද?",
+    "confirm_button": "තහවුරු කරන්න",
+    "saved_success": "සැකසුම් සාර්ථකව සුරැකිණි!"
+  },
+  "sidebar": {
+    "dashboard": "ප්‍රධාන පුවරුව",
+    "subscriptions": "දායකත්වයන්",
+    "settings": "සැකසුම්",
+    "logout": "ඉවත් වන්න"
+  },
+  "navbar": {
+    "profile": "පැතිකඩ",
+    "my_account": "මගේ ගිණුම",
+    "messages": "පණිවිඩ",
+    "notifications": "දැනුම්දීම්",
+    "login": "පුරන්න"
+  }
+}

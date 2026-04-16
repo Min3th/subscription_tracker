@@ -24,6 +24,7 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import StatCard from "../components/StatCard";
 import { getSubscriptions } from "../api/subscription";
+import { useTranslation } from "react-i18next";
 
 const monthlySpendingData = [
   { month: "Oct", amount: 98 },
@@ -35,6 +36,7 @@ const monthlySpendingData = [
 ];
 
 export default function Dashboard() {
+  const { t } = useTranslation();
   const theme = useTheme();
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
@@ -108,10 +110,10 @@ export default function Dashboard() {
       >
         <Box display="flex" flexDirection="column" gap={0.5}>
           <Typography variant="h4" fontWeight="800" color="text.primary">
-            Subscription Tracker
+            {t('dashboard.title')}
           </Typography>
           <Typography variant="subtitle1" color="text.secondary">
-            Manage and monitor all your subscriptions efficiently
+            {t('dashboard.subtitle')}
           </Typography>
         </Box>
         <Button
@@ -131,24 +133,24 @@ export default function Dashboard() {
           }}
           onClick={handleOpen}
         >
-          Add Subscription
+          {t('dashboard.add_subscription')}
         </Button>
       </Box>
 
       {/* STATS */}
       <Grid container spacing={3} mb={4}>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard title="Monthly Spent" value={`$${totalMonthly.toFixed(2)}`} icon={<AttachMoneyIcon />} />
+          <StatCard title={t('dashboard.monthly_spent')} value={`$${totalMonthly.toFixed(2)}`} icon={<AttachMoneyIcon />} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard title="Yearly Projected" value={`$${totalYearly.toFixed(2)}`} icon={<TrendingUpIcon />} />
+          <StatCard title={t('dashboard.yearly_projected')} value={`$${totalYearly.toFixed(2)}`} icon={<TrendingUpIcon />} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard title="Active Subscriptions" value={subscriptions.length} icon={<CreditCardIcon />} />
+          <StatCard title={t('dashboard.active_subscriptions')} value={subscriptions.length} icon={<CreditCardIcon />} />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard 
-            title="Next Billing" 
+            title={t('dashboard.next_billing')} 
             value={nextBilling ? new Date(nextBilling.nextBillingDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : "N/A"} 
             icon={<CalendarTodayIcon />} 
           />
@@ -163,7 +165,7 @@ export default function Dashboard() {
         <Grid size={{ xs: 12, md: 8 }}>
           <Card sx={{ borderRadius: 3, height: "100%", boxShadow: "0 4px 20px rgba(0,0,0,0.03)" }}>
             <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" mb={3} fontWeight="700">Monthly Spending Overview</Typography>
+              <Typography variant="h6" mb={3} fontWeight="700">{t('dashboard.monthly_overview')}</Typography>
               <Box sx={{ height: 320, width: "100%" }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={monthlySpendingData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
@@ -187,7 +189,7 @@ export default function Dashboard() {
           <Card sx={{ borderRadius: 3, height: "100%", boxShadow: "0 4px 20px rgba(0,0,0,0.03)" }}>
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" mb={3} fontWeight="700">
-                Spending by Category
+                {t('dashboard.spending_category')}
               </Typography>
               <Stack spacing={3}>
                 {categoryData.length > 0 ? categoryData.map(([category, value]) => {
@@ -220,7 +222,7 @@ export default function Dashboard() {
                     </Box>
                   );
                 }) : (
-                  <Typography variant="body2" color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>No category data available.</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ py: 4, textAlign: 'center' }}>{t('dashboard.no_category_data')}</Typography>
                 )}
               </Stack>
             </CardContent>
@@ -230,7 +232,7 @@ export default function Dashboard() {
 
       {/* SUBSCRIPTIONS */}
       <Typography variant="h5" mb={3} fontWeight="700" color="text.primary">
-        Your Subscriptions
+        {t('dashboard.your_subscriptions')}
       </Typography>
       <Grid container spacing={3}>
         {subscriptions.length > 0 ? subscriptions.map((sub) => (
@@ -288,7 +290,7 @@ export default function Dashboard() {
                     <Box display="flex" alignItems="center" gap={0.8} mt={1}>
                       <CalendarTodayIcon sx={{ fontSize: 14, color: theme.palette.text.secondary }} />
                       <Typography variant="caption" color="text.secondary" fontWeight="500">
-                        Next billing: {new Date(sub.nextBillingDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        {t('dashboard.next_billing_date')} {new Date(sub.nextBillingDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </Typography>
                     </Box>
                   </Box>
@@ -303,9 +305,9 @@ export default function Dashboard() {
         )) : (
           <Grid size={{ xs: 12 }}>
             <Box py={6} display="flex" flexDirection="column" alignItems="center" bgcolor="background.paper" borderRadius={3} border={1} borderColor="divider" sx={{ borderStyle: 'dashed' }}>
-              <Typography variant="h6" color="text.secondary" mb={1}>No Subscriptions Yet</Typography>
-              <Typography variant="body2" color="text.disabled" mb={3}>Click "Add Subscription" to get started.</Typography>
-              <Button variant="outlined" onClick={handleOpen} startIcon={<AddIcon />}>Add Your First Subscription</Button>
+              <Typography variant="h6" color="text.secondary" mb={1}>{t('dashboard.no_subscriptions')}</Typography>
+              <Typography variant="body2" color="text.disabled" mb={3}>{t('dashboard.click_add')}</Typography>
+              <Button variant="outlined" onClick={handleOpen} startIcon={<AddIcon />}>{t('dashboard.add_first')}</Button>
             </Box>
           </Grid>
         )}

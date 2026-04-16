@@ -35,8 +35,10 @@ import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../app/store";
 import { fetchPreferences, updatePreferences, setPreferences } from "../features/preferences/preferencesSlice";
 import { ColorModeContext } from "../theme/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 export function Settings() {
+  const { t } = useTranslation();
   const { user } = useSelector((state: RootState) => state.auth);
   const preferences = useSelector((state: RootState) => state.preferences);
   const [localTheme, setLocalTheme] = useState(preferences.theme);
@@ -176,7 +178,7 @@ export function Settings() {
 
   const languages = [
     { code: "en", name: "English" },
-    { code: "lk", name: "Sinhala" },
+    { code: "si", name: "Sinhala" },
     { code: "es", name: "Spanish" },
     { code: "fr", name: "French" },
     { code: "de", name: "German" },
@@ -194,16 +196,16 @@ export function Settings() {
     >
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" sx={{ fontWeight: "bold" }}>
-          Settings
+          {t("settings.title")}
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5 }}>
-          Manage your account preferences and settings
+          {t("settings.subtitle")}
         </Typography>
       </Box>
 
       {saved && (
         <Alert severity="success" sx={{ mb: 3 }}>
-          Settings saved successfully!
+          {t("settings.saved_success")}
         </Alert>
       )}
 
@@ -214,7 +216,7 @@ export function Settings() {
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
                 <PersonIcon sx={{ color: "#1976d2" }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Profile Information
+                  {t("settings.profile_info")}
                 </Typography>
               </Box>
 
@@ -241,17 +243,17 @@ export function Settings() {
                 </Box>
                 <Box>
                   <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                    Profile Photo
+                    {t("settings.profile_photo")}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    PNG, JPG up to 5MB
+                    {t("settings.profile_photo_desc")}
                   </Typography>
                 </Box>
                 <Grid container spacing={2}>
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       fullWidth
-                      label="Full Name"
+                      label={t("settings.full_name")}
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
@@ -260,7 +262,7 @@ export function Settings() {
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       fullWidth
-                      label="Email Address"
+                      label={t("settings.email")}
                       name="email"
                       type="email"
                       value={formData.email}
@@ -280,7 +282,7 @@ export function Settings() {
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
                 <PublicIcon sx={{ color: "#1976d2" }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Preferences
+                  {t("settings.preferences")}
                 </Typography>
               </Box>
 
@@ -300,8 +302,8 @@ export function Settings() {
 
                 <Grid size={{ xs: 12, md: 4 }}>
                   <FormControl fullWidth>
-                    <InputLabel>Language</InputLabel>
-                    <Select name="language" value={formData.language} onChange={handleSelectChange} label="Language">
+                    <InputLabel>{t("settings.language", "Language")}</InputLabel>
+                    <Select name="language" value={formData.language} onChange={handleSelectChange} label={t("settings.language", "Language")}>
                       {languages.map((lang) => (
                         <MenuItem key={lang.code} value={lang.code}>
                           {lang.name}
@@ -313,8 +315,8 @@ export function Settings() {
 
                 <Grid size={{ xs: 12, md: 4 }}>
                   <FormControl fullWidth>
-                    <InputLabel>Timezone</InputLabel>
-                    <Select name="timezone" value={formData.timezone} onChange={handleSelectChange} label="Timezone">
+                    <InputLabel>{t("settings.timezone", "Timezone")}</InputLabel>
+                    <Select name="timezone" value={formData.timezone} onChange={handleSelectChange} label={t("settings.timezone", "Timezone")}>
                       {timezones.map((tz) => (
                         <MenuItem key={tz} value={tz}>
                           {tz}
@@ -333,13 +335,13 @@ export function Settings() {
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
                 <PaletteIcon sx={{ color: "#1976d2" }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Appearance
+                  {t("settings.appearance")}
                 </Typography>
               </Box>
 
               <FormControl fullWidth>
-                <InputLabel>Theme</InputLabel>
-                <Select name="theme" value={formData.theme} onChange={handleSelectChange} label="Theme">
+                <InputLabel>{t("settings.theme", "Theme")}</InputLabel>
+                <Select name="theme" value={formData.theme} onChange={handleSelectChange} label={t("settings.theme", "Theme")}>
                   {themes.map((theme) => (
                     <MenuItem key={theme.value} value={theme.value}>
                       {theme.label}
@@ -348,7 +350,7 @@ export function Settings() {
                 </Select>
               </FormControl>
               <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: "block" }}>
-                Choose how the app looks to you. Select a single theme, or sync with your system.
+                {t("settings.theme_desc")}
               </Typography>
             </CardContent>
           </Card>
@@ -360,7 +362,7 @@ export function Settings() {
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
                 <NotificationsIcon sx={{ color: "#1976d2" }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Notifications
+                  {t("settings.notifications")}
                 </Typography>
               </Box>
 
@@ -386,10 +388,10 @@ export function Settings() {
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <Box sx={{ textAlign: "left" }}>
                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                      Upcoming Billing Alerts
+                      {t("settings.upcoming_alerts")}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Get notified 3 days before a subscription renews
+                      {t("settings.upcoming_alerts_desc")}
                     </Typography>
                   </Box>
                   <Switch
@@ -404,10 +406,10 @@ export function Settings() {
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <Box sx={{ textAlign: "left" }}>
                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                      Renewal Reminders
+                      {t("settings.renewal_reminders")}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Reminders for upcoming subscription renewals
+                      {t("settings.renewal_reminders_desc")}
                     </Typography>
                   </Box>
                   <Switch
@@ -422,10 +424,10 @@ export function Settings() {
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <Box sx={{ textAlign: "left" }}>
                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                      Price Change Alerts
+                      {t("settings.price_change")}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Get notified when subscription prices change
+                      {t("settings.price_change_desc")}
                     </Typography>
                   </Box>
                   <Switch
@@ -440,10 +442,10 @@ export function Settings() {
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <Box sx={{ textAlign: "left" }}>
                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                      Weekly Summary Report
+                      {t("settings.weekly_report")}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Receive a weekly summary of your subscriptions
+                      {t("settings.weekly_report_desc")}
                     </Typography>
                   </Box>
                   <Switch
@@ -463,7 +465,7 @@ export function Settings() {
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
                 <CreditCardIcon sx={{ color: "#1976d2" }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Payment Methods
+                  {t("settings.payment_methods")}
                 </Typography>
               </Box>
 
@@ -503,12 +505,12 @@ export function Settings() {
                     </Box>
                   </Box>
                   <Button variant="outlined" size="small">
-                    Edit
+                    {t("settings.edit")}
                   </Button>
                 </Box>
 
                 <Button variant="outlined" fullWidth>
-                  Add Payment Method
+                  {t("settings.add_payment")}
                 </Button>
               </Box>
             </CardContent>
@@ -517,27 +519,27 @@ export function Settings() {
       </Grid>
       <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end", gap: 2 }}>
         <Button variant="outlined" onClick={handleCancel}>
-          Cancel
+          {t("settings.cancel")}
         </Button>
         <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSave}>
-          Save Changes
+          {t("settings.save")}
         </Button>
       </Box>
 
       {/* Confirmation Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Confirm Changes</DialogTitle>
+        <DialogTitle>{t("settings.confirm_title")}</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Are you sure you want to save these preference changes? They will take effect immediately.
+            {t("settings.confirm_desc")}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} color="inherit">
-            Cancel
+            {t("settings.cancel")}
           </Button>
           <Button onClick={handleConfirmSave} variant="contained" color="primary">
-            Confirm
+            {t("settings.confirm_button")}
           </Button>
         </DialogActions>
       </Dialog>
