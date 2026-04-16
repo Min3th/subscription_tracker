@@ -25,6 +25,14 @@ export const fetchPreferences = createAsyncThunk("preferences/fetchPreferences",
   return response.data;
 });
 
+export const updatePreferences = createAsyncThunk(
+  "preferences/updatePreferences",
+  async (data: Partial<PreferencesState>) => {
+    const response = await api.put("/user/preferences", data);
+    return response.data;
+  },
+);
+
 const preferencesSlice = createSlice({
   name: "preferences",
   initialState,
@@ -51,6 +59,20 @@ const preferencesSlice = createSlice({
       .addCase(fetchPreferences.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message || "Failed to fetch preferences";
+      })
+      .addCase(updatePreferences.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(updatePreferences.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.currency = action.payload.currency || state.currency;
+        state.language = action.payload.language || state.language;
+        state.timezone = action.payload.timezone || state.timezone;
+        state.theme = action.payload.theme || state.theme;
+      })
+      .addCase(updatePreferences.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message || "Failed to update preferences";
       });
   },
 });

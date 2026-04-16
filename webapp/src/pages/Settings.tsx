@@ -16,6 +16,12 @@ import {
   IconButton,
   Alert,
   Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Snackbar,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -27,7 +33,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import type { SelectChangeEvent } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../app/store";
-import { fetchPreferences } from "../features/preferences/preferencesSlice";
+import { fetchPreferences, updatePreferences } from "../features/preferences/preferencesSlice";
 
 export function Settings() {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -84,6 +90,7 @@ export function Settings() {
   });
 
   const [saved, setSaved] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
 
   if (!user) {
     return <Typography>Loading...</Typography>;
@@ -111,9 +118,23 @@ export function Settings() {
   };
 
   const handleSave = () => {
-    console.log("Settings saved:", { formData, notifications, privacy });
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+    setOpenDialog(true);
+  };
+
+  const handleConfirmSave = async () => {
+    try {
+      await dispatch(updatePreferences(formData)).unwrap();
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
+    } catch (err) {
+      console.error("Failed to update preferences:", err);
+    } finally {
+      setOpenDialog(false);
+    }
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
   };
 
   const currencies = [
@@ -496,6 +517,24 @@ export function Settings() {
           Save Changes
         </Button>
       </Box>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>Confirm Changes</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to save these preference changes? They will take effect immediately.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={handleConfirmSave} variant="contained" color="primary">
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
