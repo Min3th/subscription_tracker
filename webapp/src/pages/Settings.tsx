@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Box,
   Card,
@@ -33,11 +33,14 @@ import SaveIcon from "@mui/icons-material/Save";
 import type { SelectChangeEvent } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../app/store";
-import { fetchPreferences, updatePreferences } from "../features/preferences/preferencesSlice";
+import { fetchPreferences, updatePreferences, setPreferences } from "../features/preferences/preferencesSlice";
+import { ColorModeContext } from "../theme/ThemeContext";
 
 export function Settings() {
   const { user } = useSelector((state: RootState) => state.auth);
   const preferences = useSelector((state: RootState) => state.preferences);
+  const [localTheme, setLocalTheme] = useState(preferences.theme);
+  const { setMode } = useContext(ColorModeContext);
   const dispatch = useDispatch<AppDispatch>();
 
   const [formData, setFormData] = useState({
@@ -83,12 +86,6 @@ export function Settings() {
     priceChanges: true,
   });
 
-  const [privacy] = useState({
-    publicProfile: false,
-    showEmail: false,
-    dataCollection: true,
-  });
-
   const [saved, setSaved] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -104,10 +101,16 @@ export function Settings() {
   };
 
   const handleSelectChange = (e: SelectChangeEvent) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: value,
     });
+
+    if (name === "theme") {
+      setLocalTheme(value);
+      setMode(value as "light" | "dark" | "auto");
+    }
   };
 
   const handleNotificationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,6 +122,10 @@ export function Settings() {
 
   const handleSave = () => {
     setOpenDialog(true);
+  };
+
+  const handleCancel = () => {
+    dispatch(fetchPreferences());
   };
 
   const handleConfirmSave = async () => {
@@ -320,8 +327,6 @@ export function Settings() {
             </CardContent>
           </Card>
         </Grid>
-
-        {/* Appearance */}
         <Grid size={{ xs: 12 }}>
           <Card elevation={0} sx={{ bgcolor: "transparent", backgroundImage: "none" }}>
             <CardContent sx={{ p: 3 }}>
@@ -349,7 +354,6 @@ export function Settings() {
           </Card>
         </Grid>
 
-        {/* Notifications */}
         <Grid size={{ xs: 12 }}>
           <Card elevation={0} sx={{ bgcolor: "transparent", backgroundImage: "none" }}>
             <CardContent sx={{ p: 3 }}>
@@ -512,7 +516,9 @@ export function Settings() {
         </Grid>
       </Grid>
       <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end", gap: 2 }}>
-        <Button variant="outlined">Cancel</Button>
+        <Button variant="outlined" onClick={handleCancel}>
+          Cancel
+        </Button>
         <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSave}>
           Save Changes
         </Button>
