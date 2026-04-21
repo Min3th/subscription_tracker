@@ -26,10 +26,10 @@ export default function LoginDialog({ open, onClose }: Props) {
       dispatch(
         setAuth({
           user,
-          token: res.data.token,
+          token: res.data.accessToken,
         }),
       );
-      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("token", res.data.accessToken);
       localStorage.setItem("user", JSON.stringify(user));
       navigate("/dashboard");
     } catch (error) {
