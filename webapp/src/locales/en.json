@@ -61,7 +61,12 @@
     "dashboard": "Dashboard",
     "subscriptions": "Subscriptions",
     "settings": "Settings",
-    "logout": "Logout"
+    "logout": "Logout",
+    "logoutConfirmTitle": "Confirm Logout",
+    "logoutConfirmMessage": "Are you sure you want to log out?"
+  },
+  "common": {
+    "cancel": "Cancel"
   },
   "navbar": {
     "profile": "Profile",

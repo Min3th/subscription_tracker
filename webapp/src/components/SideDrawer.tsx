@@ -23,6 +23,13 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import { Link } from "react-router-dom";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Button from "@mui/material/Button";
 
 const drawerWidth = 240;
 
@@ -93,8 +100,18 @@ export default function MiniDrawer({ open, onClose }: Props) {
   const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
+    setLogoutDialogOpen(true);
+  };
+
+  const handleLogoutCancel = () => {
+    setLogoutDialogOpen(false);
+  };
+
+  const handleLogoutConfirm = () => {
+    setLogoutDialogOpen(false);
     dispatch(logout());
     localStorage.clear();
     navigate("/");
@@ -199,7 +216,7 @@ export default function MiniDrawer({ open, onClose }: Props) {
         <List>
           <ListItem disablePadding sx={{ display: "block" }}>
             <ListItemButton
-              onClick={handleLogout}
+              onClick={handleLogoutClick}
               sx={{
                 minHeight: 48,
                 px: 2.5,
@@ -225,6 +242,30 @@ export default function MiniDrawer({ open, onClose }: Props) {
           </ListItem>
         </List>
       </Drawer>
+
+      <Dialog
+        open={logoutDialogOpen}
+        onClose={handleLogoutCancel}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title" sx={{ color: "text.primary" }}>
+          {t("sidebar.logoutConfirmTitle", "Confirm Logout")}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" sx={{ color: "text.secondary" }}>
+            {t("sidebar.logoutConfirmMessage", "Are you sure you want to log out?")}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleLogoutCancel} color="inherit">
+            {t("common.cancel", "Cancel")}
+          </Button>
+          <Button onClick={handleLogoutConfirm} autoFocus color="error">
+            {t("sidebar.logout", "Logout")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
