@@ -47,7 +47,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(auth); // makes the user available globally
 
             } catch (Exception e) {
-
+                System.out.println("JWT ERROR: " + e.getMessage());
             }
         }
         filterChain.doFilter(request,response);
