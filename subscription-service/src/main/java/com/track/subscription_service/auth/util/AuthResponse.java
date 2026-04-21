@@ -3,15 +3,36 @@ package com.track.subscription_service.auth.util;
 import com.track.subscription_service.user.entity.User;
 
 public class AuthResponse {
-    private String token;
+    private String accessToken;
+    private String refreshToken;
     private User user;
 
-    public String getToken() {
-        return token;
+
+    public AuthResponse(String accessToken, String refreshToken, User user) {
+        this.accessToken = accessToken;
+        this.user = user;
+        this.refreshToken = refreshToken;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public AuthResponse(String accessToken, User user) {
+        this.accessToken = accessToken;
+        this.user = user;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 
     public User getUser() {
@@ -22,10 +43,6 @@ public class AuthResponse {
         this.user = user;
     }
 
-    public AuthResponse(String token, User user) {
-        this.token = token;
-        this.user = user;
-    }
 
 
 }

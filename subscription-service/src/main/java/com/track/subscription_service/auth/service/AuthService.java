@@ -81,8 +81,9 @@ public class AuthService {
 
         userRepository.save(user);
 
-        String token = jwtService.generateToken(user);
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
 
-        return new AuthResponse(token, user);
+        return new AuthResponse(accessToken,refreshToken, user);
     }
 }

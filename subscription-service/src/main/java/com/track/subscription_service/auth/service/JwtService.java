@@ -2,7 +2,6 @@ package com.track.subscription_service.auth.service;
 
 import com.track.subscription_service.user.entity.User;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,14 +20,23 @@ public class JwtService {
         this.key = Keys.hmacShaKeyFor(secret.getBytes());
     }
 
-    public String generateToken(User user) {
+    public String generateAccessToken(User user) {
 
         return Jwts.builder()
                 .setSubject(user.getGoogleId()) // unique identifier
-                .claim("email", user.getEmail())
-                .claim("name", user.getName())
+                .claim("type", "access")
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24h
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 15)) // 15 min
+                .signWith(key)
+                .compact();
+    }
+
+    public String generateRefreshToken(User user){
+        return Jwts.builder()
+                .setSubject(user.getGoogleId())
+                .claim("type","refresh")
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis()+ 1000L*60*60*24*7)) // 7 days
                 .signWith(key)
                 .compact();
     }
@@ -37,7 +45,7 @@ public class JwtService {
         return extractAllClaims(token).getSubject();
     }
 
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()

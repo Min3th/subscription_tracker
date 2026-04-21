@@ -34,17 +34,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")){
 
             String token = authHeader.substring(7);
-            String googleId = jwtService.extractGoogleId(token);
+            try {
+                String googleId = jwtService.extractGoogleId(token);
 
-            UsernamePasswordAuthenticationToken auth =
-                    new UsernamePasswordAuthenticationToken(
-                            googleId,
-                            null,
-                            Collections.emptyList()
-                    );
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(
+                                googleId,
+                                null,
+                                Collections.emptyList()
+                        );
 
-            SecurityContextHolder.getContext().setAuthentication(auth); // makes the user available globally
+                SecurityContextHolder.getContext().setAuthentication(auth); // makes the user available globally
+
+            } catch (Exception e) {
+
+            }
         }
         filterChain.doFilter(request,response);
+
     }
 }
