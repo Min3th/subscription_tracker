@@ -39,7 +39,7 @@ public class AuthController {
         cookie.setSecure(false);
         cookie.setPath("/");
         cookie.setMaxAge(7*24*60*60);
-
+        cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
 
         return ResponseEntity.ok(new AuthResponse(auth.getAccessToken(),auth.getUser()));
