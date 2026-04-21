@@ -13,7 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:5173",allowCredentials = "true")
+@CrossOrigin(origins = "https://localhost:5173",allowCredentials = "true")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -36,10 +36,10 @@ public class AuthController {
 
         Cookie cookie = new Cookie("refreshToken",auth.getRefreshToken());
         cookie.setHttpOnly(true);
-        cookie.setSecure(false);
+        cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setMaxAge(7*24*60*60);
-        cookie.setAttribute("SameSite", "None");
+//        cookie.setAttribute("SameSite", "None");
         response.addCookie(cookie);
 
         return ResponseEntity.ok(new AuthResponse(auth.getAccessToken(),auth.getUser()));

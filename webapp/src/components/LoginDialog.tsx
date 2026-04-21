@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { setAuth } from "../app/authSlice";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import api from "../api/client";
 
 type Props = {
   open: boolean;
@@ -18,7 +19,7 @@ export default function LoginDialog({ open, onClose }: Props) {
   const dispatch = useDispatch();
   const handleGoogleSuccess = async (credentialResponse: any) => {
     try {
-      const res = await axios.post("http://localhost:8080/auth/google", {
+      const res = await api.post("/auth/google", {
         credential: credentialResponse.credential,
       });
 
