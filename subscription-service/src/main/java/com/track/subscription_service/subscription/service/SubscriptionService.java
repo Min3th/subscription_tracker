@@ -42,11 +42,27 @@ public class SubscriptionService {
     public Subscription update(Long id,Subscription updated,String googleId){
         Subscription existing = getByIdAndGoogleId(id,googleId);
 
-        existing.setName(updated.getName());
-        existing.setCategory(updated.getCategory());
-        existing.setCost(updated.getCost());
-        existing.setDuration(updated.getDuration());
-        existing.setType(updated.getType());
+//        if ("recurring".equalsIgnoreCase(updated.getType())) {
+//            if (updated.getStartDate() == null ||
+//                    updated.getBillingIntervalUnit() == null ||
+//                    updated.getBillingIntervalCount() == null) {
+//
+//                throw new RuntimeException("Recurring subscriptions require billing details");
+//            }
+//        }
+
+        if (updated.getName() != null) existing.setName(updated.getName());
+        if (updated.getCategory() != null) existing.setCategory(updated.getCategory());
+        if (updated.getCost() != null) existing.setCost(updated.getCost());
+        if (updated.getDuration() != null) existing.setDuration(updated.getDuration());
+        if (updated.getType() != null) existing.setType(updated.getType());
+
+        if (updated.getDescription() != null) existing.setDescription(updated.getDescription());
+        if (updated.getPaymentMethod() != null) existing.setPaymentMethod(updated.getPaymentMethod());
+        if (updated.getWebsite() != null) existing.setWebsite(updated.getWebsite());
+        if (updated.getStartDate() != null) existing.setStartDate(updated.getStartDate());
+        if (updated.getBillingIntervalUnit() != null) existing.setBillingIntervalUnit(updated.getBillingIntervalUnit());
+        if (updated.getBillingIntervalCount() != null) existing.setBillingIntervalCount(updated.getBillingIntervalCount());
 
         return repo.save(existing);
     }

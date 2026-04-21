@@ -58,10 +58,10 @@ export default function Subscriptions() {
             nextBillingDate: "2026-05-01", // temporary
             category: item.category || "General",
             status: "active",
-            paymentMethod: "Visa **** 4242",
-            startDate: "2024-01-01",
-            description: `${item.name} subscription`,
-            website: "https://example.com",
+            paymentMethod: item.paymentMethod,
+            startDate: item.startDate,
+            description: item.description,
+            website: item.website,
             autoRenew: item.type === "recurring",
             totalPaid: item.cost * 5, // fake calc
           }),

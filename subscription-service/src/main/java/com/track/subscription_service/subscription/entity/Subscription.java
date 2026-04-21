@@ -1,11 +1,10 @@
 package com.track.subscription_service.subscription.entity;
 
-import com.track.subscription_service.subscription.repository.SubscriptionRepository;
+
 import com.track.subscription_service.user.entity.User;
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
-import java.util.Date;
+
 
 @Entity
 @Table(name = "subscription")
