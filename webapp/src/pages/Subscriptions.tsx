@@ -1,5 +1,6 @@
 import { Box, TextField, InputAdornment, Button, Stack, Typography, Menu, MenuItem } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import AddIcon from "@mui/icons-material/Add";
 import SubscriptionCard, { type DetailedSubscription } from "../components/SubscriptionCard";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import SwapVertOutlinedIcon from "@mui/icons-material/SwapVertOutlined";
@@ -9,6 +10,7 @@ import { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import { getSubscriptions } from "../api/subscription";
 import GridSubscriptionCard from "../components/GridSubscriptionCard";
+import SubscriptionForm from "../components/SubscriptionForm";
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 import { useTranslation } from "react-i18next";
 
@@ -19,6 +21,7 @@ export default function Subscriptions() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [sortBy, setSortBy] = useState("name");
+  const [isAddFormOpen, setIsAddFormOpen] = useState(false);
 
   const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
@@ -42,37 +45,37 @@ export default function Subscriptions() {
       }
     });
 
+  const fetchData = async () => {
+    try {
+      const res = await getSubscriptions();
+      console.log("API response:", res.data);
+
+      const mapped = res.data.map(
+        (item: any): DetailedSubscription => ({
+          id: item.id.toString(),
+          name: item.name,
+          cost: item.cost,
+
+          billingCycle: item.duration === "yearly" ? "yearly" : "monthly",
+          nextBillingDate: "2026-05-01", // temporary
+          category: item.category || "General",
+          status: "active",
+          paymentMethod: item.paymentMethod,
+          startDate: item.startDate,
+          description: item.description,
+          website: item.website,
+          autoRenew: item.type === "recurring",
+          totalPaid: item.cost * 5, // fake calc
+        }),
+      );
+
+      setSubscriptions(mapped);
+    } catch (err) {
+      console.error("Error fetching subscriptions:", err);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await getSubscriptions();
-        console.log("API response:", res.data);
-
-        const mapped = res.data.map(
-          (item: any): DetailedSubscription => ({
-            id: item.id.toString(),
-            name: item.name,
-            cost: item.cost,
-
-            billingCycle: item.duration === "yearly" ? "yearly" : "monthly",
-            nextBillingDate: "2026-05-01", // temporary
-            category: item.category || "General",
-            status: "active",
-            paymentMethod: item.paymentMethod,
-            startDate: item.startDate,
-            description: item.description,
-            website: item.website,
-            autoRenew: item.type === "recurring",
-            totalPaid: item.cost * 5, // fake calc
-          }),
-        );
-
-        setSubscriptions(mapped);
-      } catch (err) {
-        console.error("Error fetching subscriptions:", err);
-      }
-    };
-
     fetchData();
   }, []);
   return (
@@ -173,6 +176,13 @@ export default function Subscriptions() {
                 <GridViewIcon fontSize="small" />
               </ToggleButton>
             </ToggleButtonGroup>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => setIsAddFormOpen(true)}
+            >
+              {t("subscriptions.add", "Add Subscription")}
+            </Button>
           </Stack>
         </Stack>
         <Grid container spacing={2}>
@@ -203,6 +213,11 @@ export default function Subscriptions() {
           )}
         </Grid>
       </Box>
+      <SubscriptionForm
+        open={isAddFormOpen}
+        handleClose={() => setIsAddFormOpen(false)}
+        onSuccess={fetchData}
+      />
     </Box>
   );
 }

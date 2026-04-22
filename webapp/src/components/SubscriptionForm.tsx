@@ -18,9 +18,10 @@ import { useSnackbar } from "../utils/Snackbar";
 type Props = {
   open: boolean;
   handleClose: () => void;
+  onSuccess?: () => void;
 };
 
-export default function SubscriptionForm({ open, handleClose }: Props) {
+export default function SubscriptionForm({ open, handleClose, onSuccess }: Props) {
   const snackbar = useSnackbar();
 
   const validationSchema = Yup.object({
@@ -67,6 +68,9 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
         await createSubscription(payload);
         snackbar.success("Subscription created successfully!");
         handleClose();
+        if (onSuccess) {
+          onSuccess();
+        }
       } catch (error) {
         console.error("Error creating subscription:", error);
         snackbar.error("Failed to create subscription. Please try again.");
