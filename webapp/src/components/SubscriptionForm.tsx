@@ -26,6 +26,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess }: Props
 
   const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
+    description: Yup.string(),
     amount: Yup.number()
       .typeError("Amount must be a number")
       .positive("Must be positive")
@@ -40,6 +41,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess }: Props
   const formik = useFormik({
     initialValues: {
       name: "",
+      description: "",
       amount: "",
       type: "",
       category: "",
@@ -55,6 +57,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess }: Props
       try {
         const payload = {
           name: values.name,
+          description: values.description,
           cost: Number(values.amount),
           type: values.type,
           category: values.category,
@@ -98,6 +101,18 @@ export default function SubscriptionForm({ open, handleClose, onSuccess }: Props
             onBlur={formik.handleBlur}
             error={formik.touched.name && Boolean(formik.errors.name)}
             helperText={formik.touched.name && formik.errors.name}
+          />
+
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Description"
+            name="description"
+            value={formik.values.description}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            multiline
+            rows={3}
           />
 
           <TextField

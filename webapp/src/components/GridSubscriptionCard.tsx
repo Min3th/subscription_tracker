@@ -30,9 +30,9 @@ export default function GridSubscriptionCard({ subscription }: any) {
   const categoryStyle = getCategoryColor(subscription.category);
 
   return (
-    <Card sx={{ "&:hover": { boxShadow: 6 }, transition: "0.3s" }}>
-      <CardContent>
-        <Box display="flex" flexDirection="column" gap={2}>
+    <Card sx={{ height: "100%", display: "flex", flexDirection: "column", "&:hover": { boxShadow: 6 }, transition: "0.3s" }}>
+      <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+        <Box display="flex" flexDirection="column" gap={2} flexGrow={1}>
           {/* TOP */}
           <Box display="flex" justifyContent="space-between">
             <Box
@@ -102,7 +102,7 @@ export default function GridSubscriptionCard({ subscription }: any) {
           </Box>
 
           {/* FOOTER */}
-          <Box display="flex" justifyContent="space-between" pt={1} borderTop="1px solid #eee">
+          <Box display="flex" justifyContent="space-between" pt={1} borderTop="1px solid #eee" mt="auto">
             <Typography variant="caption">Total Paid</Typography>
             <Typography variant="caption" fontWeight={500}>
               ${subscription.totalPaid.toFixed(2)}
