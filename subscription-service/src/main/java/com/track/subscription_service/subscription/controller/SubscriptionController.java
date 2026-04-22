@@ -4,9 +4,12 @@ import com.track.subscription_service.auth.service.JwtService;
 import com.track.subscription_service.subscription.entity.Subscription;
 import com.track.subscription_service.subscription.repository.SubscriptionRepository;
 import com.track.subscription_service.subscription.service.SubscriptionService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
 import java.util.List;
 
 @CrossOrigin(origins = "https://localhost:5173", allowCredentials = "true")
@@ -38,12 +41,17 @@ public class SubscriptionController {
     }
 
     @PostMapping
-    public Subscription createSubscription(
+    public ResponseEntity<Subscription> createSubscription(
             @RequestBody Subscription subscription){
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String googleId = auth.getName();
-        return service.create(subscription,googleId);
+        Subscription created = service.create(subscription,googleId);
+        URI location = URI.create("/subscriptions/" + created.getId());
+
+        return ResponseEntity
+                .created(location)
+                .body(created);
     }
 
     @PutMapping("/{id}")
