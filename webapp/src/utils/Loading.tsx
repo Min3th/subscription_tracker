@@ -1,5 +1,5 @@
 import { Backdrop, CircularProgress, Typography } from "@mui/material";
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 
 interface LoaderContextType {
   showLoader: (message?: string) => void;
@@ -28,6 +28,22 @@ export const LoaderProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const hideLoader = () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+    const handleShow = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      showLoader(customEvent.detail?.message || "Loading...");
+    };
+    const handleHide = () => hideLoader();
+
+    window.addEventListener("show-loader", handleShow);
+    window.addEventListener("hide-loader", handleHide);
+
+    return () => {
+      window.removeEventListener("show-loader", handleShow);
+      window.removeEventListener("hide-loader", handleHide);
+    };
+  }, []);
 
   return (
     <LoaderContext.Provider value={{ showLoader, hideLoader }}>

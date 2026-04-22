@@ -1,11 +1,35 @@
 import axios from "axios";
 
+let requestCount = 0;
+let hideLoaderTimer: ReturnType<typeof setTimeout> | null = null;
+
+const showLoader = () => {
+  if (hideLoaderTimer) {
+    clearTimeout(hideLoaderTimer);
+    hideLoaderTimer = null;
+  }
+  requestCount++;
+  if (requestCount === 1) {
+    window.dispatchEvent(new CustomEvent("show-loader"));
+  }
+};
+
+const hideLoader = () => {
+  requestCount = Math.max(0, requestCount - 1);
+  if (requestCount === 0) {
+    hideLoaderTimer = setTimeout(() => {
+      window.dispatchEvent(new CustomEvent("hide-loader"));
+    }, 100);
+  }
+};
+
 const api = axios.create({
   baseURL: "/api", // for proxy
   withCredentials: true,
 });
 
 api.interceptors.request.use((config) => {
+  showLoader();
   const token = localStorage.getItem("token");
   if (token && !config.url?.includes("/auth/google") && !config.url?.includes("/auth/refresh")) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -14,8 +38,12 @@ api.interceptors.request.use((config) => {
 });
 
 api.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    hideLoader();
+    return res;
+  },
   async (err) => {
+    hideLoader();
     const originalRequest = err.config;
 
     // if (originalRequest._retry || originalRequest.url?.includes("/auth/refresh")) {
