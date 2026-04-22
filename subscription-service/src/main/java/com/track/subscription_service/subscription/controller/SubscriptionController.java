@@ -24,20 +24,20 @@ public class SubscriptionController {
     }
 
     @GetMapping
-    public List<Subscription> getUserSubscriptions() {
+    public ResponseEntity<List<Subscription>>getUserSubscriptions() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String googleId = auth.getName();
 
-        return service.getByGoogleId(googleId);
+        return ResponseEntity.ok(service.getByGoogleId(googleId));
 
     }
 
     @GetMapping("/{id}")
-    public Subscription getSubscription(
+    public ResponseEntity<Subscription> getSubscription(
             @PathVariable Long id,
             Authentication auth
     ){
-        return service.getByIdAndGoogleId(id, auth.getName());
+        return ResponseEntity.ok(service.getByIdAndGoogleId(id, auth.getName()));
     }
 
     @PostMapping
@@ -55,22 +55,23 @@ public class SubscriptionController {
     }
 
     @PutMapping("/{id}")
-    public Subscription updateSubscription(
+    public ResponseEntity<Subscription> updateSubscription(
             @PathVariable Long id,
             @RequestBody Subscription updated
     ){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String googleId = auth.getName();
 
-        return service.update(id,updated,googleId);
+        return ResponseEntity.ok(service.update(id,updated,googleId));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteSubscription(
+    public ResponseEntity<Void> deleteSubscription(
             @PathVariable Long id
     ){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String googleId = auth.getName();
         service.delete(id,googleId);
+        return ResponseEntity.noContent().build();
     }
 }
