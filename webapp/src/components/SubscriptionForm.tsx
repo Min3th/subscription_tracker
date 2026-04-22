@@ -26,6 +26,7 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
       .typeError("Amount must be a number")
       .positive("Must be positive")
       .required("Amount is required"),
+    type: Yup.string().required("Type is required"),
     category: Yup.string().required("Category is required"),
     startDate: Yup.date().required("Date is required"),
     billingIntervalUnit: Yup.string().required("Required"),
@@ -36,6 +37,7 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
     initialValues: {
       name: "",
       amount: "",
+      type: "",
       category: "",
       startDate: "",
       paymentMethod: "",
@@ -50,7 +52,8 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
         const payload = {
           name: values.name,
           cost: Number(values.amount),
-          type: values.category,
+          type: values.type,
+          category: values.category,
           startDate: values.startDate,
           paymentMethod: values.paymentMethod,
           website: values.website,
@@ -110,32 +113,50 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
             }}
           />
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2, mb: 1 }}>
-            <Typography>Every</Typography>
-            <TextField
-              name="billingIntervalCount"
-              type="number"
-              value={formik.values.billingIntervalCount}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              error={formik.touched.billingIntervalCount && Boolean(formik.errors.billingIntervalCount)}
-              helperText={formik.touched.billingIntervalCount && formik.errors.billingIntervalCount}
-              sx={{ width: 80 }}
-              InputProps={{ inputProps: { min: 1 } }}
-            />
-            <TextField
-              select
-              name="billingIntervalUnit"
-              value={formik.values.billingIntervalUnit}
-              onChange={formik.handleChange}
-              sx={{ minWidth: 120 }}
-            >
-              <MenuItem value="day">Day</MenuItem>
-              <MenuItem value="week">Week</MenuItem>
-              <MenuItem value="month">Month</MenuItem>
-              <MenuItem value="year">Year</MenuItem>
-            </TextField>
-          </Box>
+          <TextField
+            fullWidth
+            margin="normal"
+            select
+            label="Type"
+            name="type"
+            value={formik.values.type}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.type && Boolean(formik.errors.type)}
+            helperText={formik.touched.type && formik.errors.type}
+          >
+            <MenuItem value="recurring">Recurring</MenuItem>
+            <MenuItem value="one-time">One-time</MenuItem>
+          </TextField>
+
+          {formik.values.type === "recurring" && (
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2, mb: 1 }}>
+              <Typography>Every</Typography>
+              <TextField
+                name="billingIntervalCount"
+                type="number"
+                value={formik.values.billingIntervalCount}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.billingIntervalCount && Boolean(formik.errors.billingIntervalCount)}
+                helperText={formik.touched.billingIntervalCount && formik.errors.billingIntervalCount}
+                sx={{ width: 80 }}
+                InputProps={{ inputProps: { min: 1 } }}
+              />
+              <TextField
+                select
+                name="billingIntervalUnit"
+                value={formik.values.billingIntervalUnit}
+                onChange={formik.handleChange}
+                sx={{ minWidth: 120 }}
+              >
+                <MenuItem value="day">Day</MenuItem>
+                <MenuItem value="week">Week</MenuItem>
+                <MenuItem value="month">Month</MenuItem>
+                <MenuItem value="year">Year</MenuItem>
+              </TextField>
+            </Box>
+          )}
 
           <TextField
             fullWidth
