@@ -13,6 +13,7 @@ import { useState } from "react";
 import { createSubscription } from "../api/subscription";
 import * as Yup from "yup";
 import { useFormik } from "formik";
+import { useSnackbar } from "../utils/Snackbar";
 
 type Props = {
   open: boolean;
@@ -20,6 +21,8 @@ type Props = {
 };
 
 export default function SubscriptionForm({ open, handleClose }: Props) {
+  const snackbar = useSnackbar();
+
   const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
     amount: Yup.number()
@@ -62,9 +65,11 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
         };
 
         await createSubscription(payload);
+        snackbar.success("Subscription created successfully!");
         handleClose();
       } catch (error) {
         console.error("Error creating subscription:", error);
+        snackbar.error("Failed to create subscription. Please try again.");
       }
     },
   });
