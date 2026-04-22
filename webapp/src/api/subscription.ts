@@ -1,7 +1,9 @@
 import api from "./client";
 
 export const createSubscription = async (data: any) => {
-  return await api.post("/subscriptions", data);
+  const response = await api.post("/subscriptions", data);
+  console.log("Response: ", response);
+  return response;
 };
 
 export const getSubscriptions = async () => {

@@ -6,7 +6,8 @@ import {
   TextField,
   Button,
   MenuItem,
-  duration,
+  Box,
+  Typography,
 } from "@mui/material";
 import { useState } from "react";
 import { createSubscription } from "../api/subscription";
@@ -25,27 +26,36 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
       .typeError("Amount must be a number")
       .positive("Must be positive")
       .required("Amount is required"),
-    billingCycle: Yup.string().required("Billing cycle required"),
     category: Yup.string().required("Category is required"),
-    nextBillingDate: Yup.date().required("Date is required"),
+    startDate: Yup.date().required("Date is required"),
+    billingIntervalUnit: Yup.string().required("Required"),
+    billingIntervalCount: Yup.number().positive("Must be positive").required("Required"),
   });
 
   const formik = useFormik({
     initialValues: {
       name: "",
       amount: "",
-      billingCycle: "monthly",
       category: "",
-      nextBillingDate: "",
+      startDate: "",
+      paymentMethod: "",
+      website: "",
+      billingIntervalUnit: "month",
+      billingIntervalCount: 1,
     },
     validationSchema,
     onSubmit: async (values) => {
+      console.log("FORM SUBMITTED", values);
       try {
         const payload = {
           name: values.name,
           cost: Number(values.amount),
-          duration: values.billingCycle,
           type: values.category,
+          startDate: values.startDate,
+          paymentMethod: values.paymentMethod,
+          website: values.website,
+          billingIntervalUnit: values.billingIntervalUnit,
+          billingIntervalCount: Number(values.billingIntervalCount),
         };
 
         await createSubscription(payload);
@@ -100,18 +110,32 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
             }}
           />
 
-          <TextField
-            select
-            fullWidth
-            margin="normal"
-            label="Billing Cycle"
-            name="billingCycle"
-            value={formik.values.billingCycle}
-            onChange={formik.handleChange}
-          >
-            <MenuItem value="monthly">Monthly</MenuItem>
-            <MenuItem value="yearly">Yearly</MenuItem>
-          </TextField>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2, mb: 1 }}>
+            <Typography>Every</Typography>
+            <TextField
+              name="billingIntervalCount"
+              type="number"
+              value={formik.values.billingIntervalCount}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.billingIntervalCount && Boolean(formik.errors.billingIntervalCount)}
+              helperText={formik.touched.billingIntervalCount && formik.errors.billingIntervalCount}
+              sx={{ width: 80 }}
+              InputProps={{ inputProps: { min: 1 } }}
+            />
+            <TextField
+              select
+              name="billingIntervalUnit"
+              value={formik.values.billingIntervalUnit}
+              onChange={formik.handleChange}
+              sx={{ minWidth: 120 }}
+            >
+              <MenuItem value="day">Day</MenuItem>
+              <MenuItem value="week">Week</MenuItem>
+              <MenuItem value="month">Month</MenuItem>
+              <MenuItem value="year">Year</MenuItem>
+            </TextField>
+          </Box>
 
           <TextField
             fullWidth
@@ -128,14 +152,34 @@ export default function SubscriptionForm({ open, handleClose }: Props) {
           <TextField
             fullWidth
             margin="normal"
-            type="date"
-            label="Next Billing Date"
-            name="nextBillingDate"
-            value={formik.values.nextBillingDate}
+            label="Payment Method"
+            name="paymentMethod"
+            value={formik.values.paymentMethod}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            error={formik.touched.nextBillingDate && Boolean(formik.errors.nextBillingDate)}
-            helperText={formik.touched.nextBillingDate && formik.errors.nextBillingDate}
+          />
+
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Website"
+            name="website"
+            value={formik.values.website}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+          />
+
+          <TextField
+            fullWidth
+            margin="normal"
+            type="date"
+            label="Start Date"
+            name="startDate"
+            value={formik.values.startDate}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.startDate && Boolean(formik.errors.startDate)}
+            helperText={formik.touched.startDate && formik.errors.startDate}
             InputLabelProps={{ shrink: true }}
           />
         </DialogContent>
