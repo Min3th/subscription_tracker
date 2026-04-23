@@ -11,6 +11,7 @@ import PublicIcon from "@mui/icons-material/Public";
 import MoneyOffIcon from "@mui/icons-material/MoneyOff";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 
 export default function HomePage() {
   const theme = useTheme();
@@ -26,41 +27,178 @@ export default function HomePage() {
       <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
 
       {/* HERO SECTION */}
-      <Box sx={{ pt: { xs: 15, md: 20 }, pb: { xs: 10, md: 15 } }}>
-        <Container maxWidth="md">
-          <Stack spacing={4} alignItems="center" justifyContent="center" sx={{ textAlign: "center" }}>
-            <Typography variant="h2" sx={{ fontWeight: 800, color: "#6400ef", fontSize: { xs: "2.5rem", md: "4rem" } }}>
-              Track Subscriptions
-              <br />
-              Effortlessly
-            </Typography>
-            <Typography variant="h6" sx={{ maxWidth: "600px", color: "text.secondary", fontWeight: 400 }}>
-              Get notified before your trials end. Avoid unexpected charges and stay in control of your subscriptions in
-              one central place.
-            </Typography>
-            <Button
-              onClick={handleRegisterClick}
-              variant="contained"
-              size="large"
+      <Box
+        sx={{
+          position: "relative",
+          pt: { xs: 15, md: 20 },
+          pb: { xs: 10, md: 15 },
+          overflow: "hidden",
+          background: theme.palette.mode === "dark" 
+            ? "radial-gradient(circle at 50% 50%, rgba(100, 0, 239, 0.1) 0%, transparent 60%)" 
+            : "radial-gradient(circle at 50% 50%, rgba(100, 0, 239, 0.05) 0%, transparent 60%)",
+        }}
+      >
+        <style>
+          {`
+            @keyframes float {
+              0% { transform: translateY(0px); }
+              50% { transform: translateY(-20px); }
+              100% { transform: translateY(0px); }
+            }
+            @keyframes float-reverse {
+              0% { transform: translateY(0px); }
+              50% { transform: translateY(20px); }
+              100% { transform: translateY(0px); }
+            }
+          `}
+        </style>
+
+        {/* Floating Background Icons */}
+        {[
+          { src: "https://cdn.simpleicons.org/netflix/E50914", top: "15%", left: "15%", size: 80, delay: "0s", animation: "float", rotate: -10 },
+          { src: "https://cdn.simpleicons.org/spotify/1ED760", top: "50%", left: "10%", size: 70, delay: "1s", animation: "float-reverse", rotate: 5 },
+          { src: "https://cdn.simpleicons.org/disneyplus/113CCF", top: "80%", left: "20%", size: 90, delay: "2s", animation: "float", rotate: -5 },
+          { src: "https://cdn.simpleicons.org/youtube/FF0000", top: "15%", right: "15%", size: 80, delay: "0.5s", animation: "float-reverse", rotate: 10 },
+          { src: "https://cdn.simpleicons.org/applemusic/FA243C", top: "45%", right: "8%", size: 70, delay: "1.5s", animation: "float", rotate: -15 },
+          { src: "https://cdn.simpleicons.org/primevideo/00A8E1", top: "75%", right: "20%", size: 90, delay: "2.5s", animation: "float-reverse", rotate: 5 },
+          // Faded ones
+          { src: "https://cdn.simpleicons.org/twitch/9146FF", top: "60%", left: "25%", size: 50, delay: "1.2s", animation: "float", rotate: 15, blur: 2, opacity: 0.6 },
+          { src: "https://cdn.simpleicons.org/dropbox/0061FF", top: "25%", right: "25%", size: 60, delay: "0.8s", animation: "float-reverse", rotate: -20, blur: 3, opacity: 0.5 },
+        ].map((icon, i) => (
+          <Box
+            key={i}
+            sx={{
+              position: "absolute",
+              top: icon.top,
+              left: icon.left,
+              right: icon.right,
+              animation: `${icon.animation} 6s ease-in-out infinite`,
+              animationDelay: icon.delay,
+              filter: icon.blur ? `blur(${icon.blur}px)` : "none",
+              opacity: icon.opacity || 1,
+              zIndex: 0,
+              display: { xs: "none", md: "flex" },
+            }}
+          >
+            <Box
               sx={{
-                px: 5,
-                py: 2,
-                borderRadius: "999px",
-                background: "linear-gradient(135deg, #6400ef, #d880f1)",
-                boxShadow: "0 8px 20px rgba(100, 0, 239, 0.3)",
-                textTransform: "none",
-                fontSize: "1.2rem",
-                fontWeight: 600,
-                "&:hover": {
-                  background: "linear-gradient(135deg, #5000c0, #c468dd)",
-                  boxShadow: "0 10px 25px rgba(100, 0, 239, 0.4)",
+                width: icon.size,
+                height: icon.size,
+                backgroundColor: theme.palette.mode === "dark" ? "#1e1e1e" : "white",
+                borderRadius: "24%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: theme.palette.mode === "dark" ? "0 10px 30px rgba(0,0,0,0.5)" : "0 10px 30px rgba(0,0,0,0.08)",
+                transform: `rotate(${icon.rotate}deg)`,
+                "& img": {
+                  width: "60%",
+                  height: "60%",
+                  objectFit: "contain",
                 },
               }}
             >
-              Register Now
-            </Button>
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.9rem" }}>
-              No ads • No credit card required • 100% free
+              <img src={icon.src} alt="icon" />
+            </Box>
+          </Box>
+        ))}
+
+        {/* Floating Decorative Dots */}
+        {[
+          { top: "20%", left: "30%", color: "#6400ef", size: 10 },
+          { top: "70%", left: "15%", color: "#d880f1", size: 15 },
+          { top: "30%", right: "20%", color: "#6400ef", size: 12 },
+          { top: "80%", right: "30%", color: "#d880f1", size: 8 },
+          { top: "50%", right: "40%", color: "#6400ef", size: 14 },
+        ].map((dot, i) => (
+          <Box
+            key={`dot-${i}`}
+            sx={{
+              position: "absolute",
+              top: dot.top,
+              left: dot.left,
+              right: dot.right,
+              width: dot.size,
+              height: dot.size,
+              borderRadius: "50%",
+              backgroundColor: dot.color,
+              opacity: 0.4,
+              filter: "blur(2px)",
+              zIndex: 0,
+              display: { xs: "none", md: "block" },
+            }}
+          />
+        ))}
+
+        <Container maxWidth="md" sx={{ position: "relative", zIndex: 1 }}>
+          <Stack spacing={4} alignItems="center" justifyContent="center" sx={{ textAlign: "center" }}>
+            <Box
+              sx={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 1,
+                px: 2.5,
+                py: 1,
+                borderRadius: "999px",
+                backgroundColor: theme.palette.mode === "dark" ? "rgba(100, 0, 239, 0.15)" : "rgba(100, 0, 239, 0.05)",
+                border: `1px solid rgba(100, 0, 239, 0.2)`,
+                mb: 1,
+              }}
+            >
+              <AutoAwesomeIcon sx={{ fontSize: 18, color: "#6400ef" }} />
+              <Typography variant="body2" sx={{ color: "#6400ef", fontWeight: 600 }}>
+                Stay in control of your subscriptions
+              </Typography>
+            </Box>
+
+            <Typography variant="h2" sx={{ fontWeight: 800, color: "text.primary", fontSize: { xs: "3rem", md: "4.5rem" }, lineHeight: 1.1 }}>
+              Track Subscriptions
+              <br />
+              <Box component="span" sx={{ color: "#6400ef" }}>
+                Effortlessly
+              </Box>
+            </Typography>
+            <Typography variant="h6" sx={{ maxWidth: "600px", color: "text.secondary", fontWeight: 400, mt: 1 }}>
+              Get notified before your trials end. Avoid unexpected charges and stay in control of your subscriptions in
+              one central place.
+            </Typography>
+            
+            <Box sx={{ mt: 2 }}>
+              <Button
+                onClick={handleRegisterClick}
+                variant="contained"
+                size="large"
+                sx={{
+                  px: 5,
+                  py: 2,
+                  borderRadius: "999px",
+                  background: "linear-gradient(135deg, #6400ef, #d880f1)",
+                  boxShadow: "0 8px 20px rgba(100, 0, 239, 0.3)",
+                  textTransform: "none",
+                  fontSize: "1.2rem",
+                  fontWeight: 600,
+                  "&:hover": {
+                    background: "linear-gradient(135deg, #5000c0, #c468dd)",
+                    boxShadow: "0 10px 25px rgba(100, 0, 239, 0.4)",
+                  },
+                }}
+              >
+                Register Now
+              </Button>
+            </Box>
+            
+            <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.9rem", display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+              <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <AutoAwesomeIcon sx={{ fontSize: 14, color: "text.disabled" }} /> No ads
+              </Box> 
+              • 
+              <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <AutoAwesomeIcon sx={{ fontSize: 14, color: "text.disabled" }} /> No credit card required
+              </Box> 
+              • 
+              <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <AutoAwesomeIcon sx={{ fontSize: 14, color: "text.disabled" }} /> 100% free
+              </Box>
             </Typography>
           </Stack>
         </Container>
