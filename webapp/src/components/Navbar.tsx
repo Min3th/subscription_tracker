@@ -170,14 +170,14 @@ export default function Navbar({
                 onClick={() => document.getElementById("why-you-need")?.scrollIntoView({ behavior: "smooth" })}
                 sx={{ textTransform: "none", fontWeight: 500 }}
               >
-                Why You Need a Tracker
+                Why Track
               </Button>
               <Button
                 color="inherit"
                 onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
                 sx={{ textTransform: "none", fontWeight: 500 }}
               >
-                Everything You Need
+                Features
               </Button>
               <Button
                 color="inherit"

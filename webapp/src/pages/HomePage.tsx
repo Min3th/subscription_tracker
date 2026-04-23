@@ -20,7 +20,7 @@ export default function HomePage() {
   const handleRegisterClick = () => {
     setLoginOpen(true);
   };
-
+  const purpink = theme.palette.mode === "dark" ? "#d880f1" : "#6400ef";
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "background.default" }}>
       <Navbar open={false} onClick={() => {}} />
@@ -215,8 +215,8 @@ export default function HomePage() {
                 mb: 1,
               }}
             >
-              <AutoAwesomeIcon sx={{ fontSize: 18, color: "#6400ef" }} />
-              <Typography variant="body2" sx={{ color: "#6400ef", fontWeight: 600 }}>
+              <AutoAwesomeIcon sx={{ fontSize: 18, color: purpink }} />
+              <Typography variant="body2" sx={{ color: purpink, fontWeight: 600 }}>
                 Stay in control of your subscriptions
               </Typography>
             </Box>
@@ -227,7 +227,7 @@ export default function HomePage() {
             >
               Track Subscriptions
               <br />
-              <Box component="span" sx={{ color: "#6400ef" }}>
+              <Box component="span" sx={{ color: purpink }}>
                 Effortlessly
               </Box>
             </Typography>
@@ -354,95 +354,107 @@ export default function HomePage() {
       </Box>
 
       {/* FEATURES SECTION */}
-      <Container id="features" maxWidth="lg" sx={{ py: { xs: 10, md: 15 } }}>
-        <Typography
-          variant="h3"
-          sx={{
-            textAlign: "center",
-            fontWeight: 700,
-            mb: 8,
-            color: "text.primary",
-            fontSize: { xs: "2rem", md: "3rem" },
-          }}
-        >
-          Everything You Need
-        </Typography>
-        <Grid container spacing={4} alignItems="center" justifyContent="center">
-          {[
-            {
-              icon: <NotificationsActiveIcon sx={{ fontSize: 32, color: "#6400ef" }} />,
-              title: "Smart Notifications",
-              desc: "Get email or push alerts days before your card is charged, giving you plenty of time to cancel or renew.",
-            },
-            {
-              icon: <BarChartIcon sx={{ fontSize: 32, color: "#6400ef" }} />,
-              title: "Visual Insights",
-              desc: "Understand your spending habits with intuitive charts. See your monthly and yearly costs broken down by category.",
-            },
-            {
-              icon: <DashboardIcon sx={{ fontSize: 32, color: "#6400ef" }} />,
-              title: "Centralized Dashboard",
-              desc: "See all your active, paused, and cancelled subscriptions in one clean, easy-to-use dashboard.",
-            },
-            {
-              icon: <PublicIcon sx={{ fontSize: 32, color: "#6400ef" }} />,
-              title: "Flexible Billing Cycles",
-              desc: "Whether you're billed weekly, monthly, or yearly, our tracker handles it all effortlessly.",
-            },
-          ].map((feature, i) => (
-            <Grid item xs={12} sm={6} key={i}>
-              <Card
-                sx={{
-                  height: "300px",
-                  width: "400px",
-                  borderRadius: 4,
-                  boxShadow:
-                    theme.palette.mode === "dark" ? "0 4px 20px rgba(0,0,0,0.4)" : "0 4px 20px rgba(0,0,0,0.05)",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  textAlign: "center",
-                  p: 4,
-                  backgroundColor: theme.palette.mode === "dark" ? "background.paper" : "#ffffff",
-                  transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
-                  "&:hover": {
-                    transform: "translateY(-5px)",
-                    boxShadow:
-                      theme.palette.mode === "dark" ? "0 8px 30px rgba(0,0,0,0.6)" : "0 8px 30px rgba(0,0,0,0.1)",
-                  },
-                }}
-              >
-                <Box
+      <Box
+        id="everthing-you-need"
+        sx={{
+          py: 10,
+          backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.02)" : "#f8f9fa",
+          mt: "20px",
+        }}
+      >
+        <Container id="features" maxWidth="lg" sx={{ py: { xs: 10, md: 15 } }}>
+          <Typography
+            variant="h3"
+            sx={{
+              textAlign: "center",
+              fontWeight: 700,
+              mb: 8,
+              color: "text.primary",
+              fontSize: { xs: "2rem", md: "3rem" },
+            }}
+          >
+            Everything You Need
+          </Typography>
+          <Grid container spacing={4} alignItems="center" justifyContent="center">
+            {[
+              {
+                icon: <NotificationsActiveIcon sx={{ fontSize: 32, color: purpink }} />,
+                title: "Smart Notifications",
+                desc: "Get email or push alerts days before your card is charged, giving you plenty of time to cancel or renew.",
+              },
+              {
+                icon: <BarChartIcon sx={{ fontSize: 32, color: purpink }} />,
+                title: "Visual Insights",
+                desc: "Understand your spending habits with intuitive charts. See your monthly and yearly costs broken down by category.",
+              },
+              {
+                icon: <DashboardIcon sx={{ fontSize: 32, color: purpink }} />,
+                title: "Centralized Dashboard",
+                desc: "See all your active, paused, and cancelled subscriptions in one clean, easy-to-use dashboard.",
+              },
+              {
+                icon: <PublicIcon sx={{ fontSize: 32, color: purpink }} />,
+                title: "Flexible Billing Cycles",
+                desc: "Whether you're billed weekly, monthly, or yearly, our tracker handles it all effortlessly.",
+              },
+            ].map((feature, i) => (
+              <Grid item xs={12} sm={6} key={i}>
+                <Card
                   sx={{
+                    height: "300px",
+                    width: "400px",
+                    borderRadius: 4,
+                    boxShadow:
+                      theme.palette.mode === "dark" ? "0 4px 20px rgba(0,0,0,0.4)" : "0 4px 20px rgba(0,0,0,0.05)",
                     display: "flex",
+                    flexDirection: "column",
                     alignItems: "center",
-                    justifyContent: "center",
-                    width: 72,
-                    height: 72,
-                    borderRadius: "20px",
-                    backgroundColor:
-                      theme.palette.mode === "dark" ? "rgba(100, 0, 239, 0.2)" : "rgba(100, 0, 239, 0.1)",
-                    mb: 3,
+                    textAlign: "center",
+                    p: 4,
+                    backgroundColor: theme.palette.mode === "dark" ? "background.paper" : "#ffffff",
+                    transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+                    "&:hover": {
+                      transform: "translateY(-5px)",
+                      boxShadow:
+                        theme.palette.mode === "dark" ? "0 8px 30px rgba(0,0,0,0.6)" : "0 8px 30px rgba(0,0,0,0.1)",
+                    },
                   }}
                 >
-                  {feature.icon}
-                </Box>
-                <Typography variant="h6" fontWeight="bold" gutterBottom>
-                  {feature.title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {feature.desc}
-                </Typography>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
-
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: 72,
+                      height: 72,
+                      borderRadius: "20px",
+                      backgroundColor:
+                        theme.palette.mode === "dark" ? "rgba(100, 0, 239, 0.2)" : "rgba(100, 0, 239, 0.1)",
+                      mb: 3,
+                    }}
+                  >
+                    {feature.icon}
+                  </Box>
+                  <Typography variant="h6" fontWeight="bold" gutterBottom>
+                    {feature.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {feature.desc}
+                  </Typography>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
       {/* HOW IT WORKS SECTION */}
       <Box
         id="how-it-works"
-        sx={{ py: 10, backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.02)" : "#f8f9fa" }}
+        sx={{
+          py: 10,
+          backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.02)" : "#f8f9fa",
+          mt: "20px",
+        }}
       >
         <Container maxWidth="md">
           <Typography
