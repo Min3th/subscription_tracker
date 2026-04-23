@@ -15,7 +15,7 @@ const initialState: PreferencesState = {
   currency: "USD",
   language: "en",
   timezone: "America/New_York",
-  theme: "light",
+  theme: "auto",
   status: "idle",
   error: null,
 };

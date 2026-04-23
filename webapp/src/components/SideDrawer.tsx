@@ -17,7 +17,6 @@ import ListItemText from "@mui/material/ListItemText";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../app/authSlice";
 import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import { Link } from "react-router-dom";
@@ -30,6 +29,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
+import { logoutUser } from "../app/authSlice";
+import type { AppDispatch } from "../app/store";
 
 const drawerWidth = 240;
 
@@ -98,7 +99,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
 export default function MiniDrawer({ open, onClose }: Props) {
   const { t } = useTranslation();
   const theme = useTheme();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
@@ -112,7 +113,7 @@ export default function MiniDrawer({ open, onClose }: Props) {
 
   const handleLogoutConfirm = () => {
     setLogoutDialogOpen(false);
-    dispatch(logout());
+    dispatch(logoutUser());
     localStorage.clear();
     navigate("/");
   };

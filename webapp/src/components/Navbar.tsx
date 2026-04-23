@@ -15,7 +15,12 @@ import { Button } from "@mui/material";
 import LoginDialog from "./LoginDialog";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import Avatar from "@mui/material/Avatar";
+import AddIcon from "@mui/icons-material/Add";
+import SubscriptionForm from "./SubscriptionForm";
 import { useDispatch, useSelector } from "react-redux";
+import Subtrak from "../../public/Subtrak.png";
+import { Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar({
   onClick,
@@ -29,10 +34,18 @@ export default function Navbar({
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
   const [openLogin, setOpenLogin] = React.useState(false);
+  const [openAdd, setOpenAdd] = React.useState(false);
   const user = useSelector((state: any) => state.auth.user);
   const dispatch = useDispatch();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    const handleOpenAdd = () => setOpenAdd(true);
+    window.addEventListener("open_add_subscription", handleOpenAdd);
+    return () => window.removeEventListener("open_add_subscription", handleOpenAdd);
+  }, []);
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -133,6 +146,25 @@ export default function Navbar({
         }}
       >
         <Toolbar>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              cursor: "pointer",
+            }}
+            onClick={() => navigate("/")}
+          >
+            <Box
+              component="img"
+              src={Subtrak}
+              alt="Subtrak Logo"
+              sx={{
+                height: 40,
+                width: "auto",
+              }}
+            />
+          </Box>
           {showDrawerButton && (
             <IconButton
               color="inherit"
@@ -144,17 +176,77 @@ export default function Navbar({
               {open ? <ChevronLeftIcon /> : <MenuIcon />}
             </IconButton>
           )}
+
+          {!showDrawerButton && (
+            <Box
+              sx={{
+                display: { xs: "none", md: "flex" },
+                gap: 3,
+                alignItems: "center",
+                position: "absolute",
+                left: "50%",
+                transform: "translateX(-50%)",
+              }}
+            >
+              <Button
+                color="inherit"
+                onClick={() => document.getElementById("why-you-need")?.scrollIntoView({ behavior: "smooth" })}
+                sx={{ textTransform: "none", fontWeight: 500 }}
+              >
+                Why Track
+              </Button>
+              <Button
+                color="inherit"
+                onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
+                sx={{ textTransform: "none", fontWeight: 500 }}
+              >
+                Features
+              </Button>
+              <Button
+                color="inherit"
+                onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
+                sx={{ textTransform: "none", fontWeight: 500 }}
+              >
+                How It Works
+              </Button>
+            </Box>
+          )}
+
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             {user ? (
-              <IconButton onClick={handleProfileMenuOpen}>
-                <Avatar
-                  src={user.picture}
-                  alt={user?.name}
-                  sx={{ width: 36, height: 36 }}
-                  imgProps={{ referrerPolicy: "no-referrer" }}
-                />
-              </IconButton>
+              <>
+                <Button
+                  variant="contained"
+                  startIcon={<AddIcon />}
+                  sx={{
+                    mr: 2,
+                    my: "auto",
+                    px: 2,
+                    py: 1,
+                    height: "fit-content",
+                    borderRadius: "999px",
+                    textTransform: "none",
+                    fontWeight: 600,
+                    fontSize: "0.9rem",
+                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.15)",
+                    "&:hover": {
+                      boxShadow: "0px 6px 14px rgba(0, 0, 0, 0.25)",
+                    },
+                  }}
+                  onClick={() => setOpenAdd(true)}
+                >
+                  Add Subscription
+                </Button>
+                <IconButton onClick={handleProfileMenuOpen}>
+                  <Avatar
+                    src={user.picture}
+                    alt={user?.name}
+                    sx={{ width: 36, height: 36 }}
+                    imgProps={{ referrerPolicy: "no-referrer" }}
+                  />
+                </IconButton>
+              </>
             ) : (
               <Button
                 variant="contained"
@@ -167,7 +259,7 @@ export default function Navbar({
                   textTransform: "none",
                   fontWeight: 600,
                   fontSize: "0.9rem",
-                  background: "#b484c1",
+                  background: "#c468dd",
                 }}
               >
                 Login
@@ -191,6 +283,11 @@ export default function Navbar({
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
+      <SubscriptionForm
+        open={openAdd}
+        handleClose={() => setOpenAdd(false)}
+        onSuccess={() => window.dispatchEvent(new Event("subscription_added"))}
+      />
     </Box>
   );
 }

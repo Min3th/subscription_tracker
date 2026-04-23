@@ -82,6 +82,8 @@ export default function Subscriptions() {
 
   useEffect(() => {
     fetchData();
+    window.addEventListener("subscription_added", fetchData);
+    return () => window.removeEventListener("subscription_added", fetchData);
   }, []);
   return (
     <Box
@@ -181,16 +183,6 @@ export default function Subscriptions() {
                 <GridViewIcon fontSize="small" />
               </ToggleButton>
             </ToggleButtonGroup>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => {
-                setEditId(null);
-                setIsAddFormOpen(true);
-              }}
-            >
-              {t("subscriptions.add", "Add Subscription")}
-            </Button>
           </Stack>
         </Stack>
         <Grid container spacing={2}>
