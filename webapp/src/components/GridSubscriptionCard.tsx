@@ -121,7 +121,7 @@ export default function GridSubscriptionCard({ subscription, onEdit }: any) {
             </Box>
           </Box>
 
-          <Box display="flex" justifyContent="space-between" pt={1} borderTop="1px solid #eee" mt="auto">
+          <Box display="flex" justifyContent="space-between" pt={1} borderTop={1} borderColor="divider" mt="auto">
             <Typography variant="caption">Total Paid</Typography>
             <Typography variant="caption" fontWeight={500}>
               ${subscription.totalPaid.toFixed(2)}

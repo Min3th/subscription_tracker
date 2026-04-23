@@ -25,7 +25,7 @@ export default function UserProfile({ user, onSignOut, onSettings }: UserProfile
   };
 
   return (
-    <Box sx={{ backgroundColor: "lightpink" }}>
+    <Box>
       <Box
         onClick={handleClick}
         sx={{
@@ -42,7 +42,11 @@ export default function UserProfile({ user, onSignOut, onSettings }: UserProfile
           },
         }}
       >
-        <Avatar src={user.photoUrl} alt={user.name} sx={{ width: 40, height: 40, border: "2px solid #e0e0e0" }} />
+        <Avatar
+          src={user.photoUrl}
+          alt={user.name}
+          sx={{ width: 40, height: 40, border: "2px solid", borderColor: "divider" }}
+        />
         <Box sx={{ display: { xs: "none", md: "block" }, textAlign: "left" }}>
           <Typography variant="body2" sx={{ fontWeight: 500 }}>
             {user.name}

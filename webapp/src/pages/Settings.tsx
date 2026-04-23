@@ -214,7 +214,7 @@ export function Settings() {
           <Card elevation={0} sx={{ bgcolor: "transparent", backgroundImage: "none" }}>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
-                <PersonIcon sx={{ color: "#1976d2" }} />
+                <PersonIcon sx={{ color: "primary.main" }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   {t("settings.profile_info")}
                 </Typography>
@@ -280,7 +280,7 @@ export function Settings() {
           <Card elevation={0} sx={{ bgcolor: "transparent", backgroundImage: "none" }}>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
-                <PublicIcon sx={{ color: "#1976d2" }} />
+                <PublicIcon sx={{ color: "primary.main" }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   {t("settings.preferences")}
                 </Typography>
@@ -303,7 +303,12 @@ export function Settings() {
                 <Grid size={{ xs: 12, md: 4 }}>
                   <FormControl fullWidth>
                     <InputLabel>{t("settings.language", "Language")}</InputLabel>
-                    <Select name="language" value={formData.language} onChange={handleSelectChange} label={t("settings.language", "Language")}>
+                    <Select
+                      name="language"
+                      value={formData.language}
+                      onChange={handleSelectChange}
+                      label={t("settings.language", "Language")}
+                    >
                       {languages.map((lang) => (
                         <MenuItem key={lang.code} value={lang.code}>
                           {lang.name}
@@ -316,7 +321,12 @@ export function Settings() {
                 <Grid size={{ xs: 12, md: 4 }}>
                   <FormControl fullWidth>
                     <InputLabel>{t("settings.timezone", "Timezone")}</InputLabel>
-                    <Select name="timezone" value={formData.timezone} onChange={handleSelectChange} label={t("settings.timezone", "Timezone")}>
+                    <Select
+                      name="timezone"
+                      value={formData.timezone}
+                      onChange={handleSelectChange}
+                      label={t("settings.timezone", "Timezone")}
+                    >
                       {timezones.map((tz) => (
                         <MenuItem key={tz} value={tz}>
                           {tz}
@@ -333,7 +343,7 @@ export function Settings() {
           <Card elevation={0} sx={{ bgcolor: "transparent", backgroundImage: "none" }}>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
-                <PaletteIcon sx={{ color: "#1976d2" }} />
+                <PaletteIcon sx={{ color: "primary.main" }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   {t("settings.appearance")}
                 </Typography>
@@ -341,7 +351,12 @@ export function Settings() {
 
               <FormControl fullWidth>
                 <InputLabel>{t("settings.theme", "Theme")}</InputLabel>
-                <Select name="theme" value={formData.theme} onChange={handleSelectChange} label={t("settings.theme", "Theme")}>
+                <Select
+                  name="theme"
+                  value={formData.theme}
+                  onChange={handleSelectChange}
+                  label={t("settings.theme", "Theme")}
+                >
                   {themes.map((theme) => (
                     <MenuItem key={theme.value} value={theme.value}>
                       {theme.label}
@@ -360,7 +375,7 @@ export function Settings() {
           <Card elevation={0} sx={{ bgcolor: "transparent", backgroundImage: "none" }}>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
-                <NotificationsIcon sx={{ color: "#1976d2" }} />
+                <NotificationsIcon sx={{ color: "primary.main" }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   {t("settings.notifications")}
                 </Typography>
@@ -463,7 +478,7 @@ export function Settings() {
           <Card elevation={0} sx={{ bgcolor: "transparent", backgroundImage: "none" }}>
             <CardContent sx={{ p: 3 }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
-                <CreditCardIcon sx={{ color: "#1976d2" }} />
+                <CreditCardIcon sx={{ color: "primary.main" }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   {t("settings.payment_methods")}
                 </Typography>
@@ -486,14 +501,14 @@ export function Settings() {
                       sx={{
                         width: 48,
                         height: 32,
-                        bgcolor: "#f5f5f5",
+                        bgcolor: "action.hover",
                         borderRadius: 0.5,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                       }}
                     >
-                      <CreditCardIcon sx={{ color: "#1976d2" }} />
+                      <CreditCardIcon sx={{ color: "primary.main" }} />
                     </Box>
                     <Box>
                       <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -530,9 +545,7 @@ export function Settings() {
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>{t("settings.confirm_title")}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            {t("settings.confirm_desc")}
-          </DialogContentText>
+          <DialogContentText>{t("settings.confirm_desc")}</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog} color="inherit">
