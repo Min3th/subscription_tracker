@@ -1,4 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import api from "../api/client";
 
 type User = {
   name: string;
@@ -16,6 +17,18 @@ const initialState: AuthState = {
   token: null,
 };
 
+export const logoutUser = createAsyncThunk("auth/logoutUser", async (_, { dispatch }) => {
+  try {
+    await api.post("/auth/logout");
+  } catch (e) {
+    console.warn("Logout request failed");
+  }
+
+  localStorage.removeItem("token");
+
+  return true;
+});
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -28,6 +41,12 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(logoutUser.fulfilled, (state) => {
+      state.user = null;
+      state.token = null;
+    });
   },
 });
 

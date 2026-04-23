@@ -4,7 +4,7 @@ import { getTheme } from "./theme";
 import type { ReactNode } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../app/store";
-import { updatePreferences } from "../features/preferences/preferencesSlice";
+import { setPreferences, updatePreferences } from "../features/preferences/preferencesSlice";
 
 type ColorModeContextType = {
   mode: "light" | "dark";
@@ -19,6 +19,8 @@ export const ColorModeContext = createContext<ColorModeContextType>({
 });
 
 export default function ThemeContextProvider({ children }: { children: ReactNode }) {
+  const token = localStorage.getItem("token");
+
   const dispatch = useDispatch<AppDispatch>();
   const preferenceTheme = useSelector((state: RootState) => state.preferences.theme);
 
@@ -35,11 +37,17 @@ export default function ThemeContextProvider({ children }: { children: ReactNode
     () => ({
       mode: computedMode,
       setMode: (mode: "light" | "dark" | "auto") => {
-        dispatch(updatePreferences({ theme: mode }));
+        dispatch(setPreferences({ theme: mode }));
+        if (token) {
+          dispatch(updatePreferences({ theme: mode }));
+        }
       },
       toggleColorMode: () => {
         const nextTheme = computedMode === "light" ? "dark" : "light";
-        dispatch(updatePreferences({ theme: nextTheme }));
+        dispatch(setPreferences({ theme: nextTheme }));
+        if (token) {
+          dispatch(updatePreferences({ theme: nextTheme }));
+        }
       },
     }),
     [computedMode, dispatch],
