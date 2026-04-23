@@ -153,7 +153,6 @@ export default function Dashboard() {
     const fetchSubscriptions = async () => {
       try {
         const res = await getSubscriptions();
-        console.log("Fetched subscriptions:", res);
         setSubscriptions(res.data);
       } catch (error: any) {
         console.error("Error fetching subscriptions:", error);

@@ -90,7 +90,6 @@ export default function UserProfile({ user, onSignOut, onSettings }: UserProfile
 
         <MenuItem
           onClick={() => {
-            console.log("Profile clicked");
             handleClose();
           }}
         >

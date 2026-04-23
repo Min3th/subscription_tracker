@@ -9,7 +9,6 @@ export default function GoogleAuthButton({ onSuccess }: Props) {
     <GoogleLogin
       onSuccess={onSuccess}
       onError={() => {
-        console.log("Login Failed");
       }}
     />
   );

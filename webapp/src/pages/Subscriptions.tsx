@@ -54,7 +54,6 @@ export default function Subscriptions() {
   const fetchData = async () => {
     try {
       const res = await getSubscriptions();
-      console.log("API response:", res.data);
 
       const mapped = res.data.map(
         (item: any): DetailedSubscription => ({

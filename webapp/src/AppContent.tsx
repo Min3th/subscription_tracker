@@ -14,7 +14,6 @@ export default function AppContent({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     const localUser = localStorage.getItem("user");
     const token = localStorage.getItem("token");
-    console.log("Token", token);
     if (localUser && token) {
       dispatch(
         setAuth({

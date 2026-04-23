@@ -164,7 +164,6 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
               <Switch
                 checked={subscription.autoRenew}
                 onChange={(e) => {
-                  console.log("Auto-renew:", e.target.checked);
                 }}
                 size="small"
               />

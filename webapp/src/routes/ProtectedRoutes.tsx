@@ -6,7 +6,6 @@ type Props = {
 
 export default function ProtectedRoute({ children }: Props) {
   const token = localStorage.getItem("token");
-  console.log("ProtectedRoute token:", token);
   if (!token) {
     return <Navigate to="/" replace />;
   }

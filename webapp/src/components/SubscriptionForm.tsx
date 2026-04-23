@@ -57,7 +57,6 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
     },
     validationSchema,
     onSubmit: async (values) => {
-      console.log("FORM SUBMITTED", values);
       try {
         const payload = {
           name: values.name,

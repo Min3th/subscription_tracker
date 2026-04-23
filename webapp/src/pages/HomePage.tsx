@@ -7,7 +7,6 @@ export default function HomePage() {
   const handleGoogleSuccess = (credentialResponse: any) => {
     if (credentialResponse.credential) {
       const user = jwtDecode(credentialResponse.credential);
-      console.log(user);
     }
   };
   return (

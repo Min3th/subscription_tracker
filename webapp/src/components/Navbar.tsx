@@ -30,7 +30,6 @@ export default function Navbar({
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
   const [openLogin, setOpenLogin] = React.useState(false);
   const user = useSelector((state: any) => state.auth.user);
-  console.log("User state in Navbar:", user?.picture);
   const dispatch = useDispatch();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
