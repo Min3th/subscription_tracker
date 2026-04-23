@@ -81,7 +81,7 @@ export default function HomePage() {
           >
             Why You Need a Tracker
           </Typography>
-          <Grid container spacing={4}>
+          <Grid container spacing={4} justifyContent="center">
             {[
               {
                 icon: <EventBusyIcon sx={{ fontSize: 40, color: "#f44336" }} />,
@@ -99,11 +99,12 @@ export default function HomePage() {
                 desc: "With streaming, software, and delivery services, it's impossible to keep track of every billing cycle manually.",
               },
             ].map((item, i) => (
-              <Grid item xs={12} md={4} key={i}>
+              <Grid item xs={12} sm={6} md={4} key={i}>
                 <Card
                   sx={{
                     height: "100%",
                     borderRadius: 4,
+                    width: "300px",
                     boxShadow:
                       theme.palette.mode === "dark" ? "0 4px 20px rgba(0,0,0,0.4)" : "0 4px 20px rgba(0,0,0,0.05)",
                     display: "flex",
@@ -112,6 +113,12 @@ export default function HomePage() {
                     textAlign: "center",
                     p: 4,
                     backgroundColor: theme.palette.mode === "dark" ? "background.paper" : "#ffffff",
+                    transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+                    "&:hover": {
+                      transform: "translateY(-5px)",
+                      boxShadow:
+                        theme.palette.mode === "dark" ? "0 8px 30px rgba(0,0,0,0.6)" : "0 8px 30px rgba(0,0,0,0.1)",
+                    },
                   }}
                 >
                   <Box sx={{ mb: 2 }}>{item.icon}</Box>
@@ -142,7 +149,7 @@ export default function HomePage() {
         >
           Everything You Need
         </Typography>
-        <Grid container spacing={6} alignItems="center">
+        <Grid container spacing={4} alignItems="center" justifyContent="center">
           {[
             {
               icon: <NotificationsActiveIcon sx={{ fontSize: 32, color: "#6400ef" }} />,
@@ -166,31 +173,49 @@ export default function HomePage() {
             },
           ].map((feature, i) => (
             <Grid item xs={12} sm={6} key={i}>
-              <Stack direction="row" spacing={3}>
+              <Card
+                sx={{
+                  height: "300px",
+                  width: "400px",
+                  borderRadius: 4,
+                  boxShadow:
+                    theme.palette.mode === "dark" ? "0 4px 20px rgba(0,0,0,0.4)" : "0 4px 20px rgba(0,0,0,0.05)",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  textAlign: "center",
+                  p: 4,
+                  backgroundColor: theme.palette.mode === "dark" ? "background.paper" : "#ffffff",
+                  transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+                  "&:hover": {
+                    transform: "translateY(-5px)",
+                    boxShadow:
+                      theme.palette.mode === "dark" ? "0 8px 30px rgba(0,0,0,0.6)" : "0 8px 30px rgba(0,0,0,0.1)",
+                  },
+                }}
+              >
                 <Box
                   sx={{
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    width: 64,
-                    height: 64,
-                    borderRadius: "16px",
+                    width: 72,
+                    height: 72,
+                    borderRadius: "20px",
                     backgroundColor:
                       theme.palette.mode === "dark" ? "rgba(100, 0, 239, 0.2)" : "rgba(100, 0, 239, 0.1)",
-                    flexShrink: 0,
+                    mb: 3,
                   }}
                 >
                   {feature.icon}
                 </Box>
-                <Box>
-                  <Typography variant="h6" fontWeight="bold" gutterBottom>
-                    {feature.title}
-                  </Typography>
-                  <Typography variant="body1" color="text.secondary">
-                    {feature.desc}
-                  </Typography>
-                </Box>
-              </Stack>
+                <Typography variant="h6" fontWeight="bold" gutterBottom>
+                  {feature.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {feature.desc}
+                </Typography>
+              </Card>
             </Grid>
           ))}
         </Grid>
@@ -211,7 +236,7 @@ export default function HomePage() {
           >
             How It Works
           </Typography>
-          <Grid container spacing={4}>
+          <Grid container spacing={4} justifyContent="center">
             {[
               { step: "1", title: "Add Services", desc: "Enter your subscriptions and billing details in seconds." },
               { step: "2", title: "Set Reminders", desc: "Choose when you want to be notified before a charge." },
@@ -221,8 +246,29 @@ export default function HomePage() {
                 desc: "Relax knowing you'll never miss a payment or cancellation again.",
               },
             ].map((item, i) => (
-              <Grid item xs={12} md={4} key={i}>
-                <Stack alignItems="center" textAlign="center" spacing={2}>
+              <Grid item xs={12} sm={6} md={4} key={i}>
+                <Card
+                  sx={{
+                    height: "100%",
+                    width: "400px",
+                    borderRadius: 4,
+                    boxShadow: "none",
+                    border: `1px solid ${theme.palette.divider}`,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    textAlign: "center",
+                    p: 4,
+                    backgroundColor: "transparent",
+                    transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
+                    "&:hover": {
+                      transform: "translateY(-5px)",
+                      boxShadow:
+                        theme.palette.mode === "dark" ? "0 8px 30px rgba(0,0,0,0.6)" : "0 8px 30px rgba(0,0,0,0.05)",
+                      borderColor: "transparent",
+                    },
+                  }}
+                >
                   <Box
                     sx={{
                       width: 56,
@@ -236,17 +282,18 @@ export default function HomePage() {
                       fontSize: "1.5rem",
                       fontWeight: "bold",
                       boxShadow: "0 4px 14px rgba(100, 0, 239, 0.4)",
+                      mb: 3,
                     }}
                   >
                     {item.step}
                   </Box>
-                  <Typography variant="h6" fontWeight="bold">
+                  <Typography variant="h6" fontWeight="bold" gutterBottom>
                     {item.title}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     {item.desc}
                   </Typography>
-                </Stack>
+                </Card>
               </Grid>
             ))}
           </Grid>
