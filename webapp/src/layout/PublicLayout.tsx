@@ -31,7 +31,7 @@ export default function PublicLayout() {
             <Outlet />
           </Suspense>
         </Box>
-        <ThemeToggleButton />
+        {/* <ThemeToggleButton /> */}
         <Footer />
       </Box>
     </Box>

@@ -23,7 +23,7 @@ export default function ThemeContextProvider({ children }: { children: ReactNode
 
   const dispatch = useDispatch<AppDispatch>();
   const preferenceTheme = useSelector((state: RootState) => state.preferences.theme);
-
+  console.log("preferenceTheme:", preferenceTheme);
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
   const computedMode = useMemo(() => {
