@@ -3,7 +3,6 @@ import Navbar from "../components/Navbar";
 import { Outlet } from "react-router-dom";
 import { Box, Toolbar } from "@mui/material";
 import Footer from "../components/Footer";
-import ThemeToggleButton from "../components/ThemeToggleButton";
 import SideDrawer from "../components/SideDrawer";
 
 export default function DashboardLayout() {
@@ -33,7 +32,6 @@ export default function DashboardLayout() {
             <Outlet />
           </Suspense>
         </Box>
-        <ThemeToggleButton />
         <Footer />
       </Box>
     </Box>

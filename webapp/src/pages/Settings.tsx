@@ -111,7 +111,7 @@ export function Settings() {
 
     if (name === "theme") {
       setLocalTheme(value);
-      setMode(value as "light" | "dark" | "auto");
+      dispatch(setPreferences({ theme: value }));
     }
   };
 
