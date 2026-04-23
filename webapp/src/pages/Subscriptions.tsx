@@ -22,6 +22,12 @@ export default function Subscriptions() {
   const [filterCategory, setFilterCategory] = useState("all");
   const [sortBy, setSortBy] = useState("name");
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+
+  const handleEdit = (id: string) => {
+    setEditId(id);
+    setIsAddFormOpen(true);
+  };
 
   const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
@@ -179,7 +185,10 @@ export default function Subscriptions() {
             <Button
               variant="contained"
               startIcon={<AddIcon />}
-              onClick={() => setIsAddFormOpen(true)}
+              onClick={() => {
+                setEditId(null);
+                setIsAddFormOpen(true);
+              }}
             >
               {t("subscriptions.add", "Add Subscription")}
             </Button>
@@ -198,9 +207,9 @@ export default function Subscriptions() {
                 }}
               >
                 {view === "list" ? (
-                  <SubscriptionCard subscription={sub} />
+                  <SubscriptionCard subscription={sub} onEdit={handleEdit} />
                 ) : (
-                  <GridSubscriptionCard subscription={sub} />
+                  <GridSubscriptionCard subscription={sub} onEdit={handleEdit} />
                 )}
               </Grid>
             ))
@@ -215,8 +224,12 @@ export default function Subscriptions() {
       </Box>
       <SubscriptionForm
         open={isAddFormOpen}
-        handleClose={() => setIsAddFormOpen(false)}
+        handleClose={() => {
+          setIsAddFormOpen(false);
+          setEditId(null);
+        }}
         onSuccess={fetchData}
+        editId={editId}
       />
     </Box>
   );

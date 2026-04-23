@@ -152,7 +152,7 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
                 <Box display="flex" alignItems="center" gap={1}>
                   <LanguageIcon fontSize="small" />
                   <Link href={subscription.website} target="_blank" underline="hover">
-                    Visit Website
+                    {subscription.website}
                   </Link>
                 </Box>
               </Box>

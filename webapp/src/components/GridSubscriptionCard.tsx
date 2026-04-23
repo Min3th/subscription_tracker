@@ -1,9 +1,18 @@
-import { Card, CardContent, Box, Typography, Chip, IconButton } from "@mui/material";
+import { Card, CardContent, Box, Typography, Chip, IconButton, Menu, MenuItem } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
+import { useState } from "react";
 
-export default function GridSubscriptionCard({ subscription }: any) {
+export default function GridSubscriptionCard({ subscription, onEdit }: any) {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+
+  const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(e.currentTarget);
+  };
+
+  const handleClose = () => setAnchorEl(null);
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
@@ -53,9 +62,21 @@ export default function GridSubscriptionCard({ subscription }: any) {
               {subscription.name.charAt(0)}
             </Box>
 
-            <IconButton size="small">
-              <MoreVertIcon />
-            </IconButton>
+            <Box>
+              <IconButton size="small" onClick={handleOpen}>
+                <MoreVertIcon />
+              </IconButton>
+              <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+                <MenuItem
+                  onClick={() => {
+                    onEdit?.(subscription.id);
+                    handleClose();
+                  }}
+                >
+                  Edit
+                </MenuItem>
+              </Menu>
+            </Box>
           </Box>
 
           <Box display="flex" flexDirection="column" alignItems="start">
