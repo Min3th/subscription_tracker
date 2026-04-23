@@ -33,9 +33,10 @@ export default function HomePage() {
           pt: { xs: 15, md: 20 },
           pb: { xs: 10, md: 15 },
           overflow: "hidden",
-          background: theme.palette.mode === "dark" 
-            ? "radial-gradient(circle at 50% 50%, rgba(100, 0, 239, 0.1) 0%, transparent 60%)" 
-            : "radial-gradient(circle at 50% 50%, rgba(100, 0, 239, 0.05) 0%, transparent 60%)",
+          background:
+            theme.palette.mode === "dark"
+              ? "radial-gradient(circle at 50% 50%, rgba(100, 0, 239, 0.1) 0%, transparent 60%)"
+              : "radial-gradient(circle at 50% 50%, rgba(100, 0, 239, 0.05) 0%, transparent 60%)",
         }}
       >
         <style>
@@ -55,15 +56,83 @@ export default function HomePage() {
 
         {/* Floating Background Icons */}
         {[
-          { src: "https://cdn.simpleicons.org/netflix/E50914", top: "15%", left: "15%", size: 80, delay: "0s", animation: "float", rotate: -10 },
-          { src: "https://cdn.simpleicons.org/spotify/1ED760", top: "50%", left: "10%", size: 70, delay: "1s", animation: "float-reverse", rotate: 5 },
-          { src: "https://cdn.simpleicons.org/disneyplus/113CCF", top: "80%", left: "20%", size: 90, delay: "2s", animation: "float", rotate: -5 },
-          { src: "https://cdn.simpleicons.org/youtube/FF0000", top: "15%", right: "15%", size: 80, delay: "0.5s", animation: "float-reverse", rotate: 10 },
-          { src: "https://cdn.simpleicons.org/applemusic/FA243C", top: "45%", right: "8%", size: 70, delay: "1.5s", animation: "float", rotate: -15 },
-          { src: "https://cdn.simpleicons.org/primevideo/00A8E1", top: "75%", right: "20%", size: 90, delay: "2.5s", animation: "float-reverse", rotate: 5 },
+          {
+            src: "https://cdn.simpleicons.org/netflix/E50914",
+            top: "15%",
+            left: "15%",
+            size: 80,
+            delay: "0s",
+            animation: "float",
+            rotate: -10,
+          },
+          {
+            src: "https://cdn.simpleicons.org/spotify/1ED760",
+            top: "50%",
+            left: "10%",
+            size: 70,
+            delay: "1s",
+            animation: "float-reverse",
+            rotate: 5,
+          },
+          {
+            src: "https://cdn.simpleicons.org/patreon/FF424D",
+            top: "80%",
+            left: "20%",
+            size: 90,
+            delay: "2s",
+            animation: "float",
+            rotate: -5,
+          },
+          {
+            src: "https://cdn.simpleicons.org/youtube/FF0000",
+            top: "15%",
+            right: "15%",
+            size: 80,
+            delay: "0.5s",
+            animation: "float-reverse",
+            rotate: 10,
+          },
+          {
+            src: "https://cdn.simpleicons.org/applemusic/FA243C",
+            top: "45%",
+            right: "8%",
+            size: 70,
+            delay: "1.5s",
+            animation: "float",
+            rotate: -15,
+          },
+          {
+            src: "https://cdn.simpleicons.org/twitch/9146FF",
+            top: "75%",
+            right: "20%",
+            size: 90,
+            delay: "2.5s",
+            animation: "float-reverse",
+            rotate: 5,
+          },
           // Faded ones
-          { src: "https://cdn.simpleicons.org/twitch/9146FF", top: "60%", left: "25%", size: 50, delay: "1.2s", animation: "float", rotate: 15, blur: 2, opacity: 0.6 },
-          { src: "https://cdn.simpleicons.org/dropbox/0061FF", top: "25%", right: "25%", size: 60, delay: "0.8s", animation: "float-reverse", rotate: -20, blur: 3, opacity: 0.5 },
+          {
+            src: "https://cdn.simpleicons.org/twitch/9146FF",
+            top: "60%",
+            left: "25%",
+            size: 50,
+            delay: "1.2s",
+            animation: "float",
+            rotate: 15,
+            blur: 2,
+            opacity: 0.6,
+          },
+          {
+            src: "https://cdn.simpleicons.org/dropbox/0061FF",
+            top: "25%",
+            right: "25%",
+            size: 60,
+            delay: "0.8s",
+            animation: "float-reverse",
+            rotate: -20,
+            blur: 3,
+            opacity: 0.5,
+          },
         ].map((icon, i) => (
           <Box
             key={i}
@@ -89,7 +158,8 @@ export default function HomePage() {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                boxShadow: theme.palette.mode === "dark" ? "0 10px 30px rgba(0,0,0,0.5)" : "0 10px 30px rgba(0,0,0,0.08)",
+                boxShadow:
+                  theme.palette.mode === "dark" ? "0 10px 30px rgba(0,0,0,0.5)" : "0 10px 30px rgba(0,0,0,0.08)",
                 transform: `rotate(${icon.rotate}deg)`,
                 "& img": {
                   width: "60%",
@@ -151,7 +221,10 @@ export default function HomePage() {
               </Typography>
             </Box>
 
-            <Typography variant="h2" sx={{ fontWeight: 800, color: "text.primary", fontSize: { xs: "3rem", md: "4.5rem" }, lineHeight: 1.1 }}>
+            <Typography
+              variant="h2"
+              sx={{ fontWeight: 800, color: "text.primary", fontSize: { xs: "3rem", md: "4.5rem" }, lineHeight: 1.1 }}
+            >
               Track Subscriptions
               <br />
               <Box component="span" sx={{ color: "#6400ef" }}>
@@ -162,7 +235,7 @@ export default function HomePage() {
               Get notified before your trials end. Avoid unexpected charges and stay in control of your subscriptions in
               one central place.
             </Typography>
-            
+
             <Box sx={{ mt: 2 }}>
               <Button
                 onClick={handleRegisterClick}
@@ -186,17 +259,21 @@ export default function HomePage() {
                 Register Now
               </Button>
             </Box>
-            
-            <Typography variant="caption" color="text.secondary" sx={{ fontSize: "0.9rem", display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-              <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ fontSize: "0.9rem", display: "flex", alignItems: "center", gap: 1, mt: 1 }}
+            >
+              <Box component="span" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                 <AutoAwesomeIcon sx={{ fontSize: 14, color: "text.disabled" }} /> No ads
-              </Box> 
-              • 
-              <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              </Box>
+              •
+              <Box component="span" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                 <AutoAwesomeIcon sx={{ fontSize: 14, color: "text.disabled" }} /> No credit card required
-              </Box> 
-              • 
-              <Box component="span" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              </Box>
+              •
+              <Box component="span" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                 <AutoAwesomeIcon sx={{ fontSize: 14, color: "text.disabled" }} /> 100% free
               </Box>
             </Typography>

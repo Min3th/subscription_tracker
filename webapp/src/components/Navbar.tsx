@@ -200,7 +200,7 @@ export default function Navbar({
                   textTransform: "none",
                   fontWeight: 600,
                   fontSize: "0.9rem",
-                  background: "#b484c1",
+                  background: "#c468dd",
                 }}
               >
                 Login
