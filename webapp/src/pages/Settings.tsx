@@ -36,6 +36,7 @@ import type { RootState, AppDispatch } from "../app/store";
 import { fetchPreferences, updatePreferences, setPreferences } from "../features/preferences/preferencesSlice";
 import { ColorModeContext } from "../theme/ThemeContext";
 import { useTranslation } from "react-i18next";
+import { useBlocker } from "react-router-dom";
 
 export function Settings() {
   const { t } = useTranslation();
@@ -44,6 +45,13 @@ export function Settings() {
   const [localTheme, setLocalTheme] = useState(preferences.theme);
   const { setMode } = useContext(ColorModeContext);
   const dispatch = useDispatch<AppDispatch>();
+
+  const [initialPreferences, setInitialPreferences] = useState<{
+    currency: string;
+    language: string;
+    timezone: string;
+    theme: string;
+  } | null>(null);
 
   const [formData, setFormData] = useState({
     name: user?.name || "",
@@ -77,8 +85,17 @@ export function Settings() {
         timezone: preferences.timezone,
         theme: preferences.theme,
       }));
+      if (!initialPreferences) {
+        setInitialPreferences({
+          currency: preferences.currency,
+          language: preferences.language,
+          timezone: preferences.timezone,
+          theme: preferences.theme,
+        });
+      }
     }
-  }, [preferences.status, preferences.currency, preferences.language, preferences.timezone, preferences.theme]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preferences.status]); // Only run when status changes to avoid overwriting on theme preview
 
   const [notifications, setNotifications] = useState({
     emailNotifications: true,
@@ -94,6 +111,19 @@ export function Settings() {
   if (!user) {
     return <Typography>Loading...</Typography>;
   }
+
+  const isDirty =
+    formData.name !== (user?.name || "") ||
+    formData.email !== (user?.email || "") ||
+    (initialPreferences &&
+      (formData.currency !== initialPreferences.currency ||
+        formData.timezone !== initialPreferences.timezone ||
+        formData.theme !== initialPreferences.theme ||
+        formData.language !== initialPreferences.language));
+
+  const blocker = useBlocker(
+    ({ currentLocation, nextLocation }) => isDirty && currentLocation.pathname !== nextLocation.pathname,
+  );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -127,12 +157,27 @@ export function Settings() {
   };
 
   const handleCancel = () => {
+    if (initialPreferences) {
+      setFormData((prev) => ({
+        ...prev,
+        ...initialPreferences,
+      }));
+      if (initialPreferences.theme !== formData.theme) {
+        dispatch(setPreferences({ theme: initialPreferences.theme }));
+      }
+    }
     dispatch(fetchPreferences());
   };
 
   const handleConfirmSave = async () => {
     try {
       await dispatch(updatePreferences(formData)).unwrap();
+      setInitialPreferences({
+        currency: formData.currency,
+        language: formData.language,
+        timezone: formData.timezone,
+        theme: formData.theme,
+      });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
@@ -553,6 +598,44 @@ export function Settings() {
           </Button>
           <Button onClick={handleConfirmSave} variant="contained" color="primary">
             {t("settings.confirm_button")}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Unsaved Changes Navigation Blocker Dialog */}
+      <Dialog open={blocker.state === "blocked"} onClose={() => blocker.state === "blocked" && blocker.reset()}>
+        <DialogTitle>{t("settings.unsaved_changes_title", "Unsaved Changes")}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {t("settings.unsaved_changes_desc", "You have unsaved changes. Do you want to confirm the changes or not?")}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => blocker.state === "blocked" && blocker.reset()} color="inherit">
+            {t("settings.cancel", "Cancel")}
+          </Button>
+          <Button
+            onClick={() => {
+              if (blocker.state === "blocked") {
+                dispatch(fetchPreferences());
+                blocker.proceed();
+              }
+            }}
+            color="error"
+          >
+            {t("settings.discard", "Discard")}
+          </Button>
+          <Button
+            onClick={async () => {
+              if (blocker.state === "blocked") {
+                await handleConfirmSave();
+                blocker.proceed();
+              }
+            }}
+            variant="contained"
+            color="primary"
+          >
+            {t("settings.save_and_continue", "Save & Continue")}
           </Button>
         </DialogActions>
       </Dialog>

@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import { store } from "./app/store.ts";
 import { SnackbarProvider } from "./utils/Snackbar.tsx";
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HomePage from "./pages/HomePage.tsx";
 import ThemeContextProvider from "./theme/ThemeContext.tsx";
 import { LoaderProvider } from "./utils/Loading.tsx";
@@ -19,6 +19,34 @@ import Subscriptions from "./pages/Subscriptions.tsx";
 import UserProfile from "./pages/UserProfile.tsx";
 import { Settings } from "./pages/Settings.tsx";
 
+const router = createBrowserRouter([
+  {
+    element: <PublicLayout />,
+    children: [
+      { path: "/", element: <HomePage /> },
+      { path: "/page1", element: <PageOne /> },
+      { path: "/page2", element: <PageTwo /> },
+    ],
+  },
+  {
+    element: <DashboardLayout />,
+    children: [
+      {
+        path: "/dashboard",
+        element: <Dashboard />,
+      },
+      {
+        path: "/subscriptions",
+        element: <Subscriptions />,
+      },
+      {
+        path: "/settings",
+        element: <Settings />,
+      },
+    ],
+  },
+]);
+
 function App() {
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
@@ -27,41 +55,7 @@ function App() {
           <Provider store={store}>
             <AppContent>
               <ThemeContextProvider>
-                <BrowserRouter>
-                  <Routes>
-                    <Route element={<PublicLayout />}>
-                      <Route path="/" element={<HomePage />} />
-                      <Route path="/page1" element={<PageOne />} />
-                      <Route path="/page2" element={<PageTwo />} />
-                    </Route>
-                    <Route element={<DashboardLayout />}>
-                      <Route
-                        path="/dashboard"
-                        element={
-                          // <ProtectedRoute>
-                          <Dashboard />
-                          // </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/subscriptions"
-                        element={
-                          // <ProtectedRoute>
-                          <Subscriptions />
-                          // </ProtectedRoute>
-                        }
-                      />
-                      <Route
-                        path="/settings"
-                        element={
-                          // <ProtectedRoute>
-                          <Settings />
-                          // </ProtectedRoute>
-                        }
-                      />
-                    </Route>
-                  </Routes>
-                </BrowserRouter>
+                <RouterProvider router={router} />
               </ThemeContextProvider>
             </AppContent>
           </Provider>
