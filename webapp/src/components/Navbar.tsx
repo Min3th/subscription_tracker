@@ -153,6 +153,42 @@ export default function Navbar({
               {open ? <ChevronLeftIcon /> : <MenuIcon />}
             </IconButton>
           )}
+
+          {!showDrawerButton && (
+            <Box
+              sx={{
+                display: { xs: "none", md: "flex" },
+                gap: 3,
+                alignItems: "center",
+                position: "absolute",
+                left: "50%",
+                transform: "translateX(-50%)",
+              }}
+            >
+              <Button
+                color="inherit"
+                onClick={() => document.getElementById("why-you-need")?.scrollIntoView({ behavior: "smooth" })}
+                sx={{ textTransform: "none", fontWeight: 500 }}
+              >
+                Why You Need a Tracker
+              </Button>
+              <Button
+                color="inherit"
+                onClick={() => document.getElementById("features")?.scrollIntoView({ behavior: "smooth" })}
+                sx={{ textTransform: "none", fontWeight: 500 }}
+              >
+                Everything You Need
+              </Button>
+              <Button
+                color="inherit"
+                onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
+                sx={{ textTransform: "none", fontWeight: 500 }}
+              >
+                How It Works
+              </Button>
+            </Box>
+          )}
+
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             {user ? (

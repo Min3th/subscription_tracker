@@ -30,7 +30,7 @@ export default function HomePage() {
       <Box
         sx={{
           position: "relative",
-          pt: { xs: 15, md: 20 },
+          pt: { xs: 6, md: 8 },
           pb: { xs: 10, md: 15 },
           overflow: "hidden",
           background:
@@ -282,7 +282,10 @@ export default function HomePage() {
       </Box>
 
       {/* WHY YOU NEED THIS SECTION */}
-      <Box sx={{ py: 10, backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.02)" : "#f8f9fa" }}>
+      <Box
+        id="why-you-need"
+        sx={{ py: 10, backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.02)" : "#f8f9fa" }}
+      >
         <Container maxWidth="lg">
           <Typography
             variant="h3"
@@ -351,7 +354,7 @@ export default function HomePage() {
       </Box>
 
       {/* FEATURES SECTION */}
-      <Container maxWidth="lg" sx={{ py: { xs: 10, md: 15 } }}>
+      <Container id="features" maxWidth="lg" sx={{ py: { xs: 10, md: 15 } }}>
         <Typography
           variant="h3"
           sx={{
@@ -437,7 +440,10 @@ export default function HomePage() {
       </Container>
 
       {/* HOW IT WORKS SECTION */}
-      <Box sx={{ py: 10, backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.02)" : "#f8f9fa" }}>
+      <Box
+        id="how-it-works"
+        sx={{ py: 10, backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.02)" : "#f8f9fa" }}
+      >
         <Container maxWidth="md">
           <Typography
             variant="h3"
