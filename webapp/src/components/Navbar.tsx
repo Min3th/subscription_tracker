@@ -18,6 +18,9 @@ import Avatar from "@mui/material/Avatar";
 import AddIcon from "@mui/icons-material/Add";
 import SubscriptionForm from "./SubscriptionForm";
 import { useDispatch, useSelector } from "react-redux";
+import Subtrak from "../../public/Subtrak.png";
+import { Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export default function Navbar({
   onClick,
@@ -36,6 +39,7 @@ export default function Navbar({
   const dispatch = useDispatch();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const handleOpenAdd = () => setOpenAdd(true);
@@ -142,6 +146,25 @@ export default function Navbar({
         }}
       >
         <Toolbar>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              cursor: "pointer",
+            }}
+            onClick={() => navigate("/")}
+          >
+            <Box
+              component="img"
+              src={Subtrak}
+              alt="Subtrak Logo"
+              sx={{
+                height: 40,
+                width: "auto",
+              }}
+            />
+          </Box>
           {showDrawerButton && (
             <IconButton
               color="inherit"
