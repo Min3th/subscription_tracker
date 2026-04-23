@@ -26,14 +26,72 @@ import StatCard from "../components/StatCard";
 import { getSubscriptions } from "../api/subscription";
 import { useTranslation } from "react-i18next";
 
-const monthlySpendingData = [
-  { month: "Oct", amount: 98 },
-  { month: "Nov", amount: 102 },
-  { month: "Dec", amount: 150 },
-  { month: "Jan", amount: 105 },
-  { month: "Feb", amount: 102 },
-  { month: "Mar", amount: 102 },
-];
+const getNextBillingDate = (startDateStr: string, unit: string, count: number): Date => {
+  if (!startDateStr || !unit || !count) return new Date();
+  const start = new Date(startDateStr);
+  const now = new Date();
+  if (start > now) return start;
+
+  const next = new Date(start);
+  while (next <= now) {
+    if (unit === "day") next.setDate(next.getDate() + count);
+    else if (unit === "week") next.setDate(next.getDate() + count * 7);
+    else if (unit === "month") next.setMonth(next.getMonth() + count);
+    else if (unit === "year") next.setFullYear(next.getFullYear() + count);
+    else break;
+  }
+  return next;
+};
+
+const getMonthlyCost = (cost: number, unit: string, count: number): number => {
+  if (!cost || !unit || !count) return 0;
+  if (unit === "day") return (cost / count) * 30.416;
+  if (unit === "week") return (cost / count) * 4.333;
+  if (unit === "month") return cost / count;
+  if (unit === "year") return cost / (count * 12);
+  return 0;
+};
+
+const generatePast6MonthsSpending = (subscriptions: any[]) => {
+  const monthsData = [];
+  const now = new Date();
+  
+  for (let i = 5; i >= 0; i--) {
+    const targetMonth = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const targetMonthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0);
+    const monthLabel = targetMonth.toLocaleDateString('en-US', { month: 'short' });
+    
+    let amount = 0;
+    
+    subscriptions.forEach(sub => {
+      if (sub.type === "one-time") {
+        const d = new Date(sub.startDate);
+        if (d >= targetMonth && d <= targetMonthEnd) {
+          amount += sub.cost;
+        }
+      } else {
+        if (!sub.startDate || !sub.billingIntervalUnit || !sub.billingIntervalCount) return;
+        const start = new Date(sub.startDate);
+        if (start > targetMonthEnd) return;
+        
+        let current = new Date(start);
+        while (current <= targetMonthEnd) {
+          if (current >= targetMonth) {
+            amount += sub.cost;
+          }
+          if (sub.billingIntervalUnit === "day") current.setDate(current.getDate() + sub.billingIntervalCount);
+          else if (sub.billingIntervalUnit === "week") current.setDate(current.getDate() + sub.billingIntervalCount * 7);
+          else if (sub.billingIntervalUnit === "month") current.setMonth(current.getMonth() + sub.billingIntervalCount);
+          else if (sub.billingIntervalUnit === "year") current.setFullYear(current.getFullYear() + sub.billingIntervalCount);
+          else break; 
+        }
+      }
+    });
+    
+    monthsData.push({ month: monthLabel, amount: Number(amount.toFixed(2)) });
+  }
+  return monthsData;
+};
 
 export default function Dashboard() {
   const { t } = useTranslation();
@@ -44,21 +102,31 @@ export default function Dashboard() {
   const handleClose = () => setOpen(false);
 
   const totalMonthly = useMemo(
-    () => subscriptions.reduce((sum, sub) => sum + (sub.billingCycle === "monthly" ? sub.cost : sub.cost / 12), 0),
+    () => subscriptions.reduce((sum, sub) => {
+      if (sub.type === "one-time") return sum;
+      return sum + getMonthlyCost(sub.cost, sub.billingIntervalUnit, sub.billingIntervalCount);
+    }, 0),
     [subscriptions],
   );
 
   const totalYearly = useMemo(
-    () => subscriptions.reduce((sum, sub) => sum + (sub.billingCycle === "yearly" ? sub.cost : sub.cost * 12), 0),
+    () => subscriptions.reduce((sum, sub) => {
+      if (sub.type === "one-time") return sum;
+      return sum + getMonthlyCost(sub.cost, sub.billingIntervalUnit, sub.billingIntervalCount) * 12;
+    }, 0),
     [subscriptions],
   );
 
   const nextBilling = useMemo(() => {
     if (!subscriptions.length) return null;
-    return [...subscriptions].sort(
-      (a, b) => new Date(a.nextBillingDate).getTime() - new Date(b.nextBillingDate).getTime(),
+    const recurringSubs = subscriptions.filter(sub => sub.type !== "one-time");
+    if (!recurringSubs.length) return null;
+    return recurringSubs.sort(
+      (a, b) => getNextBillingDate(a.startDate, a.billingIntervalUnit, a.billingIntervalCount).getTime() - getNextBillingDate(b.startDate, b.billingIntervalUnit, b.billingIntervalCount).getTime(),
     )[0];
   }, [subscriptions]);
+
+  const monthlySpendingData = useMemo(() => generatePast6MonthsSpending(subscriptions), [subscriptions]);
 
   // Category aggregation
   const categoryData = useMemo(
@@ -66,8 +134,13 @@ export default function Dashboard() {
       Object.entries(
         subscriptions.reduce(
           (acc, sub) => {
-            const cost = sub.billingCycle === "monthly" ? sub.cost : sub.cost / 12;
-            acc[sub.category] = (acc[sub.category] || 0) + cost;
+            let cost = 0;
+            if (sub.type !== "one-time") {
+              cost = getMonthlyCost(sub.cost, sub.billingIntervalUnit, sub.billingIntervalCount);
+            }
+            if (cost > 0) {
+              acc[sub.category] = (acc[sub.category] || 0) + cost;
+            }
             return acc;
           },
           {} as Record<string, number>,
@@ -141,7 +214,6 @@ export default function Dashboard() {
         </Button>
       </Box>
 
-      {/* STATS */}
       <Grid container spacing={3} mb={4}>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard
@@ -169,7 +241,7 @@ export default function Dashboard() {
             title={t("dashboard.next_billing")}
             value={
               nextBilling
-                ? new Date(nextBilling.nextBillingDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+                ? getNextBillingDate(nextBilling.startDate, nextBilling.billingIntervalUnit, nextBilling.billingIntervalCount).toLocaleDateString("en-US", { month: "short", day: "numeric" })
                 : "N/A"
             }
             icon={<CalendarTodayIcon />}
@@ -179,9 +251,7 @@ export default function Dashboard() {
 
       <SubscriptionForm handleClose={handleClose} open={open} />
 
-      {/* CHART + CATEGORY */}
       <Grid container spacing={3} mb={4} alignItems="stretch">
-        {/* Chart */}
         <Grid size={{ xs: 12, md: 8 }}>
           <Card sx={{ borderRadius: 3, height: "100%", boxShadow: "0 4px 20px rgba(0,0,0,0.03)" }}>
             <CardContent sx={{ p: 3 }}>
@@ -222,7 +292,6 @@ export default function Dashboard() {
           </Card>
         </Grid>
 
-        {/* Category */}
         <Grid size={{ xs: 12, md: 4 }}>
           <Card sx={{ borderRadius: 3, height: "100%", boxShadow: "0 4px 20px rgba(0,0,0,0.03)" }}>
             <CardContent sx={{ p: 3 }}>
@@ -332,19 +401,21 @@ export default function Dashboard() {
                         <Typography component="span" fontWeight="700" color="text.primary">
                           ${Number(sub.cost).toFixed(2)}
                         </Typography>{" "}
-                        / {sub.billingCycle}
+                        {sub.type === "one-time" ? "one-time" : `/ every ${sub.billingIntervalCount > 1 ? sub.billingIntervalCount + " " : ""}${sub.billingIntervalUnit}${sub.billingIntervalCount > 1 ? "s" : ""}`}
                       </Typography>
-                      <Box display="flex" alignItems="center" gap={0.8} mt={1}>
-                        <CalendarTodayIcon sx={{ fontSize: 14, color: theme.palette.text.secondary }} />
-                        <Typography variant="caption" color="text.secondary" fontWeight="500">
-                          {t("dashboard.next_billing_date")}{" "}
-                          {new Date(sub.nextBillingDate).toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          })}
-                        </Typography>
-                      </Box>
+                      {sub.type !== "one-time" && (
+                        <Box display="flex" alignItems="center" gap={0.8} mt={1}>
+                          <CalendarTodayIcon sx={{ fontSize: 14, color: theme.palette.text.secondary }} />
+                          <Typography variant="caption" color="text.secondary" fontWeight="500">
+                            {t("dashboard.next_billing_date")}{" "}
+                            {getNextBillingDate(sub.startDate, sub.billingIntervalUnit, sub.billingIntervalCount).toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
+                          </Typography>
+                        </Box>
+                      )}
                     </Box>
                   </Box>
 

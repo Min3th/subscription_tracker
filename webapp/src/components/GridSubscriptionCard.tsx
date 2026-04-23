@@ -30,10 +30,11 @@ export default function GridSubscriptionCard({ subscription }: any) {
   const categoryStyle = getCategoryColor(subscription.category);
 
   return (
-    <Card sx={{ height: "100%", display: "flex", flexDirection: "column", "&:hover": { boxShadow: 6 }, transition: "0.3s" }}>
+    <Card
+      sx={{ height: "100%", display: "flex", flexDirection: "column", "&:hover": { boxShadow: 6 }, transition: "0.3s" }}
+    >
       <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <Box display="flex" flexDirection="column" gap={2} flexGrow={1}>
-          {/* TOP */}
           <Box display="flex" justifyContent="space-between">
             <Box
               sx={{
@@ -78,7 +79,6 @@ export default function GridSubscriptionCard({ subscription }: any) {
             </Box>
           </Box>
 
-          {/* PRICE */}
           <Box>
             <Typography fontSize={22} fontWeight="bold">
               ${subscription.cost.toFixed(2)}
@@ -88,7 +88,6 @@ export default function GridSubscriptionCard({ subscription }: any) {
             </Typography>
           </Box>
 
-          {/* INFO */}
           <Box display="flex" flexDirection="column" gap={0.5}>
             <Box display="flex" alignItems="center" gap={1}>
               <CalendarTodayIcon sx={{ fontSize: 14 }} />
@@ -101,7 +100,6 @@ export default function GridSubscriptionCard({ subscription }: any) {
             </Box>
           </Box>
 
-          {/* FOOTER */}
           <Box display="flex" justifyContent="space-between" pt={1} borderTop="1px solid #eee" mt="auto">
             <Typography variant="caption">Total Paid</Typography>
             <Typography variant="caption" fontWeight={500}>
