@@ -19,7 +19,6 @@ import AddIcon from "@mui/icons-material/Add";
 import SubscriptionForm from "./SubscriptionForm";
 import { useDispatch, useSelector } from "react-redux";
 import Subtrak from "../../public/Subtrak.png";
-import { Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 export default function Navbar({
@@ -165,18 +164,6 @@ export default function Navbar({
               }}
             />
           </Box>
-          {showDrawerButton && (
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={onClick}
-              edge="start"
-              sx={[{ marginRight: 5 }, open && { display: "none" }]}
-            >
-              {open ? <ChevronLeftIcon /> : <MenuIcon />}
-            </IconButton>
-          )}
-
           {!showDrawerButton && (
             <Box
               sx={{

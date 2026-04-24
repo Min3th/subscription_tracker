@@ -23,7 +23,11 @@
     "sort_name": "Name",
     "sort_price_desc": "Price (High to Low)",
     "sort_next_billing": "Next Billing Date",
-    "no_found": "No subscriptions found"
+    "no_found": "No subscriptions found",
+    "delete_confirm_title": "Confirm Delete",
+    "delete_confirm_message": "Are you sure you want to delete this subscription? This action cannot be undone.",
+    "delete_confirm_button": "Delete",
+    "delete_cancel_button": "Cancel"
   },
   "settings": {
     "title": "Settings",

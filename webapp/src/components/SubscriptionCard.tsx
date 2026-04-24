@@ -1,4 +1,21 @@
-import { Card, CardContent, Box, Typography, Chip, IconButton, Menu, MenuItem, Divider, Link } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Box,
+  Typography,
+  Chip,
+  IconButton,
+  Menu,
+  MenuItem,
+  Divider,
+  Link,
+  DialogTitle,
+  DialogContent,
+  Dialog,
+  DialogContentText,
+  DialogActions,
+  Button,
+} from "@mui/material";
 import { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
@@ -8,22 +25,13 @@ import LanguageIcon from "@mui/icons-material/Language";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { Switch, FormControlLabel } from "@mui/material";
-
-export interface DetailedSubscription {
-  id: string;
-  name: string;
-  cost: number;
-  billingCycle: "monthly" | "yearly";
-  nextBillingDate: string;
-  category: string;
-  status: "active" | "cancelled" | "paused";
-  paymentMethod: string;
-  startDate: string;
-  description: string;
-  website: string;
-  autoRenew: boolean;
-  totalPaid: number;
-}
+import { useTheme } from "@mui/material";
+import type { DetailedSubscription } from "../types/subscription";
+import { deleteSubscription } from "../api/subscription";
+import { t } from "i18next";
+import { useSnackbar } from "../utils/Snackbar";
+import { useDispatch } from "react-redux";
+import { deleteSubscriptionThunk } from "../app/subscriptionSlice";
 
 interface Props {
   subscription: DetailedSubscription;
@@ -35,13 +43,14 @@ interface Props {
 export default function SubscriptionCard({ subscription, onEdit, onCancel, onPause }: Props) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-
+  const theme = useTheme();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
   };
-
+  const snackbar = useSnackbar();
   const handleClose = () => setAnchorEl(null);
-
+  const dispatch = useDispatch();
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
@@ -66,6 +75,25 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
 
   const statusStyle = getStatusColor(subscription.status);
   const categoryStyle = getCategoryColor(subscription.category);
+
+  const handleDeleteClick = () => {
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  const handleDeleteConfirm = async (id: number) => {
+    try {
+      dispatch(deleteSubscriptionThunk(id));
+      snackbar.success("Subscription deleted successfully.");
+    } catch (err) {
+      snackbar.error("Failed to delete subscription.");
+      console.error("Error deleting subscription:", err);
+    }
+    setDeleteDialogOpen(false);
+  };
 
   return (
     <Card sx={{ "&:hover": { boxShadow: 6 }, transition: "0.3s" }}>
@@ -124,14 +152,14 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
                 <Box display="flex" alignItems="center" gap={1}>
                   <AttachMoneyIcon fontSize="small" />
                   <Typography fontWeight="bold">${subscription.cost.toFixed(2)}</Typography>
-                  <Typography variant="body2">
-                    / {subscription.billingCycle === "monthly" ? "month" : "year"}
-                  </Typography>
+                  <Typography variant="body2">/ {subscription.billingIntervalUnit}</Typography>
                 </Box>
 
                 <Box display="flex" alignItems="center" gap={1}>
                   <CalendarTodayIcon fontSize="small" />
-                  <Typography variant="body2">Next: {subscription.nextBillingDate}</Typography>
+                  <Typography variant="body2">
+                    Next: {new Date(subscription.nextBillingDate).toLocaleDateString()}
+                  </Typography>
                 </Box>
 
                 <Box display="flex" alignItems="center" gap={1}>
@@ -151,7 +179,12 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
 
                 <Box display="flex" alignItems="center" gap={1}>
                   <LanguageIcon fontSize="small" />
-                  <Link href={subscription.website} target="_blank" underline="hover">
+                  <Link
+                    href={subscription.website}
+                    target="_blank"
+                    underline="hover"
+                    sx={{ color: theme.palette.purpink }}
+                  >
                     {subscription.website}
                   </Link>
                 </Box>
@@ -161,12 +194,7 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
           <Box display="flex" flexDirection="column" alignItems="flex-end" gap={2}>
             <Box display="flex" alignItems="center" gap={1}>
               <Typography variant="body2">Auto-renew</Typography>
-              <Switch
-                checked={subscription.autoRenew}
-                onChange={(e) => {
-                }}
-                size="small"
-              />
+              <Switch checked={subscription.autoRenew} onChange={(e) => {}} size="small" />
             </Box>
 
             <IconButton onClick={handleOpen}>
@@ -193,6 +221,13 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
                   Pause
                 </MenuItem>
               )}
+              <MenuItem
+                onClick={() => {
+                  setDeleteDialogOpen(true);
+                }}
+              >
+                Delete
+              </MenuItem>
 
               <Divider />
 
@@ -209,6 +244,29 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
           </Box>
         </Box>
       </CardContent>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title" sx={{ color: "text.primary" }}>
+          {t("subscriptions.delete_confirm_title", "Confirm Delete")}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" sx={{ color: "text.secondary" }}>
+            {t("subscriptions.delete_confirm_message", "Are you sure you want to delete this subscription?")}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="inherit">
+            {t("common.cancel", "Cancel")}
+          </Button>
+          <Button onClick={() => handleDeleteConfirm(subscription.id)} autoFocus color="error">
+            {t("subscriptions.delete_confirm_button", "Delete")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Card>
   );
 }

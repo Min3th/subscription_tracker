@@ -17,3 +17,8 @@ export const updateSubscriptions = async (id: string, data: any) => {
   const response = await api.put(`/subscriptions/${id}`, data);
   return response;
 };
+
+export const deleteSubscription = async (id: number) => {
+  const response = await api.delete(`/subscriptions/${id}`);
+  return response;
+};

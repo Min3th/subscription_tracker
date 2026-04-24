@@ -96,13 +96,13 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
   ],
 }));
 
-export default function MiniDrawer({ open, onClose }: Props) {
+export default function MiniDrawer() {
   const { t } = useTranslation();
   const theme = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
-
+  const [open, setOpen] = useState(true);
   const handleLogoutClick = () => {
     setLogoutDialogOpen(true);
   };
@@ -118,14 +118,15 @@ export default function MiniDrawer({ open, onClose }: Props) {
     navigate("/");
   };
 
+  const toggleDrawer = () => {
+    setOpen((prev) => !prev);
+  };
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-          <IconButton onClick={onClose}>
-            {theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-          </IconButton>
+          <IconButton>{theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}</IconButton>
         </DrawerHeader>
         <Divider />
         <List>
@@ -242,6 +243,31 @@ export default function MiniDrawer({ open, onClose }: Props) {
             </ListItemButton>
           </ListItem>
         </List>
+        <Box
+          sx={{
+            position: "absolute",
+            top: "50%",
+            right: -10,
+            transform: "translateY(-50%)",
+            zIndex: 1000,
+          }}
+        >
+          <IconButton
+            onClick={toggleDrawer}
+            sx={{
+              bgcolor: "background.paper",
+              border: "1px solid",
+              borderColor: "divider",
+              width: 28,
+              height: 28,
+              "&:hover": {
+                bgcolor: "action.hover",
+              },
+            }}
+          >
+            {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+          </IconButton>
+        </Box>
       </Drawer>
 
       <Dialog

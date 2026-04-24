@@ -1,7 +1,6 @@
-import { Dialog, DialogTitle, DialogContent, Box, Typography, Stack } from "@mui/material";
+import { Dialog, DialogContent, Box, Typography, Stack } from "@mui/material";
 import GoogleAuthButton from "./GoogleAuthButton";
 import { jwtDecode } from "jwt-decode";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAuth } from "../app/authSlice";
