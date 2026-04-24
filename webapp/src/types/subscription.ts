@@ -13,8 +13,9 @@ export interface DetailedSubscription {
   id: string;
   name: string;
   cost: number;
-  billingCycle: "monthly" | "yearly";
-  nextBillingDate: string;
+  billingIntervalUnit: BillingUnit;
+  billingIntervalCount: number;
+  nextBillingDate: Date;
   category: string;
   status: "active" | "cancelled" | "paused";
   paymentMethod: string;

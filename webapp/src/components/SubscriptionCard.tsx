@@ -127,14 +127,14 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
                 <Box display="flex" alignItems="center" gap={1}>
                   <AttachMoneyIcon fontSize="small" />
                   <Typography fontWeight="bold">${subscription.cost.toFixed(2)}</Typography>
-                  <Typography variant="body2">
-                    / {subscription.billingCycle === "monthly" ? "month" : "year"}
-                  </Typography>
+                  <Typography variant="body2">/ {subscription.billingIntervalUnit}</Typography>
                 </Box>
 
                 <Box display="flex" alignItems="center" gap={1}>
                   <CalendarTodayIcon fontSize="small" />
-                  <Typography variant="body2">Next: {subscription.nextBillingDate}</Typography>
+                  <Typography variant="body2">
+                    Next: {new Date(subscription.nextBillingDate).toLocaleDateString()}
+                  </Typography>
                 </Box>
 
                 <Box display="flex" alignItems="center" gap={1}>

@@ -78,9 +78,9 @@ export default function Subscriptions() {
           id: item.id.toString(),
           name: item.name,
           cost: item.cost,
-
-          billingCycle: item.duration === "yearly" ? "yearly" : "monthly",
-          nextBillingDate: "2026-05-31",
+          billingIntervalUnit: item.billingIntervalUnit,
+          billingIntervalCount: item.billingIntervalCount,
+          nextBillingDate: getNextBillingDate(item.startDate, item.billingIntervalUnit, item.billingIntervalCount),
           category: item.category || "General",
           status: "active",
           paymentMethod: item.paymentMethod,
