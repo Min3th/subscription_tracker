@@ -29,8 +29,11 @@ import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { DetailedSubscription } from "../types/subscription";
 import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import type { RootState } from "../app/store";
+import { fetchSubscriptions } from "../app/subscriptionSlice";
 
-const getNextBillingDate = (startDateStr: string, unit: string, count: number): Date => {
+export const getNextBillingDate = (startDateStr: string, unit: string, count: number): Date => {
   if (!startDateStr || !unit || !count) return new Date();
   const start = new Date(startDateStr);
   const now = new Date();
@@ -47,7 +50,7 @@ const getNextBillingDate = (startDateStr: string, unit: string, count: number): 
   return next;
 };
 
-const calculateTotalPaid = (startDateStr: string, unit: string, count: number, cost: number): number => {
+export const calculateTotalPaid = (startDateStr: string, unit: string, count: number, cost: number): number => {
   if (!startDateStr || !unit || !count || !cost) return 0;
 
   const start = new Date(startDateStr);
@@ -74,7 +77,7 @@ const calculateTotalPaid = (startDateStr: string, unit: string, count: number, c
 export default function Subscriptions() {
   const { t } = useTranslation();
   const [view, setView] = useState<"grid" | "list">("list");
-  const [subscriptions, setSubscriptions] = useState<DetailedSubscription[]>([]);
+  const dispatch = useDispatch();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [sortBy, setSortBy] = useState("name");
@@ -85,7 +88,7 @@ export default function Subscriptions() {
     setEditId(id);
     setIsAddFormOpen(true);
   };
-
+  const subscriptions = useSelector((state: RootState) => state.subscriptions.list);
   const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
   const [sortAnchorEl, setSortAnchorEl] = useState<null | HTMLElement>(null);
 
@@ -108,60 +111,9 @@ export default function Subscriptions() {
       }
     });
 
-  const fetchData = async () => {
-    try {
-      const res = await getSubscriptions();
-
-      const mapped = res.data.map(
-        (item: any): DetailedSubscription => ({
-          id: item.id.toString(),
-          name: item.name,
-          cost: item.cost,
-          billingIntervalUnit: item.billingIntervalUnit,
-          billingIntervalCount: item.billingIntervalCount,
-          nextBillingDate: getNextBillingDate(item.startDate, item.billingIntervalUnit, item.billingIntervalCount),
-          category: item.category || "General",
-          status: "active",
-          paymentMethod: item.paymentMethod,
-          startDate: item.startDate,
-          description: item.description,
-          website: item.website,
-          autoRenew: item.type === "recurring",
-          totalPaid: calculateTotalPaid(item.startDate, item.billingIntervalUnit, item.billingIntervalCount, item.cost),
-        }),
-      );
-
-      setSubscriptions(mapped);
-    } catch (err) {
-      console.error("Error fetching subscriptions:", err);
-    }
-  };
-
   useEffect(() => {
-    fetchData();
-    window.addEventListener("subscription_added", fetchData);
-    return () => window.removeEventListener("subscription_added", fetchData);
-  }, []);
-
-  const handleDeleteClick = () => {
-    setDeleteDialogOpen(true);
-  };
-
-  const handleDeleteCancel = () => {
-    setDeleteDialogOpen(false);
-  };
-
-  const handleDeleteConfirm = async (id: string) => {
-    try {
-      // dispatch(deleteSubscription(id));
-      await fetchData();
-    } catch (err) {
-      console.error("Error deleting subscription:", err);
-    }
-    setDeleteDialogOpen(false);
-  };
-
-  const handleDelete = () => {};
+    dispatch(fetchSubscriptions());
+  }, [dispatch]);
 
   return (
     <Box
@@ -297,7 +249,6 @@ export default function Subscriptions() {
           setIsAddFormOpen(false);
           setEditId(null);
         }}
-        onSuccess={fetchData}
         editId={editId}
       />
     </Box>
