@@ -1,4 +1,21 @@
-import { Card, CardContent, Box, Typography, Chip, IconButton, Menu, MenuItem, Divider, Link } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Box,
+  Typography,
+  Chip,
+  IconButton,
+  Menu,
+  MenuItem,
+  Divider,
+  Link,
+  DialogTitle,
+  DialogContent,
+  Dialog,
+  DialogContentText,
+  DialogActions,
+  Button,
+} from "@mui/material";
 import { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
@@ -10,23 +27,26 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { Switch, FormControlLabel } from "@mui/material";
 import { useTheme } from "@mui/material";
 import type { DetailedSubscription } from "../types/subscription";
+import { deleteSubscription } from "../api/subscription";
+import { t } from "i18next";
+import { useSnackbar } from "../utils/Snackbar";
 
 interface Props {
   subscription: DetailedSubscription;
   onEdit?: (id: string) => void;
   onCancel?: (id: string) => void;
   onPause?: (id: string) => void;
-  onDelete?: (id: string) => void;
 }
 
-export default function SubscriptionCard({ subscription, onEdit, onCancel, onPause, onDelete }: Props) {
+export default function SubscriptionCard({ subscription, onEdit, onCancel, onPause }: Props) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const theme = useTheme();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
   };
-
+  const snackbar = useSnackbar();
   const handleClose = () => setAnchorEl(null);
 
   const getStatusColor = (status: string) => {
@@ -53,6 +73,26 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
 
   const statusStyle = getStatusColor(subscription.status);
   const categoryStyle = getCategoryColor(subscription.category);
+
+  const handleDeleteClick = () => {
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  const handleDeleteConfirm = async (id: number) => {
+    try {
+      await deleteSubscription(id);
+      // await fetchData();
+      snackbar.success("Subscription deleted successfully.");
+    } catch (err) {
+      snackbar.error("Failed to delete subscription.");
+      console.error("Error deleting subscription:", err);
+    }
+    setDeleteDialogOpen(false);
+  };
 
   return (
     <Card sx={{ "&:hover": { boxShadow: 6 }, transition: "0.3s" }}>
@@ -182,8 +222,7 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
               )}
               <MenuItem
                 onClick={() => {
-                  onDelete?.(subscription.id);
-                  handleClose();
+                  setDeleteDialogOpen(true);
                 }}
               >
                 Delete
@@ -204,6 +243,29 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
           </Box>
         </Box>
       </CardContent>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title" sx={{ color: "text.primary" }}>
+          {t("subscriptions.delete_confirm_title", "Confirm Delete")}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" sx={{ color: "text.secondary" }}>
+            {t("subscriptions.delete_confirm_message", "Are you sure you want to delete this subscription?")}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="inherit">
+            {t("common.cancel", "Cancel")}
+          </Button>
+          <Button onClick={() => handleDeleteConfirm(subscription.id)} autoFocus color="error">
+            {t("subscriptions.delete_confirm_button", "Delete")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Card>
   );
 }

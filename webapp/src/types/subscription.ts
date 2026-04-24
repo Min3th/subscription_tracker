@@ -10,7 +10,7 @@ export interface Subscription {
 }
 
 export interface DetailedSubscription {
-  id: string;
+  id: number;
   name: string;
   cost: number;
   billingIntervalUnit: BillingUnit;

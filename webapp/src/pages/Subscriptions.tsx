@@ -28,7 +28,6 @@ import SubscriptionForm from "../components/SubscriptionForm";
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { DetailedSubscription } from "../types/subscription";
-import { Dispatch } from "@reduxjs/toolkit";
 import { useDispatch } from "react-redux";
 
 const getNextBillingDate = (startDateStr: string, unit: string, count: number): Date => {
@@ -82,7 +81,6 @@ export default function Subscriptions() {
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const dispatch: Dispatch = useDispatch();
   const handleEdit = (id: string) => {
     setEditId(id);
     setIsAddFormOpen(true);
@@ -155,13 +153,15 @@ export default function Subscriptions() {
 
   const handleDeleteConfirm = async (id: string) => {
     try {
-      await dispatch(deleteSubscription(id));
+      // dispatch(deleteSubscription(id));
       await fetchData();
     } catch (err) {
       console.error("Error deleting subscription:", err);
     }
     setDeleteDialogOpen(false);
   };
+
+  const handleDelete = () => {};
 
   return (
     <Box
@@ -276,7 +276,7 @@ export default function Subscriptions() {
                 }}
               >
                 {view === "list" ? (
-                  <SubscriptionCard subscription={sub} onEdit={handleEdit} onDelete={handleDelete} />
+                  <SubscriptionCard subscription={sub} onEdit={handleEdit} />
                 ) : (
                   <GridSubscriptionCard subscription={sub} onEdit={handleEdit} />
                 )}
@@ -300,29 +300,6 @@ export default function Subscriptions() {
         onSuccess={fetchData}
         editId={editId}
       />
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={handleDeleteCancel}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title" sx={{ color: "text.primary" }}>
-          {t("sidebar.logoutConfirmTitle", "Confirm Logout")}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description" sx={{ color: "text.secondary" }}>
-            {t("sidebar.logoutConfirmMessage", "Are you sure you want to log out?")}
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDeleteCancel} color="inherit">
-            {t("common.cancel", "Cancel")}
-          </Button>
-          <Button onClick={handleDeleteConfirm} autoFocus color="error">
-            {t("sidebar.logout", "Logout")}
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 }
