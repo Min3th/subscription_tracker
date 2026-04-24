@@ -204,21 +204,21 @@ export default function Dashboard() {
           <StatCard
             title={t("dashboard.monthly_spent")}
             value={`$${totalMonthly.toFixed(2)}`}
-            icon={<AttachMoneyIcon />}
+            icon={<AttachMoneyIcon sx={{ color: theme.palette.purpink }} />}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard
             title={t("dashboard.yearly_projected")}
             value={`$${totalYearly.toFixed(2)}`}
-            icon={<TrendingUpIcon />}
+            icon={<TrendingUpIcon sx={{ color: theme.palette.purpink }} />}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard
             title={t("dashboard.active_subscriptions")}
             value={subscriptions.length}
-            icon={<CreditCardIcon />}
+            icon={<CreditCardIcon sx={{ color: theme.palette.purpink }} />}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
@@ -233,7 +233,7 @@ export default function Dashboard() {
                   ).toLocaleDateString("en-US", { month: "short", day: "numeric" })
                 : "N/A"
             }
-            icon={<CalendarTodayIcon />}
+            icon={<CalendarTodayIcon sx={{ color: theme.palette.purpink }} />}
           />
         </Grid>
       </Grid>

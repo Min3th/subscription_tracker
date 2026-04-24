@@ -20,7 +20,6 @@ export default function HomePage() {
   const handleRegisterClick = () => {
     setLoginOpen(true);
   };
-  const purpink = theme.palette.mode === "dark" ? "#d880f1" : "#6400ef";
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "background.default" }}>
       <Navbar open={false} onClick={() => {}} />
@@ -215,8 +214,8 @@ export default function HomePage() {
                 mb: 1,
               }}
             >
-              <AutoAwesomeIcon sx={{ fontSize: 18, color: purpink }} />
-              <Typography variant="body2" sx={{ color: purpink, fontWeight: 600 }}>
+              <AutoAwesomeIcon sx={{ fontSize: 18, color: theme.palette.purpink }} />
+              <Typography variant="body2" sx={{ color: theme.palette.purpink, fontWeight: 600 }}>
                 Stay in control of your subscriptions
               </Typography>
             </Box>
@@ -227,7 +226,7 @@ export default function HomePage() {
             >
               Track Subscriptions
               <br />
-              <Box component="span" sx={{ color: purpink }}>
+              <Box component="span" sx={{ color: theme.palette.purpink }}>
                 Effortlessly
               </Box>
             </Typography>
@@ -378,22 +377,22 @@ export default function HomePage() {
           <Grid container spacing={4} alignItems="center" justifyContent="center">
             {[
               {
-                icon: <NotificationsActiveIcon sx={{ fontSize: 32, color: purpink }} />,
+                icon: <NotificationsActiveIcon sx={{ fontSize: 32, color: theme.palette.purpink }} />,
                 title: "Smart Notifications",
                 desc: "Get email or push alerts days before your card is charged, giving you plenty of time to cancel or renew.",
               },
               {
-                icon: <BarChartIcon sx={{ fontSize: 32, color: purpink }} />,
+                icon: <BarChartIcon sx={{ fontSize: 32, color: theme.palette.purpink }} />,
                 title: "Visual Insights",
                 desc: "Understand your spending habits with intuitive charts. See your monthly and yearly costs broken down by category.",
               },
               {
-                icon: <DashboardIcon sx={{ fontSize: 32, color: purpink }} />,
+                icon: <DashboardIcon sx={{ fontSize: 32, color: theme.palette.purpink }} />,
                 title: "Centralized Dashboard",
                 desc: "See all your active, paused, and cancelled subscriptions in one clean, easy-to-use dashboard.",
               },
               {
-                icon: <PublicIcon sx={{ fontSize: 32, color: purpink }} />,
+                icon: <PublicIcon sx={{ fontSize: 32, color: theme.palette.purpink }} />,
                 title: "Flexible Billing Cycles",
                 desc: "Whether you're billed weekly, monthly, or yearly, our tracker handles it all effortlessly.",
               },

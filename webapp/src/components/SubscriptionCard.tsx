@@ -8,6 +8,7 @@ import LanguageIcon from "@mui/icons-material/Language";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { Switch, FormControlLabel } from "@mui/material";
+import { useTheme } from "@mui/material";
 
 export interface DetailedSubscription {
   id: string;
@@ -35,7 +36,7 @@ interface Props {
 export default function SubscriptionCard({ subscription, onEdit, onCancel, onPause }: Props) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-
+  const theme = useTheme();
   const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
   };
@@ -151,7 +152,12 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
 
                 <Box display="flex" alignItems="center" gap={1}>
                   <LanguageIcon fontSize="small" />
-                  <Link href={subscription.website} target="_blank" underline="hover">
+                  <Link
+                    href={subscription.website}
+                    target="_blank"
+                    underline="hover"
+                    sx={{ color: theme.palette.purpink }}
+                  >
                     {subscription.website}
                   </Link>
                 </Box>
@@ -161,12 +167,7 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
           <Box display="flex" flexDirection="column" alignItems="flex-end" gap={2}>
             <Box display="flex" alignItems="center" gap={1}>
               <Typography variant="body2">Auto-renew</Typography>
-              <Switch
-                checked={subscription.autoRenew}
-                onChange={(e) => {
-                }}
-                size="small"
-              />
+              <Switch checked={subscription.autoRenew} onChange={(e) => {}} size="small" />
             </Box>
 
             <IconButton onClick={handleOpen}>

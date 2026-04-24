@@ -1,9 +1,19 @@
 import { createTheme } from "@mui/material";
 import type { PaletteMode } from "@mui/material";
 
+declare module "@mui/material/styles" {
+  interface Palette {
+    purpink: string;
+  }
+  interface PaletteOptions {
+    purpink?: string;
+  }
+}
+
 export const getDesignTokens = (mode: PaletteMode) => ({
   palette: {
     mode,
+    purpink: mode === "dark" ? "#d880f1" : "#6400ef",
 
     ...(mode === "light"
       ? {
