@@ -1,4 +1,18 @@
-import { Box, TextField, InputAdornment, Button, Stack, Typography, Menu, MenuItem } from "@mui/material";
+import {
+  Box,
+  TextField,
+  InputAdornment,
+  Button,
+  Stack,
+  Typography,
+  Menu,
+  MenuItem,
+  DialogTitle,
+  DialogContent,
+  Dialog,
+  DialogContentText,
+  DialogActions,
+} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
 import SubscriptionCard from "../components/SubscriptionCard";
@@ -8,12 +22,14 @@ import ViewListIcon from "@mui/icons-material/ViewList";
 import GridViewIcon from "@mui/icons-material/GridView";
 import { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
-import { getSubscriptions } from "../api/subscription";
+import { deleteSubscription, getSubscriptions } from "../api/subscription";
 import GridSubscriptionCard from "../components/GridSubscriptionCard";
 import SubscriptionForm from "../components/SubscriptionForm";
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { DetailedSubscription } from "../types/subscription";
+import { Dispatch } from "@reduxjs/toolkit";
+import { useDispatch } from "react-redux";
 
 const getNextBillingDate = (startDateStr: string, unit: string, count: number): Date => {
   if (!startDateStr || !unit || !count) return new Date();
@@ -32,6 +48,30 @@ const getNextBillingDate = (startDateStr: string, unit: string, count: number): 
   return next;
 };
 
+const calculateTotalPaid = (startDateStr: string, unit: string, count: number, cost: number): number => {
+  if (!startDateStr || !unit || !count || !cost) return 0;
+
+  const start = new Date(startDateStr);
+  const now = new Date();
+
+  if (start > now) return 0;
+
+  let cycles = 0;
+  const current = new Date(start);
+
+  while (current <= now) {
+    cycles++;
+
+    if (unit === "day") current.setDate(current.getDate() + count);
+    else if (unit === "week") current.setDate(current.getDate() + count * 7);
+    else if (unit === "month") current.setMonth(current.getMonth() + count);
+    else if (unit === "year") current.setFullYear(current.getFullYear() + count);
+    else break;
+  }
+
+  return cycles * cost;
+};
+
 export default function Subscriptions() {
   const { t } = useTranslation();
   const [view, setView] = useState<"grid" | "list">("list");
@@ -41,7 +81,8 @@ export default function Subscriptions() {
   const [sortBy, setSortBy] = useState("name");
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const dispatch: Dispatch = useDispatch();
   const handleEdit = (id: string) => {
     setEditId(id);
     setIsAddFormOpen(true);
@@ -88,7 +129,7 @@ export default function Subscriptions() {
           description: item.description,
           website: item.website,
           autoRenew: item.type === "recurring",
-          totalPaid: item.cost * 5, // fake calc
+          totalPaid: calculateTotalPaid(item.startDate, item.billingIntervalUnit, item.billingIntervalCount, item.cost),
         }),
       );
 
@@ -103,6 +144,25 @@ export default function Subscriptions() {
     window.addEventListener("subscription_added", fetchData);
     return () => window.removeEventListener("subscription_added", fetchData);
   }, []);
+
+  const handleDeleteClick = () => {
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  const handleDeleteConfirm = async (id: string) => {
+    try {
+      await dispatch(deleteSubscription(id));
+      await fetchData();
+    } catch (err) {
+      console.error("Error deleting subscription:", err);
+    }
+    setDeleteDialogOpen(false);
+  };
+
   return (
     <Box
       sx={{
@@ -216,7 +276,7 @@ export default function Subscriptions() {
                 }}
               >
                 {view === "list" ? (
-                  <SubscriptionCard subscription={sub} onEdit={handleEdit} />
+                  <SubscriptionCard subscription={sub} onEdit={handleEdit} onDelete={handleDelete} />
                 ) : (
                   <GridSubscriptionCard subscription={sub} onEdit={handleEdit} />
                 )}
@@ -240,6 +300,29 @@ export default function Subscriptions() {
         onSuccess={fetchData}
         editId={editId}
       />
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title" sx={{ color: "text.primary" }}>
+          {t("sidebar.logoutConfirmTitle", "Confirm Logout")}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" sx={{ color: "text.secondary" }}>
+            {t("sidebar.logoutConfirmMessage", "Are you sure you want to log out?")}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="inherit">
+            {t("common.cancel", "Cancel")}
+          </Button>
+          <Button onClick={handleDeleteConfirm} autoFocus color="error">
+            {t("sidebar.logout", "Logout")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

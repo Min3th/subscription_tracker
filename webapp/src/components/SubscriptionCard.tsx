@@ -16,26 +16,10 @@ interface Props {
   onEdit?: (id: string) => void;
   onCancel?: (id: string) => void;
   onPause?: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
-const getNextBillingDate = (startDateStr: string, unit: string, count: number): Date => {
-  if (!startDateStr || !unit || !count) return new Date();
-  const start = new Date(startDateStr);
-  const now = new Date();
-  if (start > now) return start;
-
-  const next = new Date(start);
-  while (next <= now) {
-    if (unit === "day") next.setDate(next.getDate() + count);
-    else if (unit === "week") next.setDate(next.getDate() + count * 7);
-    else if (unit === "month") next.setMonth(next.getMonth() + count);
-    else if (unit === "year") next.setFullYear(next.getFullYear() + count);
-    else break;
-  }
-  return next;
-};
-
-export default function SubscriptionCard({ subscription, onEdit, onCancel, onPause }: Props) {
+export default function SubscriptionCard({ subscription, onEdit, onCancel, onPause, onDelete }: Props) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const theme = useTheme();
@@ -196,6 +180,14 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
                   Pause
                 </MenuItem>
               )}
+              <MenuItem
+                onClick={() => {
+                  onDelete?.(subscription.id);
+                  handleClose();
+                }}
+              >
+                Delete
+              </MenuItem>
 
               <Divider />
 
