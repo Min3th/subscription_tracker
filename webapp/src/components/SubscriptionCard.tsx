@@ -30,6 +30,8 @@ import type { DetailedSubscription } from "../types/subscription";
 import { deleteSubscription } from "../api/subscription";
 import { t } from "i18next";
 import { useSnackbar } from "../utils/Snackbar";
+import { useDispatch } from "react-redux";
+import { deleteSubscriptionThunk } from "../app/subscriptionSlice";
 
 interface Props {
   subscription: DetailedSubscription;
@@ -48,7 +50,7 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
   };
   const snackbar = useSnackbar();
   const handleClose = () => setAnchorEl(null);
-
+  const dispatch = useDispatch();
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
@@ -84,8 +86,7 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
 
   const handleDeleteConfirm = async (id: number) => {
     try {
-      await deleteSubscription(id);
-      // await fetchData();
+      dispatch(deleteSubscriptionThunk(id));
       snackbar.success("Subscription deleted successfully.");
     } catch (err) {
       snackbar.error("Failed to delete subscription.");
