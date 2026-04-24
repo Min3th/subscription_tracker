@@ -19,6 +19,7 @@ import { useFormik } from "formik";
 import { useSnackbar } from "../utils/Snackbar";
 import { useEffect } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useTheme } from "@mui/material";
 
 type Props = {
   open: boolean;
@@ -31,6 +32,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
   const [loading, setLoading] = useState(false);
   const [activeStep, setActiveStep] = useState(0);
   const snackbar = useSnackbar();
+  const theme = useTheme();
 
   const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
@@ -332,7 +334,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
         <DialogActions sx={{ px: 3, pb: 2 }}>
           {activeStep === 0 ? (
             <>
-              <Button onClick={handleDialogClose} disabled={loading}>
+              <Button onClick={handleDialogClose} disabled={loading} sx={{ color: theme.palette.text.primary }}>
                 Cancel
               </Button>
               <Button variant="contained" onClick={handleNext} disabled={loading}>

@@ -22,12 +22,20 @@ export const getDesignTokens = (mode: PaletteMode) => ({
             default: "#f5f5f5",
             paper: "#ffffff",
           },
+          text: {
+            primary: "#000000",
+            secondary: "#555555",
+          },
         }
       : {
           primary: { main: "#6400ef" },
           background: {
             default: "#121212",
             paper: "#1e1e1e",
+          },
+          text: {
+            primary: "#ffffff",
+            secondary: "#aaaaaa",
           },
         }),
   },
