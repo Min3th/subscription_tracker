@@ -1,7 +1,7 @@
 import { Box, TextField, InputAdornment, Button, Stack, Typography, Menu, MenuItem } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
-import SubscriptionCard, { type DetailedSubscription } from "../components/SubscriptionCard";
+import SubscriptionCard from "../components/SubscriptionCard";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import SwapVertOutlinedIcon from "@mui/icons-material/SwapVertOutlined";
 import ViewListIcon from "@mui/icons-material/ViewList";
@@ -13,6 +13,24 @@ import GridSubscriptionCard from "../components/GridSubscriptionCard";
 import SubscriptionForm from "../components/SubscriptionForm";
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import type { DetailedSubscription } from "../types/subscription";
+
+const getNextBillingDate = (startDateStr: string, unit: string, count: number): Date => {
+  if (!startDateStr || !unit || !count) return new Date();
+  const start = new Date(startDateStr);
+  const now = new Date();
+  if (start > now) return start;
+
+  const next = new Date(start);
+  while (next <= now) {
+    if (unit === "day") next.setDate(next.getDate() + count);
+    else if (unit === "week") next.setDate(next.getDate() + count * 7);
+    else if (unit === "month") next.setMonth(next.getMonth() + count);
+    else if (unit === "year") next.setFullYear(next.getFullYear() + count);
+    else break;
+  }
+  return next;
+};
 
 export default function Subscriptions() {
   const { t } = useTranslation();
@@ -62,7 +80,7 @@ export default function Subscriptions() {
           cost: item.cost,
 
           billingCycle: item.duration === "yearly" ? "yearly" : "monthly",
-          nextBillingDate: "2026-05-01", // temporary
+          nextBillingDate: "2026-05-31",
           category: item.category || "General",
           status: "active",
           paymentMethod: item.paymentMethod,

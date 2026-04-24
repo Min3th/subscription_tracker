@@ -1,16 +1,6 @@
 import { Grid } from "@mui/material";
 import MiniSubscriptionCard from "./MiniSubscriptionCard";
-
-interface Subscription {
-  id: number;
-  name: string;
-  category: string;
-  cost: number;
-  type: "one-time" | "recurring";
-  billingIntervalCount: number;
-  billingIntervalUnit: string;
-  startDate: string;
-}
+import type { Subscription } from "../types/subscription";
 
 interface SubscriptionGridProps {
   subscriptions: Subscription[];

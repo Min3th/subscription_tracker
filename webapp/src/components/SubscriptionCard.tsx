@@ -9,22 +9,7 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { Switch, FormControlLabel } from "@mui/material";
 import { useTheme } from "@mui/material";
-
-export interface DetailedSubscription {
-  id: string;
-  name: string;
-  cost: number;
-  billingCycle: "monthly" | "yearly";
-  nextBillingDate: string;
-  category: string;
-  status: "active" | "cancelled" | "paused";
-  paymentMethod: string;
-  startDate: string;
-  description: string;
-  website: string;
-  autoRenew: boolean;
-  totalPaid: number;
-}
+import type { DetailedSubscription } from "../types/subscription";
 
 interface Props {
   subscription: DetailedSubscription;
@@ -32,6 +17,23 @@ interface Props {
   onCancel?: (id: string) => void;
   onPause?: (id: string) => void;
 }
+
+const getNextBillingDate = (startDateStr: string, unit: string, count: number): Date => {
+  if (!startDateStr || !unit || !count) return new Date();
+  const start = new Date(startDateStr);
+  const now = new Date();
+  if (start > now) return start;
+
+  const next = new Date(start);
+  while (next <= now) {
+    if (unit === "day") next.setDate(next.getDate() + count);
+    else if (unit === "week") next.setDate(next.getDate() + count * 7);
+    else if (unit === "month") next.setMonth(next.getMonth() + count);
+    else if (unit === "year") next.setFullYear(next.getFullYear() + count);
+    else break;
+  }
+  return next;
+};
 
 export default function SubscriptionCard({ subscription, onEdit, onCancel, onPause }: Props) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

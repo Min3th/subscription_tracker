@@ -1,17 +1,7 @@
 import { Card, Box, Typography, Avatar, Chip } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { alpha, useTheme } from "@mui/material/styles";
-
-interface Subscription {
-  id: number;
-  name: string;
-  category: string;
-  cost: number;
-  type: "one-time" | "recurring";
-  billingIntervalCount: number;
-  billingIntervalUnit: string;
-  startDate: string;
-}
+import type { Subscription } from "../types/subscription";
 
 export interface MiniSubscriptionCardProps {
   sub: Subscription;
