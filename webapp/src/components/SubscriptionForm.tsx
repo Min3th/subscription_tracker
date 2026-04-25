@@ -20,14 +20,29 @@ import { useSnackbar } from "../utils/Snackbar";
 import { useEffect } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useTheme } from "@mui/material";
-import { updateSubscriptionThunk } from "../app/subscriptionSlice";
+import { updateSubscriptionThunk, createSubscriptionThunk, fetchSubscriptionById } from "../app/subscriptionSlice";
 import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../app/store";
+import type { UpdateSubscriptionPayload, SubscriptionType, BillingUnit } from "../types/subscription";
 
 type Props = {
   open: boolean;
   handleClose: () => void;
   onSuccess?: () => void;
-  editId?: string | null;
+  editId?: number | null;
+};
+
+type FormValues = {
+  name: string;
+  description: string;
+  cost: number | "";
+  type: SubscriptionType;
+  category: string;
+  startDate: string;
+  paymentMethod: string;
+  website: string;
+  billingIntervalUnit: BillingUnit;
+  billingIntervalCount: number;
 };
 
 export default function SubscriptionForm({ open, handleClose, onSuccess, editId }: Props) {
@@ -35,15 +50,12 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
   const [activeStep, setActiveStep] = useState(0);
   const snackbar = useSnackbar();
   const theme = useTheme();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
 
   const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
     description: Yup.string(),
-    amount: Yup.number()
-      .typeError("Amount must be a number")
-      .positive("Must be positive")
-      .required("Amount is required"),
+    cost: Yup.number().typeError("Amount must be a number").positive("Must be positive").required("Amount is required"),
     type: Yup.string().required("Type is required"),
     category: Yup.string().required("Category is required"),
     startDate: Yup.date().required("Date is required"),
@@ -51,12 +63,12 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
     billingIntervalCount: Yup.number().positive("Must be positive").required("Required"),
   });
 
-  const formik = useFormik({
+  const formik = useFormik<FormValues>({
     initialValues: {
       name: "",
       description: "",
-      amount: "",
-      type: "",
+      cost: 0,
+      type: "recurring",
       category: "",
       startDate: "",
       paymentMethod: "",
@@ -71,7 +83,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
           id: editId,
           name: values.name,
           description: values.description,
-          cost: Number(values.amount),
+          cost: Number(values.cost),
           type: values.type,
           category: values.category,
           startDate: values.startDate,
@@ -82,10 +94,23 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
         };
 
         if (editId) {
-          await dispatch(updateSubscriptionThunk(payload));
+          const updatePayload: UpdateSubscriptionPayload = {
+            id: editId,
+            name: values.name,
+            description: values.description,
+            cost: Number(values.cost),
+            type: values.type,
+            category: values.category,
+            startDate: values.startDate,
+            paymentMethod: values.paymentMethod,
+            website: values.website,
+            billingIntervalUnit: values.billingIntervalUnit,
+            billingIntervalCount: Number(values.billingIntervalCount),
+          };
+          await dispatch(updateSubscriptionThunk(updatePayload));
           snackbar.success("Subscription updated successfully!");
         } else {
-          await createSubscription(payload);
+          await dispatch(createSubscriptionThunk(payload));
           snackbar.success("Subscription created successfully!");
         }
 
@@ -105,13 +130,13 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
 
     if (open && editId) {
       setLoading(true);
-      getSubscriptionById(editId)
-        .then((res) => {
-          const data = res.data;
+      dispatch(fetchSubscriptionById(editId))
+        .unwrap()
+        .then((data) => {
           formik.setValues({
             name: data.name || "",
             description: data.description || "",
-            amount: data.cost || "",
+            cost: data.cost || "",
             type: data.type || "recurring",
             category: data.category || "",
             startDate: data.startDate || "",
@@ -121,7 +146,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
             billingIntervalCount: data.billingIntervalCount || 1,
           });
         })
-        .catch((err) => {
+        .catch((err: any) => {
           console.error("Error fetching subscription:", err);
           snackbar.error("Failed to fetch subscription details.");
         })
@@ -279,11 +304,11 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                     label="Amount ($)"
                     name="amount"
                     type="number"
-                    value={formik.values.amount}
+                    value={formik.values.cost}
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    error={formik.touched.amount && Boolean(formik.errors.amount)}
-                    helperText={formik.touched.amount && formik.errors.amount}
+                    error={formik.touched.cost && Boolean(formik.errors.cost)}
+                    helperText={formik.touched.cost && formik.errors.cost}
                     sx={{
                       "& input[type=number]": {
                         MozAppearance: "textfield", // Firefox
