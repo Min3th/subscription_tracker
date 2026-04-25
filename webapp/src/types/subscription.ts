@@ -18,6 +18,7 @@ export interface DetailedSubscription {
   nextBillingDate: Date;
   category: string;
   status: "active" | "cancelled" | "paused";
+  type: SubscriptionType;
   paymentMethod: string;
   startDate: string;
   description: string;

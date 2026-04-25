@@ -25,6 +25,9 @@ import StatCard from "../components/StatCard";
 import { getSubscriptions } from "../api/subscription";
 import { useTranslation } from "react-i18next";
 import MiniSubscriptionGrid from "../components/MiniSubscriptionGrid";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../app/store";
+import { fetchSubscriptions } from "../app/subscriptionSlice";
 
 const getNextBillingDate = (startDateStr: string, unit: string, count: number): Date => {
   if (!startDateStr || !unit || !count) return new Date();
@@ -98,8 +101,8 @@ const generatePast6MonthsSpending = (subscriptions: any[]) => {
 export default function Dashboard() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const [subscriptions, setSubscriptions] = useState<any[]>([]);
-
+  const dispatch = useDispatch();
+  const subscriptions = useSelector((state: RootState) => state.subscriptions.list);
   const totalMonthly = useMemo(
     () =>
       subscriptions.reduce((sum, sub) => {
@@ -153,19 +156,8 @@ export default function Dashboard() {
   );
 
   useEffect(() => {
-    const fetchSubscriptions = async () => {
-      try {
-        const res = await getSubscriptions();
-        setSubscriptions(res.data);
-      } catch (error: any) {
-        console.error("Error fetching subscriptions:", error);
-      }
-    };
-    fetchSubscriptions();
-
-    window.addEventListener("subscription_added", fetchSubscriptions);
-    return () => window.removeEventListener("subscription_added", fetchSubscriptions);
-  }, []);
+    dispatch(fetchSubscriptions());
+  }, [dispatch]);
 
   return (
     <Box

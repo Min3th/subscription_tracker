@@ -28,8 +28,7 @@ import SubscriptionForm from "../components/SubscriptionForm";
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import type { DetailedSubscription } from "../types/subscription";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../app/store";
 import { fetchSubscriptions } from "../app/subscriptionSlice";
 
