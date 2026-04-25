@@ -1,31 +1,43 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { deleteSubscription, getSubscriptions } from "../api/subscription";
-import type { DetailedSubscription } from "../types/subscription";
+import { deleteSubscription, getSubscriptions, updateSubscriptions } from "../api/subscription";
+import type { DetailedSubscription, UpdateSubscriptionPayload } from "../types/subscription";
+
+const mapToDetailed = (item: any): DetailedSubscription => ({
+  id: item.id,
+  name: item.name,
+  cost: item.cost,
+  billingIntervalUnit: item.billingIntervalUnit,
+  billingIntervalCount: item.billingIntervalCount,
+  nextBillingDate: new Date(item.nextBillingDate),
+  category: item.category || "General",
+  status: "active",
+  type: item.type,
+  paymentMethod: item.paymentMethod,
+  startDate: item.startDate,
+  description: item.description,
+  website: item.website,
+  autoRenew: item.type === "recurring",
+  totalPaid: item.totalPaid,
+});
 
 export const fetchSubscriptions = createAsyncThunk("subscriptions/fetch", async () => {
   const res = await getSubscriptions();
-  return res.data.map((item: any) => ({
-    id: item.id, // keep as number (IMPORTANT)
-    name: item.name,
-    cost: item.cost,
-    billingIntervalUnit: item.billingIntervalUnit,
-    billingIntervalCount: item.billingIntervalCount,
-    nextBillingDate: item.nextBillingDate,
-    category: item.category || "General",
-    status: "active",
-    paymentMethod: item.paymentMethod,
-    startDate: item.startDate,
-    description: item.description,
-    website: item.website,
-    autoRenew: item.type === "recurring",
-    totalPaid: item.totalPaid,
-  }));
+  console.log("Res: ", res);
+  return res.data.map(mapToDetailed);
 });
 
 export const deleteSubscriptionThunk = createAsyncThunk("subscriptions/delete", async (id: number) => {
   await deleteSubscription(id);
   return id;
 });
+
+export const updateSubscriptionThunk = createAsyncThunk(
+  "subscriptions/update",
+  async (subscriptionData: UpdateSubscriptionPayload) => {
+    const response = await updateSubscriptions(subscriptionData);
+    return response.data;
+  },
+);
 
 interface State {
   list: DetailedSubscription[];
@@ -48,6 +60,12 @@ const slice = createSlice({
       })
       .addCase(deleteSubscriptionThunk.fulfilled, (state, action) => {
         state.list = state.list.filter((sub) => sub.id !== action.payload);
+      })
+      .addCase(updateSubscriptionThunk.fulfilled, (state, action) => {
+        const index = state.list.findIndex((sub) => sub.id === action.payload.id);
+        if (index !== -1) {
+          state.list[index] = mapToDetailed(action.payload);
+        }
       });
   },
 });

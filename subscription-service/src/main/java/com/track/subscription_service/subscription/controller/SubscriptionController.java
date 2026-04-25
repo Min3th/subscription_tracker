@@ -63,13 +63,12 @@ public class SubscriptionController {
 
     @PutMapping("/{id}")
     public ResponseEntity<SubscriptionResponse> updateSubscription(
-            @PathVariable Long id,
             @RequestBody Subscription updated
     ){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String googleId = auth.getName();
 
-        return ResponseEntity.ok(service.mapToResponse(service.update(id, updated, googleId)));
+        return ResponseEntity.ok(service.mapToResponse(service.update(updated.getId(), updated, googleId)));
     }
 
     @DeleteMapping("/{id}")

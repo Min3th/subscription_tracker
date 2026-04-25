@@ -139,6 +139,12 @@ public class SubscriptionService {
         res.id =subscription.getId();
         res.name = subscription.getName();
         res.cost = subscription.getCost();
+        res.type = subscription.getType();
+        res.duration = subscription.getDuration();
+        res.category = subscription.getCategory();
+        res.description = subscription.getDescription();
+        res.paymentMethod = subscription.getPaymentMethod();
+        res.website = subscription.getWebsite();
         res.billingIntervalUnit = subscription.getBillingIntervalUnit();
         res.billingIntervalCount =subscription.getBillingIntervalCount();
         res.startDate = subscription.getStartDate();

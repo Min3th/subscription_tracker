@@ -13,18 +13,32 @@ export interface DetailedSubscription {
   id: number;
   name: string;
   cost: number;
+  type: SubscriptionType;
   billingIntervalUnit: BillingUnit;
   billingIntervalCount: number;
   nextBillingDate: Date;
   category: string;
   status: "active" | "cancelled" | "paused";
-  type: SubscriptionType;
   paymentMethod: string;
   startDate: string;
   description: string;
   website: string;
   autoRenew: boolean;
   totalPaid: number;
+}
+
+export interface UpdateSubscriptionPayload {
+  id: number;
+  name?: string;
+  description?: string;
+  cost?: number;
+  type?: SubscriptionType;
+  category?: string;
+  startDate?: string;
+  paymentMethod?: string;
+  website?: string;
+  billingIntervalUnit?: BillingUnit;
+  billingIntervalCount?: number;
 }
 
 export type SubscriptionType = "one-time" | "recurring";

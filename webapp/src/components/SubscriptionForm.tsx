@@ -13,13 +13,15 @@ import {
   StepLabel,
 } from "@mui/material";
 import { useState } from "react";
-import { createSubscription, updateSubscriptions, getSubscriptionById } from "../api/subscription";
+import { createSubscription, getSubscriptionById } from "../api/subscription";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useSnackbar } from "../utils/Snackbar";
 import { useEffect } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useTheme } from "@mui/material";
+import { updateSubscriptionThunk } from "../app/subscriptionSlice";
+import { useDispatch } from "react-redux";
 
 type Props = {
   open: boolean;
@@ -33,6 +35,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
   const [activeStep, setActiveStep] = useState(0);
   const snackbar = useSnackbar();
   const theme = useTheme();
+  const dispatch = useDispatch();
 
   const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
@@ -65,6 +68,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
     onSubmit: async (values) => {
       try {
         const payload = {
+          id: editId,
           name: values.name,
           description: values.description,
           cost: Number(values.amount),
@@ -78,7 +82,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
         };
 
         if (editId) {
-          await updateSubscriptions(editId, payload);
+          await dispatch(updateSubscriptionThunk(payload));
           snackbar.success("Subscription updated successfully!");
         } else {
           await createSubscription(payload);

@@ -1,3 +1,4 @@
+import type { UpdateSubscriptionPayload } from "../types/subscription";
 import api from "./client";
 
 export const createSubscription = async (data: any) => {
@@ -13,8 +14,8 @@ export const getSubscriptionById = async (id: string) => {
   return await api.get(`/subscriptions/${id}`);
 };
 
-export const updateSubscriptions = async (id: string, data: any) => {
-  const response = await api.put(`/subscriptions/${id}`, data);
+export const updateSubscriptions = async (data: UpdateSubscriptionPayload) => {
+  const response = await api.put(`/subscriptions/${data.id}`, data);
   return response;
 };
 

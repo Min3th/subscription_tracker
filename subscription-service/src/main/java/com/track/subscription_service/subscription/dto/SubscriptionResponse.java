@@ -6,9 +6,15 @@ public class SubscriptionResponse {
     public Long id;
     public String name;
     public double cost;
+    public String type;
+    public String duration;
+    public String category;
+    public String description;
+    public String paymentMethod;
+    public String website;
+    public LocalDate startDate;
     public String billingIntervalUnit;
     public int billingIntervalCount;
-    public LocalDate startDate;
     public LocalDate nextBillingDate;
     public double totalPaid;
 }
