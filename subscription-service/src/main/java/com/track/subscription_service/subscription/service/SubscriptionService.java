@@ -1,5 +1,6 @@
 package com.track.subscription_service.subscription.service;
 
+import com.track.subscription_service.subscription.dto.SubscriptionResponse;
 import com.track.subscription_service.subscription.entity.Subscription;
 import com.track.subscription_service.subscription.repository.SubscriptionRepository;
 import com.track.subscription_service.user.entity.User;
@@ -127,5 +128,24 @@ public class SubscriptionService {
         }
 
         return next;
+    }
+
+    public SubscriptionResponse mapToResponse(Subscription subscription){
+        SubscriptionResponse res = new SubscriptionResponse();
+
+        res.id =subscription.getId();
+        res.name = subscription.getName();
+        res.cost = subscription.getCost();
+        res.billingIntervalUnit = subscription.getBillingIntervalUnit();
+        res.billingIntervalCount =subscription.getBillingIntervalCount();
+        res.startDate = subscription.getStartDate();
+
+        res.nextBillingDate = getNextBillingDate(
+                subscription.getStartDate(),
+                subscription.getBillingIntervalUnit(),
+                subscription.getBillingIntervalCount()
+        );
+
+        return res;
     }
 }

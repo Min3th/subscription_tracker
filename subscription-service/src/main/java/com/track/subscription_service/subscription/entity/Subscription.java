@@ -22,9 +22,9 @@ public class Subscription {
     private Long id;
 
     private String name;
+    private Double cost;
     private String type;
     private String duration;
-    private Double cost;
     private String category;
     private String description;
 
