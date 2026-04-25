@@ -24,6 +24,7 @@ import { useSnackbar } from "../utils/Snackbar";
 import { useDispatch } from "react-redux";
 import { deleteSubscriptionThunk } from "../app/subscriptionSlice";
 import type { DetailedSubscription } from "../types/subscription";
+import type { AppDispatch } from "../app/store";
 
 interface Props {
   subscription: DetailedSubscription;
@@ -36,7 +37,7 @@ export default function GridSubscriptionCard({ subscription, onEdit, onCancel }:
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const snackbar = useSnackbar();
   const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
@@ -168,7 +169,7 @@ export default function GridSubscriptionCard({ subscription, onEdit, onCancel }:
             <Typography fontSize={22} fontWeight="bold">
               ${subscription.cost.toFixed(2)}
               <Typography component="span" variant="body2">
-                /{subscription.billingCycle === "monthly" ? "mo" : "yr"}
+                /{subscription.billingIntervalUnit}
               </Typography>
             </Typography>
           </Box>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
   Box,
   Grid,
@@ -8,25 +8,20 @@ import {
   Button,
   LinearProgress,
   Stack,
-  Avatar,
-  IconButton,
-  Chip,
   useTheme,
   alpha,
 } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AddIcon from "@mui/icons-material/Add";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import StatCard from "../components/StatCard";
-import { getSubscriptions } from "../api/subscription";
 import { useTranslation } from "react-i18next";
 import MiniSubscriptionGrid from "../components/MiniSubscriptionGrid";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../app/store";
+import type { AppDispatch, RootState } from "../app/store";
 import { fetchSubscriptions } from "../app/subscriptionSlice";
 
 const getNextBillingDate = (startDateStr: string, unit: string, count: number): Date => {
@@ -101,7 +96,7 @@ const generatePast6MonthsSpending = (subscriptions: any[]) => {
 export default function Dashboard() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const subscriptions = useSelector((state: RootState) => state.subscriptions.list);
   console.log("Subscriptions: ", subscriptions);
   const totalMonthly = useMemo(

@@ -13,7 +13,6 @@ import {
   StepLabel,
 } from "@mui/material";
 import { useState } from "react";
-import { createSubscription, getSubscriptionById } from "../api/subscription";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useSnackbar } from "../utils/Snackbar";
@@ -302,7 +301,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                     fullWidth
                     margin="normal"
                     label="Amount ($)"
-                    name="amount"
+                    name="cost"
                     type="number"
                     value={formik.values.cost}
                     onChange={formik.handleChange}

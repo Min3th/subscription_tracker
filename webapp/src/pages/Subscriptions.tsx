@@ -1,20 +1,5 @@
-import {
-  Box,
-  TextField,
-  InputAdornment,
-  Button,
-  Stack,
-  Typography,
-  Menu,
-  MenuItem,
-  DialogTitle,
-  DialogContent,
-  Dialog,
-  DialogContentText,
-  DialogActions,
-} from "@mui/material";
+import { Box, TextField, InputAdornment, Button, Stack, Typography, Menu, MenuItem } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import AddIcon from "@mui/icons-material/Add";
 import SubscriptionCard from "../components/SubscriptionCard";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import SwapVertOutlinedIcon from "@mui/icons-material/SwapVertOutlined";
@@ -22,20 +7,18 @@ import ViewListIcon from "@mui/icons-material/ViewList";
 import GridViewIcon from "@mui/icons-material/GridView";
 import { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
-import { deleteSubscription, getSubscriptions } from "../api/subscription";
 import GridSubscriptionCard from "../components/GridSubscriptionCard";
 import SubscriptionForm from "../components/SubscriptionForm";
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import type { DetailedSubscription } from "../types/subscription";
 import { useDispatch, useSelector } from "react-redux";
-import type { RootState } from "../app/store";
+import type { AppDispatch, RootState } from "../app/store";
 import { fetchSubscriptions } from "../app/subscriptionSlice";
 
 export default function Subscriptions() {
   const { t } = useTranslation();
   const [view, setView] = useState<"grid" | "list">("list");
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [sortBy, setSortBy] = useState("name");

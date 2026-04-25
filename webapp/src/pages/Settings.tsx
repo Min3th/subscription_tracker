@@ -21,7 +21,6 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Snackbar,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -43,7 +42,6 @@ export function Settings() {
   const { user } = useSelector((state: RootState) => state.auth);
   const preferences = useSelector((state: RootState) => state.preferences);
   const [localTheme, setLocalTheme] = useState(preferences.theme);
-  const { setMode } = useContext(ColorModeContext);
   const dispatch = useDispatch<AppDispatch>();
 
   const [initialPreferences, setInitialPreferences] = useState<{
@@ -94,8 +92,7 @@ export function Settings() {
         });
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [preferences.status]); // Only run when status changes to avoid overwriting on theme preview
+  }, [preferences.status]);
 
   const [notifications, setNotifications] = useState({
     emailNotifications: true,
