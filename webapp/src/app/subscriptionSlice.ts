@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { deleteSubscription, getSubscriptions } from "../api/subscription";
-import { getNextBillingDate, calculateTotalPaid } from "../pages/Subscriptions";
 import type { DetailedSubscription } from "../types/subscription";
 
 export const fetchSubscriptions = createAsyncThunk("subscriptions/fetch", async () => {
@@ -11,7 +10,7 @@ export const fetchSubscriptions = createAsyncThunk("subscriptions/fetch", async 
     cost: item.cost,
     billingIntervalUnit: item.billingIntervalUnit,
     billingIntervalCount: item.billingIntervalCount,
-    nextBillingDate: getNextBillingDate(item.startDate, item.billingIntervalUnit, item.billingIntervalCount),
+    nextBillingDate: item.nextBillingDate,
     category: item.category || "General",
     status: "active",
     paymentMethod: item.paymentMethod,
@@ -19,7 +18,7 @@ export const fetchSubscriptions = createAsyncThunk("subscriptions/fetch", async 
     description: item.description,
     website: item.website,
     autoRenew: item.type === "recurring",
-    totalPaid: calculateTotalPaid(item.startDate, item.billingIntervalUnit, item.billingIntervalCount, item.cost),
+    totalPaid: item.totalPaid,
   }));
 });
 

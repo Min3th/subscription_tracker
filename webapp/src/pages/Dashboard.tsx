@@ -103,6 +103,7 @@ export default function Dashboard() {
   const theme = useTheme();
   const dispatch = useDispatch();
   const subscriptions = useSelector((state: RootState) => state.subscriptions.list);
+  console.log("Subscriptions: ", subscriptions);
   const totalMonthly = useMemo(
     () =>
       subscriptions.reduce((sum, sub) => {

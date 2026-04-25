@@ -174,7 +174,7 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
 
                 <Box display="flex" alignItems="center" gap={1}>
                   <TrendingUpIcon fontSize="small" />
-                  <Typography variant="body2">Total Paid: ${subscription.totalPaid.toFixed(2)}</Typography>
+                  <Typography variant="body2">Total Paid: ${subscription.totalPaid}</Typography>
                 </Box>
 
                 <Box display="flex" alignItems="center" gap={1}>

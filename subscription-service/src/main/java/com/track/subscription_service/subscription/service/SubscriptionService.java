@@ -74,24 +74,27 @@ public class SubscriptionService {
         repo.delete(existing);
     }
 
-    public double calculateTotalPaid(LocalDate startDate,String unit,int count,double cost){
+    public double calculateTotalPaid(LocalDate startDate, String unit, int count, double cost) {
         if (startDate.isAfter(LocalDate.now())) return 0;
 
         long cycles = 0;
         LocalDate current = startDate;
         LocalDate now = LocalDate.now();
 
-        while (!current.isAfter(now)){
+        while (current.isBefore(now) || current.isEqual(now)) {
             cycles++;
-            current = switch (unit.toLowerCase()){
+
+            current = switch (unit.toLowerCase()) {
                 case "day" -> current.plusDays(count);
                 case "week" -> current.plusWeeks(count);
                 case "month" -> current.plusMonths(count);
                 case "year" -> current.plusYears(count);
                 default -> current;
             };
+
             if (unit.equals("unknown")) break;
         }
+
         return cycles * cost;
     }
 
@@ -144,6 +147,13 @@ public class SubscriptionService {
                 subscription.getStartDate(),
                 subscription.getBillingIntervalUnit(),
                 subscription.getBillingIntervalCount()
+        );
+
+        res.totalPaid = calculateTotalPaid(
+                subscription.getStartDate(),
+                subscription.getBillingIntervalUnit(),
+                subscription.getBillingIntervalCount(),
+                subscription.getCost()
         );
 
         return res;

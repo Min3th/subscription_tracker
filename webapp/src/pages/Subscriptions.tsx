@@ -32,47 +32,6 @@ import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../app/store";
 import { fetchSubscriptions } from "../app/subscriptionSlice";
 
-export const getNextBillingDate = (startDateStr: string, unit: string, count: number): Date => {
-  if (!startDateStr || !unit || !count) return new Date();
-  const start = new Date(startDateStr);
-  const now = new Date();
-  if (start > now) return start;
-
-  const next = new Date(start);
-  while (next <= now) {
-    if (unit === "day") next.setDate(next.getDate() + count);
-    else if (unit === "week") next.setDate(next.getDate() + count * 7);
-    else if (unit === "month") next.setMonth(next.getMonth() + count);
-    else if (unit === "year") next.setFullYear(next.getFullYear() + count);
-    else break;
-  }
-  return next;
-};
-
-export const calculateTotalPaid = (startDateStr: string, unit: string, count: number, cost: number): number => {
-  if (!startDateStr || !unit || !count || !cost) return 0;
-
-  const start = new Date(startDateStr);
-  const now = new Date();
-
-  if (start > now) return 0;
-
-  let cycles = 0;
-  const current = new Date(start);
-
-  while (current <= now) {
-    cycles++;
-
-    if (unit === "day") current.setDate(current.getDate() + count);
-    else if (unit === "week") current.setDate(current.getDate() + count * 7);
-    else if (unit === "month") current.setMonth(current.getMonth() + count);
-    else if (unit === "year") current.setFullYear(current.getFullYear() + count);
-    else break;
-  }
-
-  return cycles * cost;
-};
-
 export default function Subscriptions() {
   const { t } = useTranslation();
   const [view, setView] = useState<"grid" | "list">("list");

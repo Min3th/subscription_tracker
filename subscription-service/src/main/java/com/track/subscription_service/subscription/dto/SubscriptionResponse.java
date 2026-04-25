@@ -9,6 +9,6 @@ public class SubscriptionResponse {
     public String billingIntervalUnit;
     public int billingIntervalCount;
     public LocalDate startDate;
-
     public LocalDate nextBillingDate;
+    public double totalPaid;
 }
