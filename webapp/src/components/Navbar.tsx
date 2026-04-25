@@ -19,7 +19,7 @@ import AddIcon from "@mui/icons-material/Add";
 import SubscriptionForm from "./SubscriptionForm";
 import { useDispatch, useSelector } from "react-redux";
 import Subtrak from "../../public/Subtrak.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Navbar({
   onClick,
@@ -39,6 +39,10 @@ export default function Navbar({
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // check if landing page
+  const isLandingPage = location.pathname === "/";
 
   React.useEffect(() => {
     const handleOpenAdd = () => setOpenAdd(true);
@@ -202,38 +206,32 @@ export default function Navbar({
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             {user ? (
-              <>
-                <Button
-                  variant="contained"
-                  startIcon={<AddIcon />}
-                  sx={{
-                    mr: 2,
-                    my: "auto",
-                    px: 2,
-                    py: 1,
-                    height: "fit-content",
-                    borderRadius: "999px",
-                    textTransform: "none",
-                    fontWeight: 600,
-                    fontSize: "0.9rem",
-                    boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.15)",
-                    "&:hover": {
-                      boxShadow: "0px 6px 14px rgba(0, 0, 0, 0.25)",
-                    },
-                  }}
-                  onClick={() => setOpenAdd(true)}
-                >
-                  Add Subscription
-                </Button>
-                <IconButton onClick={handleProfileMenuOpen}>
-                  <Avatar
-                    src={user.picture}
-                    alt={user?.name}
-                    sx={{ width: 36, height: 36 }}
-                    imgProps={{ referrerPolicy: "no-referrer" }}
-                  />
-                </IconButton>
-              </>
+              !isLandingPage && (
+                <>
+                  <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    sx={{
+                      mr: 2,
+                      my: "auto",
+                      px: 2,
+                      py: 1,
+                      height: "fit-content",
+                      borderRadius: "999px",
+                      textTransform: "none",
+                      fontWeight: 600,
+                      fontSize: "0.9rem",
+                      boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.15)",
+                      "&:hover": {
+                        boxShadow: "0px 6px 14px rgba(0, 0, 0, 0.25)",
+                      },
+                    }}
+                    onClick={() => setOpenAdd(true)}
+                  >
+                    Add Subscription
+                  </Button>
+                </>
+              )
             ) : (
               <Button
                 variant="contained"
@@ -251,6 +249,16 @@ export default function Navbar({
               >
                 Login
               </Button>
+            )}
+            {user && (
+              <IconButton onClick={handleProfileMenuOpen}>
+                <Avatar
+                  src={user.picture}
+                  alt={user?.name}
+                  sx={{ width: 36, height: 36 }}
+                  imgProps={{ referrerPolicy: "no-referrer" }}
+                />
+              </IconButton>
             )}
           </Box>
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
