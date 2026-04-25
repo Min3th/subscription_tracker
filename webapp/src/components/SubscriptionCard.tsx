@@ -24,10 +24,9 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import LanguageIcon from "@mui/icons-material/Language";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import { Switch, FormControlLabel } from "@mui/material";
+import { Switch } from "@mui/material";
 import { useTheme } from "@mui/material";
 import type { DetailedSubscription } from "../types/subscription";
-import { deleteSubscription } from "../api/subscription";
 import { t } from "i18next";
 import { useSnackbar } from "../utils/Snackbar";
 import { useDispatch } from "react-redux";
@@ -75,10 +74,6 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
 
   const statusStyle = getStatusColor(subscription.status);
   const categoryStyle = getCategoryColor(subscription.category);
-
-  const handleDeleteClick = () => {
-    setDeleteDialogOpen(true);
-  };
 
   const handleDeleteCancel = () => {
     setDeleteDialogOpen(false);

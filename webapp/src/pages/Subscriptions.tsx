@@ -41,7 +41,6 @@ export default function Subscriptions() {
   const [sortBy, setSortBy] = useState("name");
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const handleEdit = (id: string) => {
     setEditId(id);
     setIsAddFormOpen(true);

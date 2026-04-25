@@ -1,13 +1,43 @@
-import { Card, CardContent, Box, Typography, Chip, IconButton, Menu, MenuItem } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Box,
+  Typography,
+  Chip,
+  IconButton,
+  Menu,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Button,
+  DialogContentText,
+  DialogActions,
+  Divider,
+} from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import { useState } from "react";
+import { t } from "i18next";
+import { useSnackbar } from "../utils/Snackbar";
+import { useDispatch } from "react-redux";
+import { deleteSubscriptionThunk } from "../app/subscriptionSlice";
+import type { DetailedSubscription } from "../types/subscription";
 
-export default function GridSubscriptionCard({ subscription, onEdit }: any) {
+interface Props {
+  subscription: DetailedSubscription;
+  onEdit?: (id: string) => void;
+  onCancel?: (id: string) => void;
+  onPause?: (id: string) => void;
+}
+
+export default function GridSubscriptionCard({ subscription, onEdit, onCancel }: Props) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const dispatch = useDispatch();
+  const snackbar = useSnackbar();
   const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
   };
@@ -37,6 +67,21 @@ export default function GridSubscriptionCard({ subscription, onEdit }: any) {
 
   const statusStyle = getStatusColor(subscription.status);
   const categoryStyle = getCategoryColor(subscription.category);
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+  };
+
+  const handleDeleteConfirm = async (id: number) => {
+    try {
+      dispatch(deleteSubscriptionThunk(id));
+      snackbar.success("Subscription deleted successfully.");
+    } catch (err) {
+      snackbar.error("Failed to delete subscription.");
+      console.error("Error deleting subscription:", err);
+    }
+    setDeleteDialogOpen(false);
+  };
 
   return (
     <Card
@@ -74,6 +119,25 @@ export default function GridSubscriptionCard({ subscription, onEdit }: any) {
                   }}
                 >
                   Edit
+                </MenuItem>
+                <MenuItem
+                  onClick={() => {
+                    setDeleteDialogOpen(true);
+                  }}
+                >
+                  Delete
+                </MenuItem>
+
+                <Divider />
+
+                <MenuItem
+                  onClick={() => {
+                    onCancel?.(subscription.id);
+                    handleClose();
+                  }}
+                  sx={{ color: "error.main" }}
+                >
+                  Cancel
                 </MenuItem>
               </Menu>
             </Box>
@@ -129,6 +193,29 @@ export default function GridSubscriptionCard({ subscription, onEdit }: any) {
           </Box>
         </Box>
       </CardContent>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title" sx={{ color: "text.primary" }}>
+          {t("subscriptions.delete_confirm_title", "Confirm Delete")}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" sx={{ color: "text.secondary" }}>
+            {t("subscriptions.delete_confirm_message", "Are you sure you want to delete this subscription?")}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="inherit">
+            {t("common.cancel", "Cancel")}
+          </Button>
+          <Button onClick={() => handleDeleteConfirm(subscription.id)} autoFocus color="error">
+            {t("subscriptions.delete_confirm_button", "Delete")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Card>
   );
 }
