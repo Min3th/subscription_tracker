@@ -7,8 +7,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HomePage from "./pages/HomePage.tsx";
 import ThemeContextProvider from "./theme/ThemeContext.tsx";
 import { LoaderProvider } from "./utils/Loading.tsx";
-import PageTwo from "./pages/PageTwo.tsx";
-import PageOne from "./pages/PageOne.tsx";
 import DashboardLayout from "./layout/DashboardLayout.tsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import Dashboard from "./pages/Dashboard.tsx";
@@ -16,17 +14,12 @@ import ProtectedRoute from "./routes/ProtectedRoutes.tsx";
 import PublicLayout from "./layout/PublicLayout.tsx";
 import AppContent from "./AppContent.tsx";
 import Subscriptions from "./pages/Subscriptions.tsx";
-import UserProfile from "./pages/UserProfile.tsx";
 import { Settings } from "./pages/Settings.tsx";
 
 const router = createBrowserRouter([
   {
     element: <PublicLayout />,
-    children: [
-      { path: "/", element: <HomePage /> },
-      { path: "/page1", element: <PageOne /> },
-      { path: "/page2", element: <PageTwo /> },
-    ],
+    children: [{ path: "/", element: <HomePage /> }],
   },
   {
     element: (

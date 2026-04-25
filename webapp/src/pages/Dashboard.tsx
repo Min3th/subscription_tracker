@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import {
   Box,
   Grid,
@@ -8,40 +8,22 @@ import {
   Button,
   LinearProgress,
   Stack,
-  Avatar,
-  IconButton,
-  Chip,
   useTheme,
   alpha,
 } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AddIcon from "@mui/icons-material/Add";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import StatCard from "../components/StatCard";
-import { getSubscriptions } from "../api/subscription";
 import { useTranslation } from "react-i18next";
 import MiniSubscriptionGrid from "../components/MiniSubscriptionGrid";
-
-const getNextBillingDate = (startDateStr: string, unit: string, count: number): Date => {
-  if (!startDateStr || !unit || !count) return new Date();
-  const start = new Date(startDateStr);
-  const now = new Date();
-  if (start > now) return start;
-
-  const next = new Date(start);
-  while (next <= now) {
-    if (unit === "day") next.setDate(next.getDate() + count);
-    else if (unit === "week") next.setDate(next.getDate() + count * 7);
-    else if (unit === "month") next.setMonth(next.getMonth() + count);
-    else if (unit === "year") next.setFullYear(next.getFullYear() + count);
-    else break;
-  }
-  return next;
-};
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../app/store";
+import { fetchSubscriptions } from "../app/subscriptionSlice";
+import { formatDate } from "../utils/DateFunctions";
 
 const getMonthlyCost = (cost: number, unit: string, count: number): number => {
   if (!cost || !unit || !count) return 0;
@@ -98,8 +80,8 @@ const generatePast6MonthsSpending = (subscriptions: any[]) => {
 export default function Dashboard() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const [subscriptions, setSubscriptions] = useState<any[]>([]);
-
+  const dispatch = useDispatch<AppDispatch>();
+  const subscriptions = useSelector((state: RootState) => state.subscriptions.list);
   const totalMonthly = useMemo(
     () =>
       subscriptions.reduce((sum, sub) => {
@@ -123,9 +105,7 @@ export default function Dashboard() {
     const recurringSubs = subscriptions.filter((sub) => sub.type !== "one-time");
     if (!recurringSubs.length) return null;
     return recurringSubs.sort(
-      (a, b) =>
-        getNextBillingDate(a.startDate, a.billingIntervalUnit, a.billingIntervalCount).getTime() -
-        getNextBillingDate(b.startDate, b.billingIntervalUnit, b.billingIntervalCount).getTime(),
+      (a, b) => new Date(a.nextBillingDate).getTime() - new Date(b.nextBillingDate).getTime(),
     )[0];
   }, [subscriptions]);
 
@@ -153,19 +133,8 @@ export default function Dashboard() {
   );
 
   useEffect(() => {
-    const fetchSubscriptions = async () => {
-      try {
-        const res = await getSubscriptions();
-        setSubscriptions(res.data);
-      } catch (error: any) {
-        console.error("Error fetching subscriptions:", error);
-      }
-    };
-    fetchSubscriptions();
-
-    window.addEventListener("subscription_added", fetchSubscriptions);
-    return () => window.removeEventListener("subscription_added", fetchSubscriptions);
-  }, []);
+    dispatch(fetchSubscriptions());
+  }, [dispatch]);
 
   return (
     <Box
@@ -225,15 +194,7 @@ export default function Dashboard() {
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard
             title={t("dashboard.next_billing")}
-            value={
-              nextBilling
-                ? getNextBillingDate(
-                    nextBilling.startDate,
-                    nextBilling.billingIntervalUnit,
-                    nextBilling.billingIntervalCount,
-                  ).toLocaleDateString("en-US", { month: "short", day: "numeric" })
-                : "N/A"
-            }
+            value={nextBilling?.nextBillingDate ? formatDate(new Date(nextBilling.nextBillingDate)) : "N/A"}
             icon={<CalendarTodayIcon sx={{ color: theme.palette.purpink }} />}
           />
         </Grid>
@@ -338,7 +299,7 @@ export default function Dashboard() {
       </Typography>
       <Grid container spacing={3}>
         {subscriptions.length > 0 ? (
-          <MiniSubscriptionGrid subscriptions={subscriptions} t={t} getNextBillingDate={getNextBillingDate} />
+          <MiniSubscriptionGrid subscriptions={subscriptions} t={t} />
         ) : (
           <Grid size={{ xs: 12 }}>
             <Box

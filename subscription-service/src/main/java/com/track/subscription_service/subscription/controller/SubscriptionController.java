@@ -1,6 +1,7 @@
 package com.track.subscription_service.subscription.controller;
 
 import com.track.subscription_service.auth.service.JwtService;
+import com.track.subscription_service.subscription.dto.SubscriptionResponse;
 import com.track.subscription_service.subscription.entity.Subscription;
 import com.track.subscription_service.subscription.repository.SubscriptionRepository;
 import com.track.subscription_service.subscription.service.SubscriptionService;
@@ -24,24 +25,30 @@ public class SubscriptionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Subscription>>getUserSubscriptions() {
+    public ResponseEntity<List<SubscriptionResponse>>getUserSubscriptions() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String googleId = auth.getName();
 
-        return ResponseEntity.ok(service.getByGoogleId(googleId));
+        List<SubscriptionResponse> response = service.getByGoogleId(googleId)
+                .stream()
+                .map(service::mapToResponse)
+                .toList();
+
+        return ResponseEntity.ok(response);
 
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Subscription> getSubscription(
+    public ResponseEntity<SubscriptionResponse> getSubscription(
             @PathVariable Long id,
             Authentication auth
     ){
-        return ResponseEntity.ok(service.getByIdAndGoogleId(id, auth.getName()));
+        Subscription subscription = service.getByIdAndGoogleId(id, auth.getName());
+        return ResponseEntity.ok(service.mapToResponse(subscription));
     }
 
     @PostMapping
-    public ResponseEntity<Subscription> createSubscription(
+    public ResponseEntity<SubscriptionResponse> createSubscription(
             @RequestBody Subscription subscription){
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -51,18 +58,17 @@ public class SubscriptionController {
 
         return ResponseEntity
                 .created(location)
-                .body(created);
+                .body(service.mapToResponse(created));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Subscription> updateSubscription(
-            @PathVariable Long id,
+    public ResponseEntity<SubscriptionResponse> updateSubscription(
             @RequestBody Subscription updated
     ){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String googleId = auth.getName();
 
-        return ResponseEntity.ok(service.update(id,updated,googleId));
+        return ResponseEntity.ok(service.mapToResponse(service.update(updated.getId(), updated, googleId)));
     }
 
     @DeleteMapping("/{id}")

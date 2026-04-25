@@ -1,15 +1,14 @@
 import { Card, Box, Typography, Avatar, Chip } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { alpha, useTheme } from "@mui/material/styles";
-import type { Subscription } from "../types/subscription";
+import type { DetailedSubscription } from "../types/subscription";
 
 export interface MiniSubscriptionCardProps {
-  sub: Subscription;
+  sub: DetailedSubscription;
   t: (key: string) => string;
-  getNextBillingDate: (startDate: string, unit: string, count: number) => Date;
 }
 
-export default function MiniSubscriptionCard({ sub, t, getNextBillingDate }: MiniSubscriptionCardProps) {
+export default function MiniSubscriptionCard({ sub, t }: MiniSubscriptionCardProps) {
   const theme = useTheme();
 
   return (
@@ -95,16 +94,7 @@ export default function MiniSubscriptionCard({ sub, t, getNextBillingDate }: Min
               <Box display="flex" alignItems="center" gap={0.8} mt={1}>
                 <CalendarTodayIcon sx={{ fontSize: 14, color: theme.palette.text.secondary }} />
                 <Typography variant="caption" color="text.secondary" fontWeight="500">
-                  {t("dashboard.next_billing_date")}{" "}
-                  {getNextBillingDate(
-                    sub.startDate,
-                    sub.billingIntervalUnit,
-                    sub.billingIntervalCount,
-                  ).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
+                  {t("dashboard.next_billing_date")} {new Date(sub.nextBillingDate).toDateString()}
                 </Typography>
               </Box>
             )}

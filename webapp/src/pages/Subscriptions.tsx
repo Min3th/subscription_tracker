@@ -1,20 +1,5 @@
-import {
-  Box,
-  TextField,
-  InputAdornment,
-  Button,
-  Stack,
-  Typography,
-  Menu,
-  MenuItem,
-  DialogTitle,
-  DialogContent,
-  Dialog,
-  DialogContentText,
-  DialogActions,
-} from "@mui/material";
+import { Box, TextField, InputAdornment, Button, Stack, Typography, Menu, MenuItem } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import AddIcon from "@mui/icons-material/Add";
 import SubscriptionCard from "../components/SubscriptionCard";
 import FilterAltOutlinedIcon from "@mui/icons-material/FilterAltOutlined";
 import SwapVertOutlinedIcon from "@mui/icons-material/SwapVertOutlined";
@@ -22,68 +7,23 @@ import ViewListIcon from "@mui/icons-material/ViewList";
 import GridViewIcon from "@mui/icons-material/GridView";
 import { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
-import { deleteSubscription, getSubscriptions } from "../api/subscription";
 import GridSubscriptionCard from "../components/GridSubscriptionCard";
 import SubscriptionForm from "../components/SubscriptionForm";
 import { ToggleButtonGroup, ToggleButton } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import type { DetailedSubscription } from "../types/subscription";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-import type { RootState } from "../app/store";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../app/store";
 import { fetchSubscriptions } from "../app/subscriptionSlice";
-
-export const getNextBillingDate = (startDateStr: string, unit: string, count: number): Date => {
-  if (!startDateStr || !unit || !count) return new Date();
-  const start = new Date(startDateStr);
-  const now = new Date();
-  if (start > now) return start;
-
-  const next = new Date(start);
-  while (next <= now) {
-    if (unit === "day") next.setDate(next.getDate() + count);
-    else if (unit === "week") next.setDate(next.getDate() + count * 7);
-    else if (unit === "month") next.setMonth(next.getMonth() + count);
-    else if (unit === "year") next.setFullYear(next.getFullYear() + count);
-    else break;
-  }
-  return next;
-};
-
-export const calculateTotalPaid = (startDateStr: string, unit: string, count: number, cost: number): number => {
-  if (!startDateStr || !unit || !count || !cost) return 0;
-
-  const start = new Date(startDateStr);
-  const now = new Date();
-
-  if (start > now) return 0;
-
-  let cycles = 0;
-  const current = new Date(start);
-
-  while (current <= now) {
-    cycles++;
-
-    if (unit === "day") current.setDate(current.getDate() + count);
-    else if (unit === "week") current.setDate(current.getDate() + count * 7);
-    else if (unit === "month") current.setMonth(current.getMonth() + count);
-    else if (unit === "year") current.setFullYear(current.getFullYear() + count);
-    else break;
-  }
-
-  return cycles * cost;
-};
 
 export default function Subscriptions() {
   const { t } = useTranslation();
   const [view, setView] = useState<"grid" | "list">("list");
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("all");
   const [sortBy, setSortBy] = useState("name");
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const handleEdit = (id: string) => {
     setEditId(id);
     setIsAddFormOpen(true);

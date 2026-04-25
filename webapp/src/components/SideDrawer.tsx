@@ -153,6 +153,17 @@ export default function MiniDrawer() {
                 primary={t("sidebar.dashboard", "Dashboard")}
                 sx={{
                   opacity: open ? 1 : 0,
+                  maxWidth: open ? 180 : 0,
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  transform: open ? "scaleX(1)" : "scaleX(0)",
+                  transformOrigin: "left center",
+                  transition: theme.transitions.create(["opacity", "max-width", "transform"], {
+                    easing: theme.transitions.easing.sharp,
+                    duration: open
+                      ? theme.transitions.duration.enteringScreen
+                      : theme.transitions.duration.leavingScreen,
+                  }),
                 }}
               />
             </ListItemButton>
@@ -181,6 +192,17 @@ export default function MiniDrawer() {
                 primary={t("sidebar.subscriptions", "Subscriptions")}
                 sx={{
                   opacity: open ? 1 : 0,
+                  maxWidth: open ? 180 : 0,
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  transform: open ? "scaleX(1)" : "scaleX(0)",
+                  transformOrigin: "left center",
+                  transition: theme.transitions.create(["opacity", "max-width", "transform"], {
+                    easing: theme.transitions.easing.sharp,
+                    duration: open
+                      ? theme.transitions.duration.enteringScreen
+                      : theme.transitions.duration.leavingScreen,
+                  }),
                 }}
               />
             </ListItemButton>
@@ -209,6 +231,17 @@ export default function MiniDrawer() {
                 primary={t("sidebar.settings", "Settings")}
                 sx={{
                   opacity: open ? 1 : 0,
+                  maxWidth: open ? 180 : 0,
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  transform: open ? "scaleX(1)" : "scaleX(0)",
+                  transformOrigin: "left center",
+                  transition: theme.transitions.create(["opacity", "max-width", "transform"], {
+                    easing: theme.transitions.easing.sharp,
+                    duration: open
+                      ? theme.transitions.duration.enteringScreen
+                      : theme.transitions.duration.leavingScreen,
+                  }),
                 }}
               />
             </ListItemButton>
@@ -238,6 +271,17 @@ export default function MiniDrawer() {
                 primary={t("sidebar.logout", "Logout")}
                 sx={{
                   opacity: open ? 1 : 0,
+                  maxWidth: open ? 180 : 0,
+                  overflow: "hidden",
+                  whiteSpace: "nowrap",
+                  transform: open ? "scaleX(1)" : "scaleX(0)",
+                  transformOrigin: "left center",
+                  transition: theme.transitions.create(["opacity", "max-width", "transform"], {
+                    easing: theme.transitions.easing.sharp,
+                    duration: open
+                      ? theme.transitions.duration.enteringScreen
+                      : theme.transitions.duration.leavingScreen,
+                  }),
                 }}
               />
             </ListItemButton>
