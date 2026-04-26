@@ -1,5 +1,6 @@
 package com.track.subscription_service.notification.config;
 
+import com.sendgrid.SendGrid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

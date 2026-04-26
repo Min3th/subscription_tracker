@@ -2,7 +2,9 @@ package com.track.subscription_service.notification.service;
 
 import com.track.subscription_service.subscription.entity.Subscription;
 import com.track.subscription_service.user.entity.User;
+import org.springframework.stereotype.Service;
 
+@Service
 public class NotificationService {
 
     private final EmailService emailService;
