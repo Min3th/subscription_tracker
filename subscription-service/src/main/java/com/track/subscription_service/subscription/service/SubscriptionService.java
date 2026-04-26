@@ -15,10 +15,16 @@ public class SubscriptionService {
 
     private final SubscriptionRepository repo;
     private final UserRepository userRepository;
+    private final BillingService billingService;
 
-    public SubscriptionService(SubscriptionRepository repo, UserRepository userRepository) {
+    public SubscriptionService(
+            SubscriptionRepository repo,
+            UserRepository userRepository,
+            BillingService billingService
+    ) {
         this.repo = repo;
         this.userRepository = userRepository;
+        this.billingService = billingService;
     }
 
     public List<Subscription> getAll(){
@@ -74,65 +80,6 @@ public class SubscriptionService {
         repo.delete(existing);
     }
 
-    public double calculateTotalPaid(LocalDate startDate, String unit, int count, double cost) {
-        if (startDate.isAfter(LocalDate.now())) return 0;
-
-        long cycles = 0;
-        LocalDate current = startDate;
-        LocalDate now = LocalDate.now();
-
-        while (current.isBefore(now) || current.isEqual(now)) {
-            cycles++;
-
-            current = switch (unit.toLowerCase()) {
-                case "day" -> current.plusDays(count);
-                case "week" -> current.plusWeeks(count);
-                case "month" -> current.plusMonths(count);
-                case "year" -> current.plusYears(count);
-                default -> current;
-            };
-
-            if (unit.equals("unknown")) break;
-        }
-
-        return cycles * cost;
-    }
-
-    public LocalDate getNextBillingDate(LocalDate startDate, String unit, int count) {
-        if (startDate == null || unit == null || count <= 0) {
-            return LocalDate.now();
-        }
-
-        LocalDate now = LocalDate.now();
-
-        if (startDate.isAfter(now)) {
-            return startDate;
-        }
-
-        LocalDate next = startDate;
-
-        while (!next.isAfter(now)) {
-            switch (unit.toLowerCase()) {
-                case "day":
-                    next = next.plusDays(count);
-                    break;
-                case "week":
-                    next = next.plusWeeks(count);
-                    break;
-                case "month":
-                    next = next.plusMonths(count);
-                    break;
-                case "year":
-                    next = next.plusYears(count);
-                    break;
-                default:
-                    return next;
-            }
-        }
-
-        return next;
-    }
-
     public SubscriptionResponse mapToResponse(Subscription subscription){
         SubscriptionResponse res = new SubscriptionResponse();
 
@@ -149,13 +96,13 @@ public class SubscriptionService {
         res.billingIntervalCount =subscription.getBillingIntervalCount();
         res.startDate = subscription.getStartDate();
 
-        res.nextBillingDate = getNextBillingDate(
+        res.nextBillingDate = billingService.getNextBillingDate(
                 subscription.getStartDate(),
                 subscription.getBillingIntervalUnit(),
                 subscription.getBillingIntervalCount()
         );
 
-        res.totalPaid = calculateTotalPaid(
+        res.totalPaid = billingService.calculateTotalPaid(
                 subscription.getStartDate(),
                 subscription.getBillingIntervalUnit(),
                 subscription.getBillingIntervalCount(),
