@@ -25,13 +25,16 @@ public class SchedulerService {
     }
 
     private boolean isDueSoon(Subscription sub) {
-
-        LocalDate nextBillingDate = billingService.getNextBillingDate(
-                sub.getStartDate(),
-                sub.getBillingIntervalUnit(),
-                sub.getBillingIntervalCount()
-        );
-        return !nextBillingDate.isAfter(LocalDate.now().plusDays(3));
+        return true;
+//        System.out.println("Checking sub: " + sub.getName());
+//        LocalDate nextBillingDate = billingService.getNextBillingDate(
+//                sub.getStartDate(),
+//                sub.getBillingIntervalUnit(),
+//                sub.getBillingIntervalCount()
+//        );
+//        System.out.println("Next billing date: " + nextBillingDate);
+//        System.out.println("Today + 3: " + LocalDate.now().plusDays(3));
+//        return !nextBillingDate.isAfter(LocalDate.now().plusDays(3));
     }
 
 //    @Scheduled(cron = "0 0 9 * * ?") at 9 am

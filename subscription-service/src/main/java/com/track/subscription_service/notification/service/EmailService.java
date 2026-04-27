@@ -2,6 +2,7 @@ package com.track.subscription_service.notification.service;
 
 import com.sendgrid.Method;
 import com.sendgrid.Request;
+import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
@@ -35,7 +36,10 @@ public class EmailService {
             request.setEndpoint("mail/send");
             request.setBody(mail.build());
 
-            sendGrid.api(request);
+            Response response = sendGrid.api(request);
+
+            System.out.println("SendGrid status: " + response.getStatusCode());
+            System.out.println("SendGrid body: " + response.getBody());
         } catch (Exception e) {
             throw new RuntimeException("Failed to send email", e);
         }

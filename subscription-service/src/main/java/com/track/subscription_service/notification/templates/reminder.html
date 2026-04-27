@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Renewal Notice</title>
+    <style>
+        /* Mobile Styles */
+        @media screen and (max-width: 600px) {
+            .container { width: 100% !important; border-radius: 0px !important; }
+            .heading { font-size: 28px !important; }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background-color: #050505; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #ffffff;">
+<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #050505; padding: 40px 20px;">
+    <tr>
+        <td align="center">
+            <table border="0" cellpadding="0" cellspacing="0" width="600" class="container" style="background-color: #0f0f0f; border-radius: 16px; overflow: hidden; border: 1px solid #222222;">
+
+                <tr>
+                    <td align="left" style="padding: 30px 40px 10px 40px;">
+                        <a href="https://subtrak.me" target="_blank" style="text-decoration: none;">
+                            <img src="https://i.imgur.com/faMmbvU.png"
+                                 alt="Subtrak"
+                                 width="120"
+                                 height="auto"
+                                 style="display: block; border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic;">
+                        </a>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 20px 40px 40px 40px;">
+                        <p style="text-transform: uppercase; font-size: 12px; font-weight: 700; color: #a855f7; letter-spacing: 1px; margin-bottom: 12px;">Renewal Alert</p>
+                        <h1 class="heading" style="font-size: 36px; font-weight: 800; margin: 0 0 20px 0; line-height: 1.1; color: #ffffff;">
+                            Your <span style="color: #a855f7;">{{subscription_name}}</span> plan renews soon.
+                        </h1>
+                        <p style="font-size: 16px; line-height: 1.6; color: #b0b0b0; margin-bottom: 30px;">
+                            Just a heads up! Your subscription for <strong>{{subscription_name}}</strong> is scheduled to renew on <strong>{{renewal_date}}</strong>. Stay in control of your spending by reviewing your active plans.
+                        </p>
+
+                        <table border="0" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <td align="center" bgcolor="#8b5cf6" style="border-radius: 50px; background: linear-gradient(90deg, #8b5cf6 0%, #d946ef 100%);">
+                                    <a href="https://subtrak.me/dashboard" target="_blank" style="padding: 14px 32px; font-size: 16px; font-weight: bold; color: #ffffff; text-decoration: none; display: inline-block;">
+                                        Manage Subscription
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="padding: 30px 40px; background-color: #161616; border-top: 1px solid #222222;">
+                        <p style="font-size: 12px; color: #666666; margin: 0;">
+                            You received this because you're tracking your expenses with Subtrak. <br>
+                            <a href="#" style="color: #8b5cf6; text-decoration: none;">Unsubscribe</a> from these alerts.
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
