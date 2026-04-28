@@ -71,6 +71,9 @@ public class SubscriptionService {
         if (updated.getStartDate() != null) existing.setStartDate(updated.getStartDate());
         if (updated.getBillingIntervalUnit() != null) existing.setBillingIntervalUnit(updated.getBillingIntervalUnit());
         if (updated.getBillingIntervalCount() != null) existing.setBillingIntervalCount(updated.getBillingIntervalCount());
+        if (updated.isEmailNotificationsEnabled() != null) {
+            existing.setEmailNotificationsEnabled(updated.isEmailNotificationsEnabled());
+        }
 
         return repo.save(existing);
     }
