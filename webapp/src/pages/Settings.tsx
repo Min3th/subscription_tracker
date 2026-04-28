@@ -21,6 +21,8 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  FormControlLabel,
+  Checkbox,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -33,7 +35,6 @@ import type { SelectChangeEvent } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../app/store";
 import { fetchPreferences, updatePreferences, setPreferences } from "../features/preferences/preferencesSlice";
-import { ColorModeContext } from "../theme/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useBlocker } from "react-router-dom";
 
@@ -82,6 +83,8 @@ export function Settings() {
         language: preferences.language,
         timezone: preferences.timezone,
         theme: preferences.theme,
+        emailNotifications: preferences.emailNotifications,
+        reminderDays: preferences.reminderDays,
       }));
       if (!initialPreferences) {
         setInitialPreferences({
@@ -438,6 +441,46 @@ export function Settings() {
                     onChange={handleNotificationChange}
                     name="emailNotifications"
                   />
+                </Box>
+                <Box sx={{ textAlign: "left", opacity: notifications.emailNotifications ? 1 : 0.5 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
+                    Remind me:
+                  </Typography>
+
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={notifications.reminderDays.includes(3)}
+                          onChange={() => handleReminderChange(3)}
+                          disabled={!notifications.emailNotifications}
+                        />
+                      }
+                      label="3 days before"
+                    />
+
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={notifications.reminderDays.includes(1)}
+                          onChange={() => handleReminderChange(1)}
+                          disabled={!notifications.emailNotifications}
+                        />
+                      }
+                      label="1 day before"
+                    />
+
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={notifications.reminderDays.includes(0)}
+                          onChange={() => handleReminderChange(0)}
+                          disabled={!notifications.emailNotifications}
+                        />
+                      }
+                      label="On billing day"
+                    />
+                  </Box>
                 </Box>
 
                 <Divider />
