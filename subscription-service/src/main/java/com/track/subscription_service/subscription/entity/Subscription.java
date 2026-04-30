@@ -27,6 +27,7 @@ public class Subscription {
     private String duration;
     private String category;
     private String description;
+    private boolean emailNotificationsEnabled;
 
     @Column(name = "payment_method")
     private String paymentMethod;
@@ -47,7 +48,7 @@ public class Subscription {
     private User user;
 
     public Subscription(){}
-    public Subscription(String name, String type, String duration, Double cost,String category, String description, String paymentMethod,String website, LocalDate startDate, String billingIntervalUnit, Integer billingIntervalCount) {
+    public Subscription(String name, String type, String duration, Double cost,String category, String description, String paymentMethod,String website, LocalDate startDate, String billingIntervalUnit, Integer billingIntervalCount, boolean emailNotificationsEnabled) {
         this.name = name;
         this.type = type;
         this.duration = duration;
@@ -59,6 +60,7 @@ public class Subscription {
         this.startDate = startDate;
         this.billingIntervalUnit = billingIntervalUnit;
         this.billingIntervalCount = billingIntervalCount;
+        this.emailNotificationsEnabled = emailNotificationsEnabled;
     }
 
     public Long getId() {
@@ -155,5 +157,13 @@ public class Subscription {
 
     public void setBillingIntervalCount(Integer billingIntervalCount) {
         this.billingIntervalCount = billingIntervalCount;
+    }
+
+    public Boolean isEmailNotificationsEnabled() {
+        return emailNotificationsEnabled;
+    }
+
+    public void setEmailNotificationsEnabled(boolean emailNotificationsEnabled) {
+        this.emailNotificationsEnabled = emailNotificationsEnabled;
     }
 }

@@ -21,6 +21,9 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -33,9 +36,9 @@ import type { SelectChangeEvent } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../app/store";
 import { fetchPreferences, updatePreferences, setPreferences } from "../features/preferences/preferencesSlice";
-import { ColorModeContext } from "../theme/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useBlocker } from "react-router-dom";
+import { useSnackbar } from "../utils/Snackbar";
 
 export function Settings() {
   const { t } = useTranslation();
@@ -43,12 +46,15 @@ export function Settings() {
   const preferences = useSelector((state: RootState) => state.preferences);
   const [localTheme, setLocalTheme] = useState(preferences.theme);
   const dispatch = useDispatch<AppDispatch>();
+  const snackbar = useSnackbar();
 
   const [initialPreferences, setInitialPreferences] = useState<{
     currency: string;
     language: string;
     timezone: string;
     theme: string;
+    emailNotificationsEnabled: boolean;
+    reminderDaysBefore: number;
   } | null>(null);
 
   const [formData, setFormData] = useState({
@@ -58,6 +64,8 @@ export function Settings() {
     timezone: "America/New_York",
     theme: "light",
     language: "en",
+    emailNotificationsEnabled: true,
+    reminderDaysBefore: 3,
   });
 
   useEffect(() => {
@@ -82,6 +90,8 @@ export function Settings() {
         language: preferences.language,
         timezone: preferences.timezone,
         theme: preferences.theme,
+        emailNotificationsEnabled: preferences.emailNotificationsEnabled,
+        reminderDaysBefore: preferences.reminderDaysBefore,
       }));
       if (!initialPreferences) {
         setInitialPreferences({
@@ -89,25 +99,14 @@ export function Settings() {
           language: preferences.language,
           timezone: preferences.timezone,
           theme: preferences.theme,
+          emailNotificationsEnabled: preferences.emailNotificationsEnabled,
+          reminderDaysBefore: preferences.reminderDaysBefore,
         });
       }
     }
   }, [preferences.status]);
 
-  const [notifications, setNotifications] = useState({
-    emailNotifications: true,
-    upcomingBilling: true,
-    weeklyReport: false,
-    renewalReminders: true,
-    priceChanges: true,
-  });
-
-  const [saved, setSaved] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-
-  if (!user) {
-    return <Typography>Loading...</Typography>;
-  }
 
   const isDirty =
     formData.name !== (user?.name || "") ||
@@ -116,12 +115,17 @@ export function Settings() {
       (formData.currency !== initialPreferences.currency ||
         formData.timezone !== initialPreferences.timezone ||
         formData.theme !== initialPreferences.theme ||
-        formData.language !== initialPreferences.language));
+        formData.language !== initialPreferences.language ||
+        formData.emailNotificationsEnabled !== initialPreferences.emailNotificationsEnabled ||
+        formData.reminderDaysBefore !== initialPreferences.reminderDaysBefore));
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) => isDirty && currentLocation.pathname !== nextLocation.pathname,
   );
 
+  if (!user) {
+    return <Typography>Loading...</Typography>;
+  }
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -140,13 +144,6 @@ export function Settings() {
       setLocalTheme(value);
       dispatch(setPreferences({ theme: value }));
     }
-  };
-
-  const handleNotificationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNotifications({
-      ...notifications,
-      [e.target.name]: e.target.checked,
-    });
   };
 
   const handleSave = () => {
@@ -168,17 +165,20 @@ export function Settings() {
 
   const handleConfirmSave = async () => {
     try {
+      console.log("Pref data: ", formData);
       await dispatch(updatePreferences(formData)).unwrap();
       setInitialPreferences({
         currency: formData.currency,
         language: formData.language,
         timezone: formData.timezone,
         theme: formData.theme,
+        emailNotificationsEnabled: formData.emailNotificationsEnabled,
+        reminderDaysBefore: formData.reminderDaysBefore,
       });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
+      snackbar.success(t("settings.saved_success"));
     } catch (err) {
       console.error("Failed to update preferences:", err);
+      snackbar.error(t("settings.save_error", "Failed to update preferences"));
     } finally {
       setOpenDialog(false);
     }
@@ -228,6 +228,20 @@ export function Settings() {
     { code: "zh", name: "Chinese" },
   ];
 
+  const handleReminderDaysChange = (days: number) => {
+    setFormData({
+      ...formData,
+      reminderDaysBefore: days,
+    });
+  };
+
+  const handleEmailNotificationsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      emailNotificationsEnabled: e.target.checked,
+    });
+  };
+
   return (
     <Box
       display="flex"
@@ -244,12 +258,6 @@ export function Settings() {
           {t("settings.subtitle")}
         </Typography>
       </Box>
-
-      {saved && (
-        <Alert severity="success" sx={{ mb: 3 }}>
-          {t("settings.saved_success")}
-        </Alert>
-      )}
 
       <Grid container spacing={3}>
         <Grid size={{ xs: 12 }}>
@@ -434,10 +442,37 @@ export function Settings() {
                     </Typography>
                   </Box>
                   <Switch
-                    checked={notifications.emailNotifications}
-                    onChange={handleNotificationChange}
-                    name="emailNotifications"
+                    checked={formData.emailNotificationsEnabled}
+                    onChange={handleEmailNotificationsChange}
+                    name="emailNotificationsEnabled"
                   />
+                </Box>
+                <Box sx={{ textAlign: "left", opacity: formData.emailNotificationsEnabled ? 1 : 0.5 }}>
+                  <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
+                    Remind me:
+                  </Typography>
+
+                  <RadioGroup
+                    value={formData.reminderDaysBefore}
+                    onChange={(e) => handleReminderDaysChange(Number(e.target.value))}
+                    sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+                  >
+                    <FormControlLabel
+                      value={3}
+                      control={<Radio disabled={!formData.emailNotificationsEnabled} />}
+                      label="3 days before"
+                    />
+                    <FormControlLabel
+                      value={1}
+                      control={<Radio disabled={!formData.emailNotificationsEnabled} />}
+                      label="1 day before"
+                    />
+                    <FormControlLabel
+                      value={0}
+                      control={<Radio disabled={!formData.emailNotificationsEnabled} />}
+                      label="On billing day"
+                    />
+                  </RadioGroup>
                 </Box>
 
                 <Divider />
@@ -452,9 +487,9 @@ export function Settings() {
                     </Typography>
                   </Box>
                   <Switch
-                    checked={notifications.upcomingBilling}
-                    onChange={handleNotificationChange}
-                    name="upcomingBilling"
+                    checked={formData.emailNotificationsEnabled}
+                    onChange={handleEmailNotificationsChange}
+                    name="emailNotificationsEnabled"
                   />
                 </Box>
 
@@ -470,9 +505,9 @@ export function Settings() {
                     </Typography>
                   </Box>
                   <Switch
-                    checked={notifications.renewalReminders}
-                    onChange={handleNotificationChange}
-                    name="renewalReminders"
+                    checked={formData.emailNotificationsEnabled}
+                    onChange={handleEmailNotificationsChange}
+                    name="emailNotificationsEnabled"
                   />
                 </Box>
 
@@ -488,9 +523,9 @@ export function Settings() {
                     </Typography>
                   </Box>
                   <Switch
-                    checked={notifications.priceChanges}
-                    onChange={handleNotificationChange}
-                    name="priceChanges"
+                    checked={formData.emailNotificationsEnabled}
+                    onChange={handleEmailNotificationsChange}
+                    name="emailNotificationsEnabled"
                   />
                 </Box>
 
@@ -506,9 +541,9 @@ export function Settings() {
                     </Typography>
                   </Box>
                   <Switch
-                    checked={notifications.weeklyReport}
-                    onChange={handleNotificationChange}
-                    name="weeklyReport"
+                    checked={formData.emailNotificationsEnabled}
+                    onChange={handleEmailNotificationsChange}
+                    name="emailNotificationsEnabled"
                   />
                 </Box>
               </Box>

@@ -38,6 +38,8 @@ public class UserPreferencesService {
         existing.setLanguage(updated.getLanguage());
         existing.setTimezone(updated.getTimezone());
         existing.setTheme(updated.getTheme());
+        existing.setEmailNotificationsEnabled(updated.isEmailNotificationsEnabled());
+        existing.setReminderDaysBefore(updated.getReminderDaysBefore());
 
         return repo.save(existing);
     }
@@ -49,8 +51,9 @@ public class UserPreferencesService {
                 "USD",
                 "en",
                 "UTC",
-                "light"
-        );
+                "light",
+                true,
+                3        );
 
         return repo.save(prefs);
     }

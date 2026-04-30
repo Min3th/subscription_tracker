@@ -18,6 +18,24 @@ public class UserPreferences {
     private String language;
     private String timezone;
     private String theme;
+    private Boolean emailNotificationsEnabled;
+    private int reminderDaysBefore;
+
+    public boolean isEmailNotificationsEnabled() {
+        return emailNotificationsEnabled;
+    }
+
+    public void setEmailNotificationsEnabled(boolean emailNotificationsEnabled) {
+        this.emailNotificationsEnabled = emailNotificationsEnabled;
+    }
+
+    public int getReminderDaysBefore() {
+        return reminderDaysBefore;
+    }
+
+    public void setReminderDaysBefore(int reminderDaysBefore) {
+        this.reminderDaysBefore = reminderDaysBefore;
+    }
 
     public Long getUserId() {
         return userId;
@@ -35,12 +53,14 @@ public class UserPreferences {
         this.user = user;
     }
 
-    public UserPreferences(User user, String currency, String language, String timezone, String theme) {
+    public UserPreferences(User user, String currency, String language, String timezone, String theme,Boolean emailNotificationsEnabled,int reminderDaysBefore) {
         this.user = user;
         this.currency = currency;
         this.language = language;
         this.timezone = timezone;
         this.theme = theme;
+        this.emailNotificationsEnabled = emailNotificationsEnabled;
+        this.reminderDaysBefore = reminderDaysBefore;
     }
 
     public UserPreferences() {
