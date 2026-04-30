@@ -22,7 +22,8 @@ import {
   DialogContentText,
   DialogActions,
   FormControlLabel,
-  Checkbox,
+  Radio,
+  RadioGroup,
 } from "@mui/material";
 import PersonIcon from "@mui/icons-material/Person";
 import NotificationsIcon from "@mui/icons-material/Notifications";
@@ -50,6 +51,8 @@ export function Settings() {
     language: string;
     timezone: string;
     theme: string;
+    emailNotificationsEnabled: boolean;
+    reminderDaysBefore: number;
   } | null>(null);
 
   const [formData, setFormData] = useState({
@@ -59,6 +62,8 @@ export function Settings() {
     timezone: "America/New_York",
     theme: "light",
     language: "en",
+    emailNotificationsEnabled: true,
+    reminderDaysBefore: 3,
   });
 
   useEffect(() => {
@@ -92,11 +97,12 @@ export function Settings() {
           language: preferences.language,
           timezone: preferences.timezone,
           theme: preferences.theme,
+          emailNotificationsEnabled: preferences.emailNotificationsEnabled,
+          reminderDaysBefore: preferences.reminderDaysBefore,
         });
       }
     }
   }, [preferences.status]);
-
 
   const [saved, setSaved] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
@@ -108,7 +114,9 @@ export function Settings() {
       (formData.currency !== initialPreferences.currency ||
         formData.timezone !== initialPreferences.timezone ||
         formData.theme !== initialPreferences.theme ||
-        formData.language !== initialPreferences.language));
+        formData.language !== initialPreferences.language ||
+        formData.emailNotificationsEnabled !== initialPreferences.emailNotificationsEnabled ||
+        formData.reminderDaysBefore !== initialPreferences.reminderDaysBefore));
 
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) => isDirty && currentLocation.pathname !== nextLocation.pathname,
@@ -137,13 +145,6 @@ export function Settings() {
     }
   };
 
-  const handleNotificationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNotifications({
-      ...notifications,
-      [e.target.name]: e.target.checked,
-    });
-  };
-
   const handleSave = () => {
     setOpenDialog(true);
   };
@@ -169,6 +170,8 @@ export function Settings() {
         language: formData.language,
         timezone: formData.timezone,
         theme: formData.theme,
+        emailNotificationsEnabled: formData.emailNotificationsEnabled,
+        reminderDaysBefore: formData.reminderDaysBefore,
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -222,6 +225,20 @@ export function Settings() {
     { code: "ja", name: "Japanese" },
     { code: "zh", name: "Chinese" },
   ];
+
+  const handleReminderDaysChange = (days: number) => {
+    setFormData({
+      ...formData,
+      reminderDaysBefore: days,
+    });
+  };
+
+  const handleEmailNotificationsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      emailNotificationsEnabled: e.target.checked,
+    });
+  };
 
   return (
     <Box
@@ -429,52 +446,37 @@ export function Settings() {
                     </Typography>
                   </Box>
                   <Switch
-                    checked={notifications.emailNotifications}
-                    onChange={handleNotificationChange}
-                    name="emailNotifications"
+                    checked={formData.emailNotificationsEnabled}
+                    onChange={handleEmailNotificationsChange}
+                    name="emailNotificationsEnabled"
                   />
                 </Box>
-                <Box sx={{ textAlign: "left", opacity: notifications.emailNotifications ? 1 : 0.5 }}>
+                <Box sx={{ textAlign: "left", opacity: formData.emailNotificationsEnabled ? 1 : 0.5 }}>
                   <Typography variant="body2" sx={{ fontWeight: 500, mb: 1 }}>
                     Remind me:
                   </Typography>
 
-                  <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+                  <RadioGroup
+                    value={formData.reminderDaysBefore}
+                    onChange={(e) => handleReminderDaysChange(Number(e.target.value))}
+                    sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+                  >
                     <FormControlLabel
-                      control={
-                        <Checkbox
-                          checked={notifications.reminderDays.includes(3)}}
-                          onChange={() => handleReminderChange(3)}
-                          disabled={!notifications.emailNotifications}
-                        />
-                      }
+                      value={3}
+                      control={<Radio disabled={!formData.emailNotificationsEnabled} />}
                       label="3 days before"
                     />
-
                     <FormControlLabel
-                      control={
-                        <Checkbox
-                          // checked={notifications.reminderDays.includes(1)}
-                          checked={true}
-                          onChange={() => handleReminderChange(1)}
-                          disabled={!notifications.emailNotifications}
-                        />
-                      }
+                      value={1}
+                      control={<Radio disabled={!formData.emailNotificationsEnabled} />}
                       label="1 day before"
                     />
-
                     <FormControlLabel
-                      control={
-                        <Checkbox
-                          // checked={notifications.reminderDays.includes(0)}
-                          checked={true}
-                          onChange={() => handleReminderChange(0)}
-                          disabled={!notifications.emailNotifications}
-                        />
-                      }
+                      value={0}
+                      control={<Radio disabled={!formData.emailNotificationsEnabled} />}
                       label="On billing day"
                     />
-                  </Box>
+                  </RadioGroup>
                 </Box>
 
                 <Divider />
@@ -489,9 +491,9 @@ export function Settings() {
                     </Typography>
                   </Box>
                   <Switch
-                    checked={notifications.upcomingBilling}
-                    onChange={handleNotificationChange}
-                    name="upcomingBilling"
+                    checked={formData.emailNotificationsEnabled}
+                    onChange={handleEmailNotificationsChange}
+                    name="emailNotificationsEnabled"
                   />
                 </Box>
 
@@ -507,9 +509,9 @@ export function Settings() {
                     </Typography>
                   </Box>
                   <Switch
-                    checked={notifications.renewalReminders}
-                    onChange={handleNotificationChange}
-                    name="renewalReminders"
+                    checked={formData.emailNotificationsEnabled}
+                    onChange={handleEmailNotificationsChange}
+                    name="emailNotificationsEnabled"
                   />
                 </Box>
 
@@ -525,9 +527,9 @@ export function Settings() {
                     </Typography>
                   </Box>
                   <Switch
-                    checked={notifications.priceChanges}
-                    onChange={handleNotificationChange}
-                    name="priceChanges"
+                    checked={formData.emailNotificationsEnabled}
+                    onChange={handleEmailNotificationsChange}
+                    name="emailNotificationsEnabled"
                   />
                 </Box>
 
@@ -543,9 +545,9 @@ export function Settings() {
                     </Typography>
                   </Box>
                   <Switch
-                    checked={notifications.weeklyReport}
-                    onChange={handleNotificationChange}
-                    name="weeklyReport"
+                    checked={formData.emailNotificationsEnabled}
+                    onChange={handleEmailNotificationsChange}
+                    name="emailNotificationsEnabled"
                   />
                 </Box>
               </Box>

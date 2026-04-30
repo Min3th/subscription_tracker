@@ -63,8 +63,8 @@ const preferencesSlice = createSlice({
         state.language = action.payload.language || state.language;
         state.timezone = action.payload.timezone || state.timezone;
         state.theme = action.payload.theme || state.theme;
-        state.emailNotificationsEnabled = action.payload.emailNotificationsEnabled || state.emailNotificationsEnabled;
-        state.reminderDaysBefore = action.payload.reminderDaysBefore || state.reminderDaysBefore;
+        state.emailNotificationsEnabled = action.payload.emailNotificationsEnabled ?? state.emailNotificationsEnabled;
+        state.reminderDaysBefore = action.payload.reminderDaysBefore ?? state.reminderDaysBefore;
       })
       .addCase(fetchPreferences.rejected, (state, action) => {
         state.status = "failed";
@@ -79,8 +79,8 @@ const preferencesSlice = createSlice({
         state.language = action.payload.language || state.language;
         state.timezone = action.payload.timezone || state.timezone;
         state.theme = action.payload.theme || state.theme;
-        state.emailNotificationsEnabled = action.payload.emailNotificationsEnabled || state.emailNotificationsEnabled;
-        state.reminderDaysBefore = action.payload.reminderDaysBefore || state.reminderDaysBefore;
+        state.emailNotificationsEnabled = action.payload.emailNotificationsEnabled ?? state.emailNotificationsEnabled;
+        state.reminderDaysBefore = action.payload.reminderDaysBefore ?? state.reminderDaysBefore;
       })
       .addCase(updatePreferences.rejected, (state, action) => {
         state.status = "failed";
