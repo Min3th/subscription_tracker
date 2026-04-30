@@ -39,6 +39,7 @@ public class UserPreferencesService {
         existing.setTimezone(updated.getTimezone());
         existing.setTheme(updated.getTheme());
         existing.setEmailNotificationsEnabled(updated.isEmailNotificationsEnabled());
+        existing.setReminderDaysBefore(updated.getReminderDaysBefore());
 
         return repo.save(existing);
     }

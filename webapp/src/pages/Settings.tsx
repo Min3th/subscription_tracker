@@ -38,6 +38,7 @@ import type { RootState, AppDispatch } from "../app/store";
 import { fetchPreferences, updatePreferences, setPreferences } from "../features/preferences/preferencesSlice";
 import { useTranslation } from "react-i18next";
 import { useBlocker } from "react-router-dom";
+import { useSnackbar } from "../utils/Snackbar";
 
 export function Settings() {
   const { t } = useTranslation();
@@ -45,6 +46,7 @@ export function Settings() {
   const preferences = useSelector((state: RootState) => state.preferences);
   const [localTheme, setLocalTheme] = useState(preferences.theme);
   const dispatch = useDispatch<AppDispatch>();
+  const snackbar = useSnackbar();
 
   const [initialPreferences, setInitialPreferences] = useState<{
     currency: string;
@@ -104,7 +106,6 @@ export function Settings() {
     }
   }, [preferences.status]);
 
-  const [saved, setSaved] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
 
   const isDirty =
@@ -164,6 +165,7 @@ export function Settings() {
 
   const handleConfirmSave = async () => {
     try {
+      console.log("Pref data: ", formData);
       await dispatch(updatePreferences(formData)).unwrap();
       setInitialPreferences({
         currency: formData.currency,
@@ -173,10 +175,10 @@ export function Settings() {
         emailNotificationsEnabled: formData.emailNotificationsEnabled,
         reminderDaysBefore: formData.reminderDaysBefore,
       });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 3000);
+      snackbar.success(t("settings.saved_success"));
     } catch (err) {
       console.error("Failed to update preferences:", err);
+      snackbar.error(t("settings.save_error", "Failed to update preferences"));
     } finally {
       setOpenDialog(false);
     }
@@ -256,12 +258,6 @@ export function Settings() {
           {t("settings.subtitle")}
         </Typography>
       </Box>
-
-      {saved && (
-        <Alert severity="success" sx={{ mb: 3 }}>
-          {t("settings.saved_success")}
-        </Alert>
-      )}
 
       <Grid container spacing={3}>
         <Grid size={{ xs: 12 }}>

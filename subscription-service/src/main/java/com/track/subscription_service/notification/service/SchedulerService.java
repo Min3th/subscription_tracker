@@ -37,8 +37,8 @@ public class SchedulerService {
 //        return !nextBillingDate.isAfter(LocalDate.now().plusDays(3));
     }
 
-//    @Scheduled(cron = "0 0 9 * * ?") at 9 am
-    @Scheduled(cron = "0 */1 * * * ?") // for testing, every 1 min
+    @Scheduled(cron = "0 0 9 * * ?")  //at 9 am
+//    @Scheduled(cron = "0 */1 * * * ?") // for testing, every 1 min
     public void checkSubscriptions(){
         List<Subscription> subscriptions = subscriptionRepository.findAll();
         System.out.println("Scheduler running...");
