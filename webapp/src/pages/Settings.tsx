@@ -83,8 +83,8 @@ export function Settings() {
         language: preferences.language,
         timezone: preferences.timezone,
         theme: preferences.theme,
-        emailNotifications: preferences.emailNotifications,
-        reminderDays: preferences.reminderDays,
+        emailNotificationsEnabled: preferences.emailNotificationsEnabled,
+        reminderDaysBefore: preferences.reminderDaysBefore,
       }));
       if (!initialPreferences) {
         setInitialPreferences({
@@ -97,20 +97,9 @@ export function Settings() {
     }
   }, [preferences.status]);
 
-  const [notifications, setNotifications] = useState({
-    emailNotifications: true,
-    upcomingBilling: true,
-    weeklyReport: false,
-    renewalReminders: true,
-    priceChanges: true,
-  });
 
   const [saved, setSaved] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-
-  if (!user) {
-    return <Typography>Loading...</Typography>;
-  }
 
   const isDirty =
     formData.name !== (user?.name || "") ||
@@ -125,6 +114,9 @@ export function Settings() {
     ({ currentLocation, nextLocation }) => isDirty && currentLocation.pathname !== nextLocation.pathname,
   );
 
+  if (!user) {
+    return <Typography>Loading...</Typography>;
+  }
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
@@ -451,7 +443,7 @@ export function Settings() {
                     <FormControlLabel
                       control={
                         <Checkbox
-                          checked={notifications.reminderDays.includes(3)}
+                          checked={notifications.reminderDays.includes(3)}}
                           onChange={() => handleReminderChange(3)}
                           disabled={!notifications.emailNotifications}
                         />
@@ -462,7 +454,8 @@ export function Settings() {
                     <FormControlLabel
                       control={
                         <Checkbox
-                          checked={notifications.reminderDays.includes(1)}
+                          // checked={notifications.reminderDays.includes(1)}
+                          checked={true}
                           onChange={() => handleReminderChange(1)}
                           disabled={!notifications.emailNotifications}
                         />
@@ -473,7 +466,8 @@ export function Settings() {
                     <FormControlLabel
                       control={
                         <Checkbox
-                          checked={notifications.reminderDays.includes(0)}
+                          // checked={notifications.reminderDays.includes(0)}
+                          checked={true}
                           onChange={() => handleReminderChange(0)}
                           disabled={!notifications.emailNotifications}
                         />
