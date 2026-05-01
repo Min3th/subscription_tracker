@@ -3,6 +3,7 @@ package com.track.subscription_service.notification.service;
 import com.track.subscription_service.subscription.entity.Subscription;
 import com.track.subscription_service.subscription.repository.SubscriptionRepository;
 import com.track.subscription_service.subscription.service.BillingService;
+import com.track.subscription_service.user.entity.UserPreferences;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class SchedulerService {
     }
 
     private boolean isDueSoon(Subscription sub) {
-        return true;
+
 //        System.out.println("Checking sub: " + sub.getName());
 //        LocalDate nextBillingDate = billingService.getNextBillingDate(
 //                sub.getStartDate(),
@@ -35,6 +36,28 @@ public class SchedulerService {
 //        System.out.println("Next billing date: " + nextBillingDate);
 //        System.out.println("Today + 3: " + LocalDate.now().plusDays(3));
 //        return !nextBillingDate.isAfter(LocalDate.now().plusDays(3));
+
+        UserPreferences preferences = sub.getUser().getPreferences();
+
+        if (preferences == null || !preferences.isEmailNotificationsEnabled()) {
+            return false;
+        }
+
+        LocalDate nextBillingDate = billingService.getNextBillingDate(
+                sub.getStartDate(),
+                sub.getBillingIntervalUnit(),
+                sub.getBillingIntervalCount()
+        );
+
+        if (nextBillingDate == null) {
+            return false;
+        }
+
+        LocalDate today = LocalDate.now();
+
+        int reminderDaysBefore = preferences.getReminderDaysBefore();
+
+        return nextBillingDate.minusDays(reminderDaysBefore).isEqual(today);
     }
 
     @Scheduled(cron = "0 0 9 * * ?")  //at 9 am

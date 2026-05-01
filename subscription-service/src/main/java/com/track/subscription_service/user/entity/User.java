@@ -33,6 +33,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Subscription> subscriptions;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UserPreferences preferences;
+
     public User(String googleId, String email, String name, String provider, Instant createdAt, Instant updatedAt) {
         this.googleId = googleId;
         this.email = email;
@@ -90,6 +93,22 @@ public class User {
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<Subscription> getSubscriptions() {
+        return subscriptions;
+    }
+
+    public void setSubscriptions(List<Subscription> subscriptions) {
+        this.subscriptions = subscriptions;
+    }
+
+    public UserPreferences getPreferences() {
+        return preferences;
+    }
+
+    public void setPreferences(UserPreferences preferences) {
+        this.preferences = preferences;
     }
 
     public Instant getUpdatedAt() {
