@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Service
@@ -39,7 +40,7 @@ public class SchedulerService {
 
         UserPreferences preferences = sub.getUser().getPreferences();
 
-        if (preferences == null || !preferences.isEmailNotificationsEnabled()) {
+        if (preferences == null || !preferences.getEmailNotificationsEnabled()) {
             return false;
         }
 
@@ -57,11 +58,26 @@ public class SchedulerService {
 
         int reminderDaysBefore = preferences.getReminderDaysBefore();
 
-        return nextBillingDate.minusDays(reminderDaysBefore).isEqual(today);
+        LocalDate reminderDate = nextBillingDate.minusDays(reminderDaysBefore);
+
+        if (!reminderDate.isEqual(today)) {
+            return false;
+        }
+
+        LocalTime reminderTime = preferences.getReminderTime();
+
+        if (reminderTime == null) {
+            reminderTime = LocalTime.of(9, 0);
+        }
+
+        LocalTime now = LocalTime.now();
+
+        return now.getHour() == reminderTime.getHour()
+                && now.getMinute() >= reminderTime.getMinute()
+                && now.getMinute() < reminderTime.getMinute() + 5;
     }
 
-    @Scheduled(cron = "0 0 9 * * ?")  //at 9 am
-//    @Scheduled(cron = "0 */1 * * * ?") // for testing, every 1 min
+    @Scheduled(cron = "0 */5 * * * ?")
     public void checkSubscriptions(){
         List<Subscription> subscriptions = subscriptionRepository.findAll();
         System.out.println("Scheduler running...");
