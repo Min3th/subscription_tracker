@@ -143,7 +143,7 @@ export default function MiniDrawer() {
                 sx={{
                   minWidth: 0,
                   justifyContent: "center",
-                  mr: open ? 3 : "auto",
+                  mr: 3,
                 }}
               >
                 <DashboardIcon />
@@ -153,12 +153,8 @@ export default function MiniDrawer() {
                 primary={t("sidebar.dashboard", "Dashboard")}
                 sx={{
                   opacity: open ? 1 : 0,
-                  maxWidth: open ? 180 : 0,
-                  overflow: "hidden",
                   whiteSpace: "nowrap",
-                  transform: open ? "scaleX(1)" : "scaleX(0)",
-                  transformOrigin: "left center",
-                  transition: theme.transitions.create(["opacity", "max-width", "transform"], {
+                  transition: theme.transitions.create("opacity", {
                     easing: theme.transitions.easing.sharp,
                     duration: open
                       ? theme.transitions.duration.enteringScreen
@@ -182,7 +178,7 @@ export default function MiniDrawer() {
                 sx={{
                   minWidth: 0,
                   justifyContent: "center",
-                  mr: open ? 3 : "auto",
+                  mr: 3,
                 }}
               >
                 <SubscriptionsIcon />
@@ -192,12 +188,8 @@ export default function MiniDrawer() {
                 primary={t("sidebar.subscriptions", "Subscriptions")}
                 sx={{
                   opacity: open ? 1 : 0,
-                  maxWidth: open ? 180 : 0,
-                  overflow: "hidden",
                   whiteSpace: "nowrap",
-                  transform: open ? "scaleX(1)" : "scaleX(0)",
-                  transformOrigin: "left center",
-                  transition: theme.transitions.create(["opacity", "max-width", "transform"], {
+                  transition: theme.transitions.create("opacity", {
                     easing: theme.transitions.easing.sharp,
                     duration: open
                       ? theme.transitions.duration.enteringScreen
@@ -221,7 +213,7 @@ export default function MiniDrawer() {
                 sx={{
                   minWidth: 0,
                   justifyContent: "center",
-                  mr: open ? 3 : "auto",
+                  mr: 3,
                 }}
               >
                 <SettingsIcon />
@@ -231,12 +223,8 @@ export default function MiniDrawer() {
                 primary={t("sidebar.settings", "Settings")}
                 sx={{
                   opacity: open ? 1 : 0,
-                  maxWidth: open ? 180 : 0,
-                  overflow: "hidden",
                   whiteSpace: "nowrap",
-                  transform: open ? "scaleX(1)" : "scaleX(0)",
-                  transformOrigin: "left center",
-                  transition: theme.transitions.create(["opacity", "max-width", "transform"], {
+                  transition: theme.transitions.create("opacity", {
                     easing: theme.transitions.easing.sharp,
                     duration: open
                       ? theme.transitions.duration.enteringScreen
@@ -261,7 +249,7 @@ export default function MiniDrawer() {
                 sx={{
                   minWidth: 0,
                   justifyContent: "center",
-                  mr: open ? 3 : "auto",
+                  mr: 3,
                 }}
               >
                 <LogoutIcon />
@@ -271,12 +259,8 @@ export default function MiniDrawer() {
                 primary={t("sidebar.logout", "Logout")}
                 sx={{
                   opacity: open ? 1 : 0,
-                  maxWidth: open ? 180 : 0,
-                  overflow: "hidden",
                   whiteSpace: "nowrap",
-                  transform: open ? "scaleX(1)" : "scaleX(0)",
-                  transformOrigin: "left center",
-                  transition: theme.transitions.create(["opacity", "max-width", "transform"], {
+                  transition: theme.transitions.create("opacity", {
                     easing: theme.transitions.easing.sharp,
                     duration: open
                       ? theme.transitions.duration.enteringScreen
