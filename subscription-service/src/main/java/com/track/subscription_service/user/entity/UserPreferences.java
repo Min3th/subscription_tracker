@@ -2,6 +2,8 @@ package com.track.subscription_service.user.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalTime;
+
 @Entity
 @Table(name = "user_preferences")
 public class UserPreferences {
@@ -21,13 +23,8 @@ public class UserPreferences {
     private Boolean emailNotificationsEnabled;
     private int reminderDaysBefore;
 
-    public boolean isEmailNotificationsEnabled() {
-        return emailNotificationsEnabled;
-    }
-
-    public void setEmailNotificationsEnabled(boolean emailNotificationsEnabled) {
-        this.emailNotificationsEnabled = emailNotificationsEnabled;
-    }
+    @Column(nullable = false)
+    private LocalTime reminderTime = LocalTime.of(9, 0);
 
     public int getReminderDaysBefore() {
         return reminderDaysBefore;
@@ -61,6 +58,7 @@ public class UserPreferences {
         this.theme = theme;
         this.emailNotificationsEnabled = emailNotificationsEnabled;
         this.reminderDaysBefore = reminderDaysBefore;
+        this.reminderTime = LocalTime.of(9, 0);
     }
 
     public UserPreferences() {
@@ -98,5 +96,19 @@ public class UserPreferences {
         this.theme = theme;
     }
 
+    public Boolean getEmailNotificationsEnabled() {
+        return emailNotificationsEnabled;
+    }
 
+    public void setEmailNotificationsEnabled(Boolean emailNotificationsEnabled) {
+        this.emailNotificationsEnabled = emailNotificationsEnabled;
+    }
+
+    public LocalTime getReminderTime() {
+        return reminderTime;
+    }
+
+    public void setReminderTime(LocalTime reminderTime) {
+        this.reminderTime = reminderTime;
+    }
 }
