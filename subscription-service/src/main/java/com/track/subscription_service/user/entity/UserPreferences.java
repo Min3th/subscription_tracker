@@ -1,5 +1,6 @@
 package com.track.subscription_service.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalTime;
@@ -11,6 +12,7 @@ public class UserPreferences {
     @Id
     private Long userId;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name="user_id")
     @MapsId

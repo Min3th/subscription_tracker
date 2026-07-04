@@ -3,6 +3,7 @@ package com.track.subscription_service.user.entity;
 import com.track.subscription_service.subscription.entity.Subscription;
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class User {
     private Instant createdAt;
     private Instant updatedAt;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Subscription> subscriptions;
 

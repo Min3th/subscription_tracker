@@ -610,9 +610,6 @@ export function Settings() {
         </Grid>
       </Grid>
       <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end", gap: 2 }}>
-        <Button variant="outlined" onClick={handleCancel}>
-          {t("settings.cancel")}
-        </Button>
         <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSave}>
           {t("settings.save")}
         </Button>

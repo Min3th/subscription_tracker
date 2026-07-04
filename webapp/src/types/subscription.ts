@@ -25,6 +25,7 @@ export interface DetailedSubscription {
   website: string;
   autoRenew: boolean;
   totalPaid: number;
+  emailNotificationsEnabled: boolean;
 }
 
 export interface UpdateSubscriptionPayload {
@@ -39,6 +40,7 @@ export interface UpdateSubscriptionPayload {
   website?: string;
   billingIntervalUnit?: BillingUnit;
   billingIntervalCount?: number;
+  emailNotificationsEnabled?: boolean;
 }
 
 export type SubscriptionType = "one-time" | "recurring";
