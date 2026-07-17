@@ -42,6 +42,7 @@ type FormValues = {
   website: string;
   billingIntervalUnit: BillingUnit;
   billingIntervalCount: number;
+  emailNotificationsEnabled: boolean;
 };
 
 export default function SubscriptionForm({ open, handleClose, onSuccess, editId }: Props) {
@@ -74,6 +75,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
       website: "",
       billingIntervalUnit: "month",
       billingIntervalCount: 1,
+      emailNotificationsEnabled: false,
     },
     validationSchema,
     onSubmit: async (values) => {
@@ -90,6 +92,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
           website: values.website,
           billingIntervalUnit: values.billingIntervalUnit,
           billingIntervalCount: Number(values.billingIntervalCount),
+          emailNotificationsEnabled: Boolean(values.emailNotificationsEnabled),
         };
 
         if (editId) {
@@ -105,6 +108,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
             website: values.website,
             billingIntervalUnit: values.billingIntervalUnit,
             billingIntervalCount: Number(values.billingIntervalCount),
+            emailNotificationsEnabled: Boolean(values.emailNotificationsEnabled),
           };
           await dispatch(updateSubscriptionThunk(updatePayload));
           snackbar.success("Subscription updated successfully!");
@@ -143,6 +147,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
             website: data.website || "",
             billingIntervalUnit: data.billingIntervalUnit || "month",
             billingIntervalCount: data.billingIntervalCount || 1,
+            emailNotificationsEnabled: data.emailNotificationsEnabled || false,
           });
         })
         .catch((err: any) => {
