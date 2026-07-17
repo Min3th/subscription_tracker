@@ -49,9 +49,14 @@ jobs:
 
       - name: Build and test
         env:
-          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/subscription
-          SPRING_DATASOURCE_USERNAME: postgres
-          SPRING_DATASOURCE_PASSWORD: postgres
+          DB_URL: jdbc:postgresql://localhost:5432/subscription
+          DB_USERNAME: postgres
+          DB_PASSWORD: postgres
+          JWT_SECRET: github-actions-test-secret-key-that-is-longer-than-32-bytes
+          GOOGLE_CLIENT_ID: test-google-client-id
+          SENDGRID_API_KEY: test-sendgrid-api-key
+          SENDGRID_FROM_EMAIL: test@example.com
+          SENDGRID_FROM_NAME: Subscription Tracker Tests
         run: mvn clean package
 
       - name: Prepare deployment JAR

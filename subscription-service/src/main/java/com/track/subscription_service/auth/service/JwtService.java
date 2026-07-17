@@ -53,9 +53,4 @@ public class JwtService {
                 .getBody();
     }
 
-    @PostConstruct
-    public void debugSecret() {
-        System.out.println("JWT SECRET LENGTH: " + key.getEncoded().length);
-        System.out.println("JWT SECRET RAW: " + new String(key.getEncoded()));
-    }
 }
