@@ -102,7 +102,7 @@ jobs:
               "set -e",
               "aws s3 cp s3://${{ secrets.S3_DEPLOY_BUCKET }}/subscription-service.jar /home/ec2-user/subscription-service.jar.new",
               "sudo systemctl stop subscription-tracker",
-              "mv /home/ec2-user/subscription-service.jar.new /home/ec2-user/subscription-service.jar",
+              "sudo mv /home/ec2-user/subscription-service.jar.new /home/ec2-user/subscription-service.jar",
               "sudo systemctl start subscription-tracker",
               "sudo systemctl is-active --quiet subscription-tracker"
             ]' \
