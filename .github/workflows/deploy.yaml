@@ -16,6 +16,21 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: subscription
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d subscription"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     defaults:
       run:
         working-directory: subscription-service
@@ -33,6 +48,10 @@ jobs:
           cache-dependency-path: subscription-service/pom.xml
 
       - name: Build and test
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/subscription
+          SPRING_DATASOURCE_USERNAME: postgres
+          SPRING_DATASOURCE_PASSWORD: postgres
         run: mvn clean package
 
       - name: Prepare deployment JAR
@@ -56,14 +75,14 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Verify AWS identity
-        run: aws sts get-caller-identity
         working-directory: .
+        run: aws sts get-caller-identity
 
       - name: Upload JAR to S3
+        working-directory: .
         run: |
           aws s3 cp subscription-service.jar \
             "s3://${{ secrets.S3_DEPLOY_BUCKET }}/subscription-service.jar"
-        working-directory: .
 
       - name: Deploy through Systems Manager
         id: deploy
