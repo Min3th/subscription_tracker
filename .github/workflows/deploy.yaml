@@ -119,8 +119,11 @@ jobs:
             --instance-id "${{ secrets.EC2_INSTANCE_ID }}"
 
       - name: Show deployment result
+        if: always()
         working-directory: .
         run: |
           aws ssm get-command-invocation \
             --command-id "${{ steps.deploy.outputs.command_id }}" \
-            --instance-id "${{ secrets.EC2_INSTANCE_ID }}"
+            --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
+            --query '{Status:Status,StdOut:StandardOutputContent,StdErr:StandardErrorContent}' \
+            --output json
