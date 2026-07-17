@@ -1,0 +1,102 @@
+name: Build and Deploy Backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "subscription-service/**"
+      - ".github/workflows/deploy.yaml"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: subscription-service
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+          cache: maven
+          cache-dependency-path: subscription-service/pom.xml
+
+      - name: Build and test
+        run: mvn clean package
+
+      - name: Prepare deployment JAR
+        shell: bash
+        run: |
+          JAR_FILE=$(find target -maxdepth 1 -type f -name "*.jar" \
+            ! -name "*-sources.jar" \
+            ! -name "*-javadoc.jar" | head -n 1)
+
+          if [ -z "$JAR_FILE" ]; then
+            echo "No deployable JAR found."
+            exit 1
+          fi
+
+          cp "$JAR_FILE" ../subscription-service.jar
+
+      - name: Authenticate to AWS using GitHub OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
+        working-directory: .
+
+      - name: Upload JAR to S3
+        run: |
+          aws s3 cp subscription-service.jar \
+            "s3://${{ secrets.S3_DEPLOY_BUCKET }}/subscription-service.jar"
+        working-directory: .
+
+      - name: Deploy through Systems Manager
+        id: deploy
+        shell: bash
+        working-directory: .
+        run: |
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+            --document-name "AWS-RunShellScript" \
+            --comment "Deploy Subscription Tracker backend" \
+            --parameters 'commands=[
+              "set -e",
+              "aws s3 cp s3://${{ secrets.S3_DEPLOY_BUCKET }}/subscription-service.jar /home/ec2-user/subscription-service.jar.new",
+              "sudo systemctl stop subscription-tracker",
+              "mv /home/ec2-user/subscription-service.jar.new /home/ec2-user/subscription-service.jar",
+              "sudo systemctl start subscription-tracker",
+              "sudo systemctl is-active --quiet subscription-tracker"
+            ]' \
+            --query "Command.CommandId" \
+            --output text)
+
+          echo "command_id=$COMMAND_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for deployment
+        working-directory: .
+        run: |
+          aws ssm wait command-executed \
+            --command-id "${{ steps.deploy.outputs.command_id }}" \
+            --instance-id "${{ secrets.EC2_INSTANCE_ID }}"
+
+      - name: Show deployment result
+        working-directory: .
+        run: |
+          aws ssm get-command-invocation \
+            --command-id "${{ steps.deploy.outputs.command_id }}" \
+            --instance-id "${{ secrets.EC2_INSTANCE_ID }}"
