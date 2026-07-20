@@ -24,6 +24,7 @@ const mapToDetailed = (item: any): DetailedSubscription => ({
   website: item.website,
   autoRenew: item.type === "recurring",
   totalPaid: item.totalPaid,
+  emailNotificationsEnabled: item.emailNotificationsEnabled,
 });
 
 export const createSubscriptionThunk = createAsyncThunk("subscriptions/create", async (data: any) => {

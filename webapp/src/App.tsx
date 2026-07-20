@@ -2,7 +2,6 @@ import "./App.css";
 import { Provider } from "react-redux";
 import { store } from "./app/store.ts";
 import { SnackbarProvider } from "./utils/Snackbar.tsx";
-import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import HomePage from "./pages/HomePage.tsx";
 import ThemeContextProvider from "./theme/ThemeContext.tsx";

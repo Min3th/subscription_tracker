@@ -316,7 +316,7 @@ export default function HomePage() {
                 desc: "With streaming, software, and delivery services, it's impossible to keep track of every billing cycle manually.",
               },
             ].map((item, i) => (
-              <Grid item xs={12} sm={6} md={4} key={i}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
                 <Card
                   sx={{
                     height: "100%",
@@ -397,7 +397,7 @@ export default function HomePage() {
                 desc: "Whether you're billed weekly, monthly, or yearly, our tracker handles it all effortlessly.",
               },
             ].map((feature, i) => (
-              <Grid item xs={12} sm={6} key={i}>
+              <Grid size={{ xs: 12, sm: 6 }} key={i}>
                 <Card
                   sx={{
                     height: "300px",
@@ -478,7 +478,7 @@ export default function HomePage() {
                 desc: "Relax knowing you'll never miss a payment or cancellation again.",
               },
             ].map((item, i) => (
-              <Grid item xs={12} sm={6} md={4} key={i}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
                 <Card
                   sx={{
                     height: "100%",

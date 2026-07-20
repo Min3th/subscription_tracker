@@ -17,7 +17,7 @@ const initialState: AuthState = {
   token: null,
 };
 
-export const logoutUser = createAsyncThunk("auth/logoutUser", async (_, { dispatch }) => {
+export const logoutUser = createAsyncThunk("auth/logoutUser", async () => {
   try {
     await api.post("/auth/logout");
   } catch (e) {

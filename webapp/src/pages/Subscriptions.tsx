@@ -23,8 +23,8 @@ export default function Subscriptions() {
   const [filterCategory, setFilterCategory] = useState("all");
   const [sortBy, setSortBy] = useState("name");
   const [isAddFormOpen, setIsAddFormOpen] = useState(false);
-  const [editId, setEditId] = useState<string | null>(null);
-  const handleEdit = (id: string) => {
+  const [editId, setEditId] = useState<number | null>(null);
+  const handleEdit = (id: number) => {
     setEditId(id);
     setIsAddFormOpen(true);
   };

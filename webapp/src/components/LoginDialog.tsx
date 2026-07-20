@@ -35,9 +35,6 @@ export default function LoginDialog({ open, onClose }: Props) {
     } catch (error) {
       console.error("Error decoding JWT:", error);
     }
-    if (credentialResponse.credential) {
-      const user = jwtDecode(credentialResponse.credential);
-    }
   };
   return (
     <Dialog open={open} onClose={onClose}>

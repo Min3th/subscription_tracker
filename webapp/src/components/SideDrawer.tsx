@@ -3,7 +3,6 @@ import type { Theme } from "@mui/material/styles";
 import type { CSSObject } from "@mui/system";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
-import type { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import List from "@mui/material/List";
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
@@ -34,11 +33,6 @@ import type { AppDispatch } from "../app/store";
 
 const drawerWidth = 240;
 
-type Props = {
-  open: boolean;
-  onClose: () => void;
-};
-
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
   transition: theme.transitions.create("width", {
@@ -68,10 +62,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
-
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
-}
 
 const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" })(({ theme }) => ({
   width: drawerWidth,

@@ -28,9 +28,9 @@ import type { AppDispatch } from "../app/store";
 
 interface Props {
   subscription: DetailedSubscription;
-  onEdit?: (id: string) => void;
-  onCancel?: (id: string) => void;
-  onPause?: (id: string) => void;
+  onEdit?: (id: number) => void;
+  onCancel?: (id: number) => void;
+  onPause?: (id: number) => void;
 }
 
 export default function GridSubscriptionCard({ subscription, onEdit, onCancel }: Props) {

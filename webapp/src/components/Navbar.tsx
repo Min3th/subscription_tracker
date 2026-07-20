@@ -6,27 +6,25 @@ import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import MenuIcon from "@mui/icons-material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { Button } from "@mui/material";
 import LoginDialog from "./LoginDialog";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import Avatar from "@mui/material/Avatar";
 import AddIcon from "@mui/icons-material/Add";
 import SubscriptionForm from "./SubscriptionForm";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import Subtrak from "../../public/Subtrak.png";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Navbar({
-  onClick,
+  onClick: _onClick,
   open,
   showDrawerButton = false,
 }: {
-  onClick: () => void;
+  onClick?: () => void;
   open: boolean;
   showDrawerButton?: boolean;
 }) {
@@ -35,7 +33,6 @@ export default function Navbar({
   const [openLogin, setOpenLogin] = React.useState(false);
   const [openAdd, setOpenAdd] = React.useState(false);
   const user = useSelector((state: any) => state.auth.user);
-  const dispatch = useDispatch();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const navigate = useNavigate();

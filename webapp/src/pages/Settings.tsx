@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Card,
@@ -14,7 +14,6 @@ import {
   Divider,
   Avatar,
   IconButton,
-  Alert,
   Grid,
   Dialog,
   DialogTitle,
@@ -44,7 +43,6 @@ export function Settings() {
   const { t } = useTranslation();
   const { user } = useSelector((state: RootState) => state.auth);
   const preferences = useSelector((state: RootState) => state.preferences);
-  const [localTheme, setLocalTheme] = useState(preferences.theme);
   const dispatch = useDispatch<AppDispatch>();
   const snackbar = useSnackbar();
 
@@ -119,8 +117,8 @@ export function Settings() {
         formData.emailNotificationsEnabled !== initialPreferences.emailNotificationsEnabled ||
         formData.reminderDaysBefore !== initialPreferences.reminderDaysBefore));
 
-  const blocker = useBlocker(
-    ({ currentLocation, nextLocation }) => isDirty && currentLocation.pathname !== nextLocation.pathname,
+  const blocker = useBlocker(({ currentLocation, nextLocation }) =>
+    Boolean(isDirty && currentLocation.pathname !== nextLocation.pathname),
   );
 
   if (!user) {
@@ -141,26 +139,12 @@ export function Settings() {
     });
 
     if (name === "theme") {
-      setLocalTheme(value);
       dispatch(setPreferences({ theme: value }));
     }
   };
 
   const handleSave = () => {
     setOpenDialog(true);
-  };
-
-  const handleCancel = () => {
-    if (initialPreferences) {
-      setFormData((prev) => ({
-        ...prev,
-        ...initialPreferences,
-      }));
-      if (initialPreferences.theme !== formData.theme) {
-        dispatch(setPreferences({ theme: initialPreferences.theme }));
-      }
-    }
-    dispatch(fetchPreferences());
   };
 
   const handleConfirmSave = async () => {

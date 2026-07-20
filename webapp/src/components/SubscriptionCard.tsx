@@ -30,13 +30,14 @@ import type { DetailedSubscription } from "../types/subscription";
 import { t } from "i18next";
 import { useSnackbar } from "../utils/Snackbar";
 import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../app/store";
 import { deleteSubscriptionThunk } from "../app/subscriptionSlice";
 
 interface Props {
   subscription: DetailedSubscription;
-  onEdit?: (id: string) => void;
-  onCancel?: (id: string) => void;
-  onPause?: (id: string) => void;
+  onEdit?: (id: number) => void;
+  onCancel?: (id: number) => void;
+  onPause?: (id: number) => void;
 }
 
 export default function SubscriptionCard({ subscription, onEdit, onCancel, onPause }: Props) {
@@ -49,7 +50,7 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
   };
   const snackbar = useSnackbar();
   const handleClose = () => setAnchorEl(null);
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const getStatusColor = (status: string) => {
     switch (status) {
       case "active":
@@ -189,7 +190,7 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
           <Box display="flex" flexDirection="column" alignItems="flex-end" gap={2}>
             <Box display="flex" alignItems="center" gap={1}>
               <Typography variant="body2">Auto-renew</Typography>
-              <Switch checked={subscription.autoRenew} onChange={(e) => {}} size="small" />
+              <Switch checked={subscription.autoRenew} onChange={() => {}} size="small" />
             </Box>
 
             <IconButton onClick={handleOpen}>
