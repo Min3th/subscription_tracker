@@ -4,6 +4,7 @@ import com.track.subscription_service.auth.dto.GoogleAuthRequest;
 import com.track.subscription_service.auth.service.AuthService;
 import com.track.subscription_service.auth.service.RefreshTokenService;
 import com.track.subscription_service.auth.util.AuthResponse;
+import com.track.subscription_service.config.FrontendOriginPolicy;
 import com.track.subscription_service.user.entity.User;
 import com.track.subscription_service.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,10 +13,10 @@ import jakarta.servlet.http.Cookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "https://localhost:5173",allowCredentials = "true")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -23,16 +24,31 @@ public class AuthController {
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
     private final UserRepository userRepository;
+    private final FrontendOriginPolicy frontendOriginPolicy;
+    private final boolean refreshCookieSecure;
+    private final String refreshCookieSameSite;
     public AuthController(AuthService authService,
                           RefreshTokenService refreshTokenService,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          FrontendOriginPolicy frontendOriginPolicy,
+                          @Value("${app.auth.refresh-cookie.secure}") boolean refreshCookieSecure,
+                          @Value("${app.auth.refresh-cookie.same-site}") String refreshCookieSameSite) {
         this.authService = authService;
         this.refreshTokenService = refreshTokenService;
         this.userRepository = userRepository;
+        this.frontendOriginPolicy = frontendOriginPolicy;
+        this.refreshCookieSecure = refreshCookieSecure;
+        this.refreshCookieSameSite = refreshCookieSameSite;
+        if ("None".equalsIgnoreCase(refreshCookieSameSite) && !refreshCookieSecure) {
+            throw new IllegalStateException("SameSite=None refresh cookies must be Secure");
+        }
     }
 
     @PostMapping("/google")
-    public ResponseEntity<?> googleAuth(@RequestBody GoogleAuthRequest request, HttpServletResponse response){
+    public ResponseEntity<?> googleAuth(@RequestBody GoogleAuthRequest request,
+                                        HttpServletRequest servletRequest,
+                                        HttpServletResponse response){
+        requireAllowedOrigin(servletRequest);
 
         AuthResponse auth = authService.handleGoogleLogin(request.getCredential());
 
@@ -43,6 +59,7 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh (HttpServletRequest request, HttpServletResponse response){
+        requireAllowedOrigin(request);
         String refreshToken = readRefreshToken(request);
 
         if (refreshToken == null){
@@ -62,6 +79,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        requireAllowedOrigin(request);
         String refreshToken = readRefreshToken(request);
         if (refreshToken != null) {
             refreshTokenService.revoke(refreshToken);
@@ -93,8 +111,8 @@ public class AuthController {
     private void setRefreshCookie(HttpServletResponse response, String token, long maxAgeSeconds) {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", token)
                 .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
+                .secure(refreshCookieSecure)
+                .sameSite(refreshCookieSameSite)
                 .path("/auth")
                 .maxAge(maxAgeSeconds)
                 .build();
@@ -103,5 +121,9 @@ public class AuthController {
 
     private void clearRefreshCookie(HttpServletResponse response) {
         setRefreshCookie(response, "", 0);
+    }
+
+    private void requireAllowedOrigin(HttpServletRequest request) {
+        frontendOriginPolicy.requireAllowedBrowserOrigin(request.getHeader(HttpHeaders.ORIGIN));
     }
 }

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
 
-@CrossOrigin(origins = "https://localhost:5173", allowCredentials = "true")
 @RestController
 @RequestMapping("/subscriptions")
 public class SubscriptionController {
