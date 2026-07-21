@@ -1,12 +1,12 @@
 # Subtrak
 
-Subtrak is a full-stack subscription tracker that brings recurring expenses and one-time purchases into one dashboard. It helps users understand what they are paying for, see upcoming renewals, review spending trends, and receive email reminders before a subscription renews.
-
-The application uses Google Sign-In for authentication, a responsive React interface for managing subscriptions, and a Spring Boot API backed by PostgreSQL.
-
 <p align="center">
   <img src="docs/SubtrakHome.png" alt="Subtrak homepage" width="900">
 </p>
+
+Subtrak is a full-stack subscription tracker that brings recurring expenses and one-time purchases into one dashboard. It helps users understand what they are paying for, see upcoming renewals, review spending trends, and receive email reminders before a subscription renews.
+
+The application uses Google Sign-In for authentication, a responsive React interface for managing subscriptions, and a Spring Boot API backed by PostgreSQL.
 
 ## Features
 
