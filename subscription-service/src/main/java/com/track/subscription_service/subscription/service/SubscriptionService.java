@@ -5,6 +5,7 @@ import com.track.subscription_service.subscription.dto.SubscriptionResponse;
 import com.track.subscription_service.subscription.dto.UpdateSubscriptionRequest;
 import com.track.subscription_service.subscription.entity.Subscription;
 import com.track.subscription_service.subscription.repository.SubscriptionRepository;
+import com.track.subscription_service.subscription.model.SubscriptionType;
 import com.track.subscription_service.user.entity.User;
 import com.track.subscription_service.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -46,8 +47,8 @@ public class SubscriptionService {
         subscription.setPaymentMethod(request.paymentMethod());
         subscription.setWebsite(request.website());
         subscription.setStartDate(request.startDate());
-        subscription.setBillingIntervalUnit(request.billingIntervalUnit());
-        subscription.setBillingIntervalCount(request.billingIntervalCount());
+        subscription.setBillingIntervalUnit(request.type() == SubscriptionType.RECURRING ? request.billingIntervalUnit() : null);
+        subscription.setBillingIntervalCount(request.type() == SubscriptionType.RECURRING ? request.billingIntervalCount() : null);
         subscription.setEmailNotificationsEnabled(request.emailNotificationsEnabled());
         subscription.setUser(user);
         return repo.save(subscription);
@@ -74,8 +75,8 @@ public class SubscriptionService {
         existing.setPaymentMethod(request.paymentMethod());
         existing.setWebsite(request.website());
         existing.setStartDate(request.startDate());
-        existing.setBillingIntervalUnit(request.billingIntervalUnit());
-        existing.setBillingIntervalCount(request.billingIntervalCount());
+        existing.setBillingIntervalUnit(request.type() == SubscriptionType.RECURRING ? request.billingIntervalUnit() : null);
+        existing.setBillingIntervalCount(request.type() == SubscriptionType.RECURRING ? request.billingIntervalCount() : null);
         existing.setEmailNotificationsEnabled(request.emailNotificationsEnabled());
 
         return repo.save(existing);
@@ -102,18 +103,22 @@ public class SubscriptionService {
         res.billingIntervalCount =subscription.getBillingIntervalCount();
         res.startDate = subscription.getStartDate();
 
-        res.nextBillingDate = billingService.getNextBillingDate(
-                subscription.getStartDate(),
-                subscription.getBillingIntervalUnit(),
-                subscription.getBillingIntervalCount()
-        );
-
-        res.totalPaid = billingService.calculateTotalPaid(
-                subscription.getStartDate(),
-                subscription.getBillingIntervalUnit(),
-                subscription.getBillingIntervalCount(),
-                subscription.getCost()
-        );
+        if (subscription.getType() == SubscriptionType.RECURRING) {
+            res.nextBillingDate = billingService.getNextBillingDate(
+                    subscription.getStartDate(),
+                    subscription.getBillingIntervalUnit(),
+                    subscription.getBillingIntervalCount()
+            );
+            res.totalPaid = billingService.calculateTotalPaid(
+                    subscription.getStartDate(),
+                    subscription.getBillingIntervalUnit(),
+                    subscription.getBillingIntervalCount(),
+                    subscription.getCost()
+            );
+        } else {
+            res.nextBillingDate = null;
+            res.totalPaid = subscription.getStartDate().isAfter(LocalDate.now()) ? 0 : subscription.getCost();
+        }
 
         return res;
     }

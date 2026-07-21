@@ -1,16 +1,15 @@
 package com.track.subscription_service.subscription.service;
 
 import org.springframework.stereotype.Service;
+import com.track.subscription_service.subscription.model.BillingUnit;
 
 import java.time.LocalDate;
 
 @Service
 public class BillingService {
 
-    public LocalDate getNextBillingDate(LocalDate startDate, String unit, int count) {
-        if (startDate == null || unit == null || count <= 0) {
-            return LocalDate.now();
-        }
+    public LocalDate getNextBillingDate(LocalDate startDate, BillingUnit unit, Integer count) {
+        validateRecurringInputs(startDate, unit, count);
 
         LocalDate now = LocalDate.now();
 
@@ -21,19 +20,20 @@ public class BillingService {
         LocalDate next = startDate;
 
         while (!next.isAfter(now)) {
-            switch (unit.toLowerCase()) {
-                case "day" -> next = next.plusDays(count);
-                case "week" -> next = next.plusWeeks(count);
-                case "month" -> next = next.plusMonths(count);
-                case "year" -> next = next.plusYears(count);
-                default -> { return next; }
+            switch (unit) {
+                case DAY -> next = next.plusDays(count);
+                case WEEK -> next = next.plusWeeks(count);
+                case MONTH -> next = next.plusMonths(count);
+                case YEAR -> next = next.plusYears(count);
             }
         }
 
         return next;
     }
 
-    public double calculateTotalPaid(LocalDate startDate, String unit, int count, double cost) {
+    public double calculateTotalPaid(LocalDate startDate, BillingUnit unit, Integer count, double cost) {
+        validateRecurringInputs(startDate, unit, count);
+        if (cost <= 0) throw new IllegalArgumentException("Cost must be positive");
         if (startDate.isAfter(LocalDate.now())) return 0;
 
         long cycles = 0;
@@ -43,15 +43,20 @@ public class BillingService {
         while (current.isBefore(now) || current.isEqual(now)) {
             cycles++;
 
-            current = switch (unit.toLowerCase()) {
-                case "day" -> current.plusDays(count);
-                case "week" -> current.plusWeeks(count);
-                case "month" -> current.plusMonths(count);
-                case "year" -> current.plusYears(count);
-                default -> current;
+            current = switch (unit) {
+                case DAY -> current.plusDays(count);
+                case WEEK -> current.plusWeeks(count);
+                case MONTH -> current.plusMonths(count);
+                case YEAR -> current.plusYears(count);
             };
         }
 
         return cycles * cost;
+    }
+
+    private void validateRecurringInputs(LocalDate startDate, BillingUnit unit, Integer count) {
+        if (startDate == null) throw new IllegalArgumentException("Start date is required");
+        if (unit == null) throw new IllegalArgumentException("Billing unit is required");
+        if (count == null || count <= 0) throw new IllegalArgumentException("Billing interval count must be positive");
     }
 }

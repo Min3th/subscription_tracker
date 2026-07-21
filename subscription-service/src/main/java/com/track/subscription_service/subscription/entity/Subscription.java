@@ -2,6 +2,9 @@ package com.track.subscription_service.subscription.entity;
 
 
 import com.track.subscription_service.user.entity.User;
+import com.track.subscription_service.subscription.model.BillingUnit;
+import com.track.subscription_service.subscription.model.SubscriptionCategory;
+import com.track.subscription_service.subscription.model.SubscriptionType;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -9,11 +12,11 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "subscription")
 public class Subscription {
-    public String getCategory() {
+    public SubscriptionCategory getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(SubscriptionCategory category) {
         this.category = category;
     }
 
@@ -21,48 +24,48 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 120)
     private String name;
+
+    @Column(nullable = false)
     private Double cost;
-    private String type;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private SubscriptionType type;
+
+    @Column(length = 50)
     private String duration;
-    private String category;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private SubscriptionCategory category;
+
+    @Column(length = 1000)
     private String description;
     private boolean emailNotificationsEnabled;
 
-    @Column(name = "payment_method")
+    @Column(name = "payment_method", length = 120)
     private String paymentMethod;
 
+    @Column(length = 500)
     private String website;
 
-    @Column(name = "start_date")
+    @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
-    @Column(name = "billing_interval_unit")
-    private String billingIntervalUnit;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "billing_interval_unit", length = 10)
+    private BillingUnit billingIntervalUnit;
 
     @Column(name = "billing_interval_count")
     private Integer billingIntervalCount;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     public Subscription(){}
-    public Subscription(String name, String type, String duration, Double cost,String category, String description, String paymentMethod,String website, LocalDate startDate, String billingIntervalUnit, Integer billingIntervalCount, boolean emailNotificationsEnabled) {
-        this.name = name;
-        this.type = type;
-        this.duration = duration;
-        this.cost = cost;
-        this.category = category;
-        this.description = description;
-        this.paymentMethod = paymentMethod;
-        this.website = website;
-        this.startDate = startDate;
-        this.billingIntervalUnit = billingIntervalUnit;
-        this.billingIntervalCount = billingIntervalCount;
-        this.emailNotificationsEnabled = emailNotificationsEnabled;
-    }
-
     public Long getId() {
         return id;
     }
@@ -71,11 +74,11 @@ public class Subscription {
         this.id = id;
     }
 
-    public String getType() {
+    public SubscriptionType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(SubscriptionType type) {
         this.type = type;
     }
 
@@ -143,11 +146,11 @@ public class Subscription {
         this.startDate = startDate;
     }
 
-    public String getBillingIntervalUnit() {
+    public BillingUnit getBillingIntervalUnit() {
         return billingIntervalUnit;
     }
 
-    public void setBillingIntervalUnit(String billingIntervalUnit) {
+    public void setBillingIntervalUnit(BillingUnit billingIntervalUnit) {
         this.billingIntervalUnit = billingIntervalUnit;
     }
 

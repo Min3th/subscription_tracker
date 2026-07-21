@@ -3,6 +3,7 @@ package com.track.subscription_service.notification.service;
 import com.track.subscription_service.subscription.entity.Subscription;
 import com.track.subscription_service.subscription.repository.SubscriptionRepository;
 import com.track.subscription_service.subscription.service.BillingService;
+import com.track.subscription_service.subscription.model.SubscriptionType;
 import com.track.subscription_service.user.entity.UserPreferences;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,6 +28,10 @@ public class SchedulerService {
     }
 
     private boolean isDueSoon(Subscription sub) {
+
+        if (sub.getType() != SubscriptionType.RECURRING) {
+            return false;
+        }
 
 //        System.out.println("Checking sub: " + sub.getName());
 //        LocalDate nextBillingDate = billingService.getNextBillingDate(
