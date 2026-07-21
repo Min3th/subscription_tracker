@@ -24,7 +24,7 @@ const hideLoader = () => {
 };
 
 const api = axios.create({
-  baseURL: "/api", // for proxy
+  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
   withCredentials: true,
 });
 
