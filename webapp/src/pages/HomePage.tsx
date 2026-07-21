@@ -298,7 +298,7 @@ export default function HomePage() {
           >
             Why You Need a Tracker
           </Typography>
-          <Grid container spacing={4} justifyContent="center">
+          <Grid container spacing={4} justifyContent="center" alignItems="stretch">
             {[
               {
                 icon: <EventBusyIcon sx={{ fontSize: 40, color: "#f44336" }} />,
@@ -316,12 +316,12 @@ export default function HomePage() {
                 desc: "With streaming, software, and delivery services, it's impossible to keep track of every billing cycle manually.",
               },
             ].map((item, i) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i} sx={{ display: "flex" }}>
                 <Card
                   sx={{
                     height: "100%",
                     borderRadius: 4,
-                    width: "300px",
+                    width: "100%",
                     boxShadow:
                       theme.palette.mode === "dark" ? "0 4px 20px rgba(0,0,0,0.4)" : "0 4px 20px rgba(0,0,0,0.05)",
                     display: "flex",
@@ -354,14 +354,13 @@ export default function HomePage() {
 
       {/* FEATURES SECTION */}
       <Box
-        id="everthing-you-need"
+        id="everything-you-need"
         sx={{
           py: 10,
           backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.02)" : "#f8f9fa",
-          mt: "20px",
         }}
       >
-        <Container id="features" maxWidth="lg" sx={{ py: { xs: 10, md: 15 } }}>
+        <Container id="features" maxWidth="lg">
           <Typography
             variant="h3"
             sx={{
@@ -374,7 +373,7 @@ export default function HomePage() {
           >
             Everything You Need
           </Typography>
-          <Grid container spacing={4} alignItems="center" justifyContent="center">
+          <Grid container spacing={4} alignItems="stretch" justifyContent="center">
             {[
               {
                 icon: <NotificationsActiveIcon sx={{ fontSize: 32, color: theme.palette.purpink }} />,
@@ -397,11 +396,11 @@ export default function HomePage() {
                 desc: "Whether you're billed weekly, monthly, or yearly, our tracker handles it all effortlessly.",
               },
             ].map((feature, i) => (
-              <Grid size={{ xs: 12, sm: 6 }} key={i}>
+              <Grid size={{ xs: 12, sm: 6 }} key={i} sx={{ display: "flex" }}>
                 <Card
                   sx={{
-                    height: "300px",
-                    width: "400px",
+                    minHeight: 300,
+                    width: "100%",
                     borderRadius: 4,
                     boxShadow:
                       theme.palette.mode === "dark" ? "0 4px 20px rgba(0,0,0,0.4)" : "0 4px 20px rgba(0,0,0,0.05)",
@@ -452,10 +451,9 @@ export default function HomePage() {
         sx={{
           py: 10,
           backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.02)" : "#f8f9fa",
-          mt: "20px",
         }}
       >
-        <Container maxWidth="md">
+        <Container maxWidth="lg">
           <Typography
             variant="h3"
             sx={{
@@ -468,7 +466,7 @@ export default function HomePage() {
           >
             How It Works
           </Typography>
-          <Grid container spacing={4} justifyContent="center">
+          <Grid container spacing={4} justifyContent="center" alignItems="stretch">
             {[
               { step: "1", title: "Add Services", desc: "Enter your subscriptions and billing details in seconds." },
               { step: "2", title: "Set Reminders", desc: "Choose when you want to be notified before a charge." },
@@ -478,11 +476,11 @@ export default function HomePage() {
                 desc: "Relax knowing you'll never miss a payment or cancellation again.",
               },
             ].map((item, i) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i} sx={{ display: "flex" }}>
                 <Card
                   sx={{
                     height: "100%",
-                    width: "400px",
+                    width: "100%",
                     borderRadius: 4,
                     boxShadow: "none",
                     border: `1px solid ${theme.palette.divider}`,
