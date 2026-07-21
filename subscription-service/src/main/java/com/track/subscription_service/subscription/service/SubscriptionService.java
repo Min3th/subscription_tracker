@@ -1,6 +1,7 @@
 package com.track.subscription_service.subscription.service;
 
 import com.track.subscription_service.subscription.dto.CreateSubscriptionRequest;
+import com.track.subscription_service.common.error.ResourceNotFoundException;
 import com.track.subscription_service.subscription.dto.SubscriptionResponse;
 import com.track.subscription_service.subscription.dto.UpdateSubscriptionRequest;
 import com.track.subscription_service.subscription.entity.Subscription;
@@ -60,7 +61,7 @@ public class SubscriptionService {
 
     public Subscription getByIdAndGoogleId(Long id, String googleId){
         return repo.findByIdAndUser_GoogleId(id, googleId)
-                .orElseThrow(() -> new RuntimeException("Subscription not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Subscription not found"));
     }
 
     public Subscription update(Long id, UpdateSubscriptionRequest request, String googleId){

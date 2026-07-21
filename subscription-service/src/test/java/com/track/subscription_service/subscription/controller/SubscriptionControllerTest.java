@@ -4,6 +4,9 @@ import com.track.subscription_service.subscription.dto.SubscriptionResponse;
 import com.track.subscription_service.subscription.dto.UpdateSubscriptionRequest;
 import com.track.subscription_service.subscription.entity.Subscription;
 import com.track.subscription_service.subscription.service.SubscriptionService;
+import com.track.subscription_service.subscription.model.BillingUnit;
+import com.track.subscription_service.subscription.model.SubscriptionCategory;
+import com.track.subscription_service.subscription.model.SubscriptionType;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.Authentication;
 
@@ -23,14 +26,14 @@ class SubscriptionControllerTest {
         UpdateSubscriptionRequest request = new UpdateSubscriptionRequest(
                 "Example",
                 12.50,
-                "recurring",
+                SubscriptionType.RECURRING,
                 null,
-                "Software",
+                SubscriptionCategory.SOFTWARE,
                 "Example subscription",
                 "Visa",
                 "https://example.com",
                 LocalDate.of(2026, 1, 1),
-                "month",
+                BillingUnit.MONTH,
                 1,
                 true
         );

@@ -43,6 +43,7 @@ public class Subscription {
 
     @Column(length = 1000)
     private String description;
+    @Column(nullable = false)
     private boolean emailNotificationsEnabled;
 
     @Column(name = "payment_method", length = 120)

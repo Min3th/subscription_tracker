@@ -1,7 +1,7 @@
 export interface Subscription {
   id: number;
   name: string;
-  category: string;
+  category: SubscriptionCategory;
   cost: number;
   type: SubscriptionType;
   billingIntervalCount: number;
@@ -16,8 +16,8 @@ export interface DetailedSubscription {
   type: SubscriptionType;
   billingIntervalUnit: BillingUnit;
   billingIntervalCount: number;
-  nextBillingDate: Date;
-  category: string;
+  nextBillingDate: Date | null;
+  category: SubscriptionCategory;
   status: "active" | "cancelled" | "paused";
   paymentMethod: string;
   startDate: string;
@@ -34,7 +34,7 @@ export interface UpdateSubscriptionPayload {
   description?: string;
   cost?: number;
   type?: SubscriptionType;
-  category?: string;
+  category?: SubscriptionCategory;
   startDate?: string;
   paymentMethod?: string;
   website?: string;
@@ -45,3 +45,22 @@ export interface UpdateSubscriptionPayload {
 
 export type SubscriptionType = "one-time" | "recurring";
 export type BillingUnit = "day" | "week" | "month" | "year";
+export type SubscriptionCategory =
+  | "General"
+  | "Entertainment"
+  | "Productivity"
+  | "Music"
+  | "Software"
+  | "Utilities"
+  | "Education"
+  | "Health"
+  | "Fitness"
+  | "News"
+  | "Cloud Storage"
+  | "Finance"
+  | "Other";
+
+export const SUBSCRIPTION_CATEGORIES: SubscriptionCategory[] = [
+  "General", "Entertainment", "Productivity", "Music", "Software", "Utilities",
+  "Education", "Health", "Fitness", "News", "Cloud Storage", "Finance", "Other",
+];

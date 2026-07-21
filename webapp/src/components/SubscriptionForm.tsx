@@ -22,7 +22,13 @@ import { useTheme } from "@mui/material";
 import { updateSubscriptionThunk, createSubscriptionThunk, fetchSubscriptionById } from "../app/subscriptionSlice";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../app/store";
-import type { UpdateSubscriptionPayload, SubscriptionType, BillingUnit } from "../types/subscription";
+import {
+  SUBSCRIPTION_CATEGORIES,
+  type UpdateSubscriptionPayload,
+  type SubscriptionType,
+  type BillingUnit,
+  type SubscriptionCategory,
+} from "../types/subscription";
 
 type Props = {
   open: boolean;
@@ -36,7 +42,7 @@ type FormValues = {
   description: string;
   cost: number | "";
   type: SubscriptionType;
-  category: string;
+  category: SubscriptionCategory | "";
   startDate: string;
   paymentMethod: string;
   website: string;
@@ -86,7 +92,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
           description: values.description,
           cost: Number(values.cost),
           type: values.type,
-          category: values.category,
+          category: values.category as SubscriptionCategory,
           startDate: values.startDate,
           paymentMethod: values.paymentMethod,
           website: values.website,
@@ -102,7 +108,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
             description: values.description,
             cost: Number(values.cost),
             type: values.type,
-            category: values.category,
+            category: values.category as SubscriptionCategory,
             startDate: values.startDate,
             paymentMethod: values.paymentMethod,
             website: values.website,
@@ -244,6 +250,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                   <TextField
                     fullWidth
                     margin="normal"
+                    select
                     label="Category"
                     name="category"
                     value={formik.values.category}
@@ -251,7 +258,11 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                     onBlur={formik.handleBlur}
                     error={formik.touched.category && Boolean(formik.errors.category)}
                     helperText={formik.touched.category && formik.errors.category}
-                  />
+                  >
+                    {SUBSCRIPTION_CATEGORIES.map((category) => (
+                      <MenuItem key={category} value={category}>{category}</MenuItem>
+                    ))}
+                  </TextField>
 
                   <TextField
                     fullWidth
