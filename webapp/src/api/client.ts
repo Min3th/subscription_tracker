@@ -1,4 +1,5 @@
 import axios from "axios";
+import { tokenStore } from "./tokenStore";
 
 let requestCount = 0;
 let hideLoaderTimer: ReturnType<typeof setTimeout> | null = null;
@@ -28,9 +29,11 @@ const api = axios.create({
   withCredentials: true,
 });
 
+let refreshPromise: Promise<string> | null = null;
+
 api.interceptors.request.use((config) => {
   showLoader();
-  const token = localStorage.getItem("token");
+  const token = tokenStore.get();
   if (token && !config.url?.includes("/auth/google") && !config.url?.includes("/auth/refresh")) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -44,21 +47,33 @@ api.interceptors.response.use(
   },
   async (err) => {
     hideLoader();
-    const originalRequest = err.config;
+    const originalRequest = err.config as typeof err.config & { _retry?: boolean };
 
-    // if (originalRequest._retry || originalRequest.url?.includes("/auth/refresh")) {
-    //   return Promise.reject(err);
-    // }
-    if (err.response?.status === 401 || err.response?.status === 403) {
+    if (
+      (err.response?.status === 401 || err.response?.status === 403) &&
+      !originalRequest._retry &&
+      !originalRequest.url?.includes("/auth/refresh") &&
+      !originalRequest.url?.includes("/auth/google")
+    ) {
       originalRequest._retry = true;
       try {
-        const res = await api.post("/auth/refresh");
-        const newToken = res.data.accessToken;
-        localStorage.setItem("token", newToken);
+        if (!refreshPromise) {
+          refreshPromise = api
+            .post("/auth/refresh")
+            .then((res) => {
+              const newToken = res.data.accessToken as string;
+              tokenStore.set(newToken);
+              return newToken;
+            })
+            .finally(() => {
+              refreshPromise = null;
+            });
+        }
+        const newToken = await refreshPromise;
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
-        return api(err.config);
+        return api(originalRequest);
       } catch (refreshError) {
-        localStorage.clear();
+        tokenStore.clear();
         window.location.href = "/";
         return Promise.reject(refreshError);
       }

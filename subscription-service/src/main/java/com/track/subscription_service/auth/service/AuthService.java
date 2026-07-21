@@ -21,7 +21,7 @@ public class AuthService {
     private String clientId;
 
     private final UserRepository userRepository;
-    private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     private GoogleIdToken.Payload verifyGoogleToken(String idTokenString) {
 
@@ -48,9 +48,9 @@ public class AuthService {
 
 
 
-    public AuthService(UserRepository userRepository, JwtService jwtService) {
+    public AuthService(UserRepository userRepository, RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
-        this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     public AuthResponse handleGoogleLogin(String credential) {
@@ -81,9 +81,6 @@ public class AuthService {
 
         userRepository.save(user);
 
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
-
-        return new AuthResponse(accessToken,refreshToken, user);
+        return refreshTokenService.createSession(user);
     }
 }

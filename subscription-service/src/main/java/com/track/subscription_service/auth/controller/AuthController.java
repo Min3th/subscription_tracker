@@ -2,15 +2,17 @@ package com.track.subscription_service.auth.controller;
 
 import com.track.subscription_service.auth.dto.GoogleAuthRequest;
 import com.track.subscription_service.auth.service.AuthService;
-import com.track.subscription_service.auth.service.JwtService;
+import com.track.subscription_service.auth.service.RefreshTokenService;
 import com.track.subscription_service.auth.util.AuthResponse;
 import com.track.subscription_service.user.entity.User;
 import com.track.subscription_service.user.repository.UserRepository;
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "https://localhost:5173",allowCredentials = "true")
@@ -19,13 +21,13 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
-    private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
     private final UserRepository userRepository;
     public AuthController(AuthService authService,
-                          JwtService jwtService,
+                          RefreshTokenService refreshTokenService,
                           UserRepository userRepository) {
         this.authService = authService;
-        this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
         this.userRepository = userRepository;
     }
 
@@ -34,63 +36,72 @@ public class AuthController {
 
         AuthResponse auth = authService.handleGoogleLogin(request.getCredential());
 
-        Cookie cookie = new Cookie("refreshToken",auth.getRefreshToken());
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(7*24*60*60);
-//        cookie.setAttribute("SameSite", "None");
-        response.addCookie(cookie);
+        setRefreshCookie(response, auth.getRefreshToken(), 7 * 24 * 60 * 60);
 
         return ResponseEntity.ok(new AuthResponse(auth.getAccessToken(),auth.getUser()));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<?> refresh (HttpServletRequest request){
-        String refreshToken = null;
-
-        if (request.getCookies() != null){
-            for (Cookie cookie: request.getCookies()){
-                if ("refreshToken".equals(cookie.getName())){
-                    refreshToken = cookie.getValue();
-                }
-            }
-        }
+    public ResponseEntity<?> refresh (HttpServletRequest request, HttpServletResponse response){
+        String refreshToken = readRefreshToken(request);
 
         if (refreshToken == null){
             return ResponseEntity.status(401).body("No refresh token available!");
         }
 
         try {
-            Claims claims = jwtService.extractAllClaims(refreshToken);
-
-            String type = claims.get("type", String.class);
-            if (!"refresh".equals(type)) {
-                return ResponseEntity.status(401).body("Invalid token type!");
-            }
-
-            String googleId = claims.getSubject();
-
-            User user = userRepository.findByGoogleId(googleId).orElseThrow();
-
-            String newAccessToken = jwtService.generateAccessToken(user);
-
-            return ResponseEntity.ok(new AuthResponse(newAccessToken,user));
+            AuthResponse auth = refreshTokenService.rotate(refreshToken);
+            setRefreshCookie(response, auth.getRefreshToken(), 7 * 24 * 60 * 60);
+            return ResponseEntity.ok(new AuthResponse(auth.getAccessToken(), auth.getUser()));
         }
         catch (Exception e){
+            clearRefreshCookie(response);
             return ResponseEntity.status(401).body("Invalid refresh token!");
         }
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie("refreshToken", null);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-
-        response.addCookie(cookie);
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = readRefreshToken(request);
+        if (refreshToken != null) {
+            refreshTokenService.revoke(refreshToken);
+        }
+        clearRefreshCookie(response);
         return ResponseEntity.ok("Logged out successfully!");
+    }
+
+    @PostMapping("/logout-all")
+    public ResponseEntity<?> logoutAll(Authentication authentication, HttpServletResponse response) {
+        User user = userRepository.findByGoogleId(authentication.getName()).orElseThrow();
+        refreshTokenService.revokeAllForUser(user);
+        clearRefreshCookie(response);
+        return ResponseEntity.ok("All sessions logged out successfully!");
+    }
+
+    private String readRefreshToken(HttpServletRequest request) {
+        if (request.getCookies() == null) {
+            return null;
+        }
+        for (Cookie cookie : request.getCookies()) {
+            if ("refreshToken".equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
+
+    private void setRefreshCookie(HttpServletResponse response, String token, long maxAgeSeconds) {
+        ResponseCookie cookie = ResponseCookie.from("refreshToken", token)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/auth")
+                .maxAge(maxAgeSeconds)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
+
+    private void clearRefreshCookie(HttpServletResponse response) {
+        setRefreshCookie(response, "", 0);
     }
 }

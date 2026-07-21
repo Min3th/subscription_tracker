@@ -29,8 +29,6 @@ export default function LoginDialog({ open, onClose }: Props) {
           token: res.data.accessToken,
         }),
       );
-      localStorage.setItem("token", res.data.accessToken);
-      localStorage.setItem("user", JSON.stringify(user));
       navigate("/dashboard");
     } catch (error) {
       console.error("Error decoding JWT:", error);

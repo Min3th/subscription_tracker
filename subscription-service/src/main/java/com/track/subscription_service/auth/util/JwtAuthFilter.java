@@ -3,7 +3,6 @@ package com.track.subscription_service.auth.util;
 import com.track.subscription_service.auth.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,7 +30,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        if (path.startsWith("/auth")) {
+        if (path.equals("/auth/google") || path.equals("/auth/refresh") || path.equals("/auth/logout")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -42,7 +41,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             String token = authHeader.substring(7);
             try {
-                String googleId = jwtService.extractGoogleId(token);
+                String googleId = jwtService.validateAccessToken(token).getSubject();
 
                 UsernamePasswordAuthenticationToken auth =
                         new UsernamePasswordAuthenticationToken(
@@ -53,8 +52,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(auth); // makes the user available globally
 
-            } catch (Exception e) {
-                System.out.println("JWT ERROR: " + e.getMessage());
+            } catch (Exception ignored) {
+                SecurityContextHolder.clearContext();
             }
         }
         filterChain.doFilter(request,response);
