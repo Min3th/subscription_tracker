@@ -149,7 +149,6 @@ export function Settings() {
 
   const handleConfirmSave = async () => {
     try {
-      console.log("Pref data: ", formData);
       await dispatch(updatePreferences(formData)).unwrap();
       setInitialPreferences({
         currency: formData.currency,

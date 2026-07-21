@@ -34,7 +34,6 @@ export const createSubscriptionThunk = createAsyncThunk("subscriptions/create", 
 
 export const fetchSubscriptions = createAsyncThunk("subscriptions/fetch", async () => {
   const res = await getSubscriptions();
-  console.log("Res: ", res);
   return res.data.map(mapToDetailed);
 });
 

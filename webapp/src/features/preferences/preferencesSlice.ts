@@ -26,7 +26,6 @@ const initialState: PreferencesState = {
 
 export const fetchPreferences = createAsyncThunk("preferences/fetchPreferences", async () => {
   const response = await api.get("/user/preferences");
-  console.log("Response: ", response.data);
   return response.data;
 });
 
