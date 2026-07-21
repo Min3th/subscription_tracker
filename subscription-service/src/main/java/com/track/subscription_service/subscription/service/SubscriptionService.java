@@ -1,6 +1,8 @@
 package com.track.subscription_service.subscription.service;
 
+import com.track.subscription_service.subscription.dto.CreateSubscriptionRequest;
 import com.track.subscription_service.subscription.dto.SubscriptionResponse;
+import com.track.subscription_service.subscription.dto.UpdateSubscriptionRequest;
 import com.track.subscription_service.subscription.entity.Subscription;
 import com.track.subscription_service.subscription.repository.SubscriptionRepository;
 import com.track.subscription_service.user.entity.User;
@@ -31,9 +33,22 @@ public class SubscriptionService {
         return repo.findAll();
     }
 
-    public Subscription create(Subscription subscription,String googleId){
+    public Subscription create(CreateSubscriptionRequest request, String googleId){
         User user = userRepository.findByGoogleId(googleId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        Subscription subscription = new Subscription();
+        subscription.setName(request.name());
+        subscription.setCost(request.cost());
+        subscription.setType(request.type());
+        subscription.setDuration(request.duration());
+        subscription.setCategory(request.category());
+        subscription.setDescription(request.description());
+        subscription.setPaymentMethod(request.paymentMethod());
+        subscription.setWebsite(request.website());
+        subscription.setStartDate(request.startDate());
+        subscription.setBillingIntervalUnit(request.billingIntervalUnit());
+        subscription.setBillingIntervalCount(request.billingIntervalCount());
+        subscription.setEmailNotificationsEnabled(request.emailNotificationsEnabled());
         subscription.setUser(user);
         return repo.save(subscription);
     }
@@ -47,33 +62,21 @@ public class SubscriptionService {
                 .orElseThrow(() -> new RuntimeException("Subscription not found"));
     }
 
-    public Subscription update(Long id,Subscription updated,String googleId){
+    public Subscription update(Long id, UpdateSubscriptionRequest request, String googleId){
         Subscription existing = getByIdAndGoogleId(id,googleId);
 
-//        if ("recurring".equalsIgnoreCase(updated.getType())) {
-//            if (updated.getStartDate() == null ||
-//                    updated.getBillingIntervalUnit() == null ||
-//                    updated.getBillingIntervalCount() == null) {
-//
-//                throw new RuntimeException("Recurring subscriptions require billing details");
-//            }
-//        }
-
-        if (updated.getName() != null) existing.setName(updated.getName());
-        if (updated.getCategory() != null) existing.setCategory(updated.getCategory());
-        if (updated.getCost() != null) existing.setCost(updated.getCost());
-        if (updated.getDuration() != null) existing.setDuration(updated.getDuration());
-        if (updated.getType() != null) existing.setType(updated.getType());
-
-        if (updated.getDescription() != null) existing.setDescription(updated.getDescription());
-        if (updated.getPaymentMethod() != null) existing.setPaymentMethod(updated.getPaymentMethod());
-        if (updated.getWebsite() != null) existing.setWebsite(updated.getWebsite());
-        if (updated.getStartDate() != null) existing.setStartDate(updated.getStartDate());
-        if (updated.getBillingIntervalUnit() != null) existing.setBillingIntervalUnit(updated.getBillingIntervalUnit());
-        if (updated.getBillingIntervalCount() != null) existing.setBillingIntervalCount(updated.getBillingIntervalCount());
-        if (updated.isEmailNotificationsEnabled() != null) {
-            existing.setEmailNotificationsEnabled(updated.isEmailNotificationsEnabled());
-        }
+        existing.setName(request.name());
+        existing.setCost(request.cost());
+        existing.setType(request.type());
+        existing.setDuration(request.duration());
+        existing.setCategory(request.category());
+        existing.setDescription(request.description());
+        existing.setPaymentMethod(request.paymentMethod());
+        existing.setWebsite(request.website());
+        existing.setStartDate(request.startDate());
+        existing.setBillingIntervalUnit(request.billingIntervalUnit());
+        existing.setBillingIntervalCount(request.billingIntervalCount());
+        existing.setEmailNotificationsEnabled(request.emailNotificationsEnabled());
 
         return repo.save(existing);
     }
