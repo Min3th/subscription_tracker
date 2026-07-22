@@ -1,7 +1,6 @@
 package com.track.subscription_service.notification.service;
 
 import com.track.subscription_service.subscription.entity.Subscription;
-import com.track.subscription_service.subscription.service.BillingService;
 import com.track.subscription_service.notification.repository.NotificationDeliveryRepository;
 import com.track.subscription_service.user.entity.User;
 import org.springframework.stereotype.Service;
@@ -17,25 +16,17 @@ public class NotificationService {
 
     private final EmailService emailService;
     private final TemplateService templateService;
-    private final BillingService billingService;
     private final NotificationDeliveryRepository deliveryRepository;
 
     public NotificationService(EmailService emailService, TemplateService templateService,
-                               BillingService billingService,
                                NotificationDeliveryRepository deliveryRepository) {
         this.emailService = emailService;
         this.templateService = templateService;
-        this.billingService = billingService;
         this.deliveryRepository = deliveryRepository;
     }
 
-    public boolean sendSubscriptionReminder(User user, Subscription sub) {
+    public boolean sendSubscriptionReminder(User user, Subscription sub, LocalDate nextDate) {
         String subject = "Upcoming Subscription Payment";
-        LocalDate nextDate = billingService.getNextBillingDate(
-                sub.getStartDate(),
-                sub.getBillingIntervalUnit(),
-                sub.getBillingIntervalCount()
-        );
         int created = deliveryRepository.createIfAbsent(
                 sub.getId(), nextDate, RENEWAL_REMINDER, Instant.now()
         );

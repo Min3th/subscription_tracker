@@ -109,6 +109,7 @@ public class SubscriptionService {
         res.website = subscription.getWebsite();
         res.billingIntervalUnit = subscription.getBillingIntervalUnit();
         res.billingIntervalCount =subscription.getBillingIntervalCount();
+        res.emailNotificationsEnabled = subscription.isEmailNotificationsEnabled();
         res.startDate = subscription.getStartDate();
 
         if (subscription.getType() == SubscriptionType.RECURRING) {

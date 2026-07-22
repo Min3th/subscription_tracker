@@ -23,6 +23,7 @@ public class SubscriptionResponse {
     public LocalDate startDate;
     public BillingUnit billingIntervalUnit;
     public Integer billingIntervalCount;
+    public boolean emailNotificationsEnabled;
     public LocalDate nextBillingDate;
     @JsonSerialize(using = ToStringSerializer.class)
     public BigDecimal totalPaid;

@@ -11,6 +11,8 @@ import {
   Stepper,
   Step,
   StepLabel,
+  FormControlLabel,
+  Switch,
 } from "@mui/material";
 import { useState } from "react";
 import * as Yup from "yup";
@@ -393,6 +395,20 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
                   />
+
+                  {formik.values.type === "recurring" && (
+                    <FormControlLabel
+                      sx={{ mt: 1 }}
+                      control={
+                        <Switch
+                          name="emailNotificationsEnabled"
+                          checked={formik.values.emailNotificationsEnabled}
+                          onChange={formik.handleChange}
+                        />
+                      }
+                      label="Email me before this subscription renews"
+                    />
+                  )}
 
                   <TextField
                     fullWidth

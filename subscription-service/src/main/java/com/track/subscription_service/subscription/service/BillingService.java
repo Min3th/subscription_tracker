@@ -32,6 +32,23 @@ public class BillingService {
         return next;
     }
 
+    public LocalDate getBillingDateOnOrAfter(LocalDate startDate, BillingUnit unit,
+                                             Integer count, LocalDate onOrAfter) {
+        validateRecurringInputs(startDate, unit, count);
+        if (onOrAfter == null) throw new IllegalArgumentException("Reference date is required");
+
+        LocalDate billingDate = startDate;
+        while (billingDate.isBefore(onOrAfter)) {
+            billingDate = switch (unit) {
+                case DAY -> billingDate.plusDays(count);
+                case WEEK -> billingDate.plusWeeks(count);
+                case MONTH -> billingDate.plusMonths(count);
+                case YEAR -> billingDate.plusYears(count);
+            };
+        }
+        return billingDate;
+    }
+
     public BigDecimal calculateTotalPaid(LocalDate startDate, BillingUnit unit, Integer count, BigDecimal cost) {
         validateRecurringInputs(startDate, unit, count);
         if (cost == null || cost.signum() <= 0) throw new IllegalArgumentException("Cost must be positive");
