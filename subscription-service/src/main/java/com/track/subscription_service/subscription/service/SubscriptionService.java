@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Currency;
+import java.util.Locale;
 
 @Service
 public class SubscriptionService {
@@ -41,6 +43,7 @@ public class SubscriptionService {
         Subscription subscription = new Subscription();
         subscription.setName(request.name());
         subscription.setCost(request.cost());
+        subscription.setCurrency(normalizeCurrency(request.currency(), user));
         subscription.setType(request.type());
         subscription.setDuration(request.duration());
         subscription.setCategory(request.category());
@@ -51,6 +54,7 @@ public class SubscriptionService {
         subscription.setBillingIntervalUnit(request.type() == SubscriptionType.RECURRING ? request.billingIntervalUnit() : null);
         subscription.setBillingIntervalCount(request.type() == SubscriptionType.RECURRING ? request.billingIntervalCount() : null);
         subscription.setEmailNotificationsEnabled(request.emailNotificationsEnabled());
+        validateCost(subscription.getCost());
         subscription.setUser(user);
         return repo.save(subscription);
     }
@@ -69,6 +73,7 @@ public class SubscriptionService {
 
         existing.setName(request.name());
         existing.setCost(request.cost());
+        existing.setCurrency(normalizeCurrency(request.currency(), existing.getUser()));
         existing.setType(request.type());
         existing.setDuration(request.duration());
         existing.setCategory(request.category());
@@ -79,6 +84,7 @@ public class SubscriptionService {
         existing.setBillingIntervalUnit(request.type() == SubscriptionType.RECURRING ? request.billingIntervalUnit() : null);
         existing.setBillingIntervalCount(request.type() == SubscriptionType.RECURRING ? request.billingIntervalCount() : null);
         existing.setEmailNotificationsEnabled(request.emailNotificationsEnabled());
+        validateCost(existing.getCost());
 
         return repo.save(existing);
     }
@@ -94,6 +100,7 @@ public class SubscriptionService {
         res.id =subscription.getId();
         res.name = subscription.getName();
         res.cost = subscription.getCost();
+        res.currency = subscription.getCurrency();
         res.type = subscription.getType();
         res.duration = subscription.getDuration();
         res.category = subscription.getCategory();
@@ -118,9 +125,25 @@ public class SubscriptionService {
             );
         } else {
             res.nextBillingDate = null;
-            res.totalPaid = subscription.getStartDate().isAfter(LocalDate.now()) ? 0 : subscription.getCost();
+            res.totalPaid = subscription.getStartDate().isAfter(LocalDate.now())
+                    ? java.math.BigDecimal.ZERO : subscription.getCost();
         }
 
         return res;
+    }
+
+    private String normalizeCurrency(String requestedCurrency, User user) {
+        String fallback = user.getPreferences() == null || user.getPreferences().getCurrency() == null
+                ? "USD" : user.getPreferences().getCurrency();
+        String code = requestedCurrency == null || requestedCurrency.isBlank() ? fallback : requestedCurrency;
+        code = code.trim().toUpperCase(Locale.ROOT);
+        Currency.getInstance(code);
+        return code;
+    }
+
+    private void validateCost(java.math.BigDecimal cost) {
+        if (cost == null || cost.signum() <= 0 || cost.scale() > 4 || cost.precision() - cost.scale() > 15) {
+            throw new IllegalArgumentException("Cost must be positive with at most 15 integer and 4 decimal digits");
+        }
     }
 }

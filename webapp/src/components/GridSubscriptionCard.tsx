@@ -24,6 +24,7 @@ import { useSnackbar } from "../utils/Snackbar";
 import { useDispatch } from "react-redux";
 import { deleteSubscriptionThunk } from "../app/subscriptionSlice";
 import type { DetailedSubscription } from "../types/subscription";
+import { formatMoney } from "../utils/money";
 import type { AppDispatch } from "../app/store";
 
 interface Props {
@@ -167,7 +168,7 @@ export default function GridSubscriptionCard({ subscription, onEdit, onCancel }:
 
           <Box>
             <Typography fontSize={22} fontWeight="bold">
-              ${subscription.cost.toFixed(2)}
+              {formatMoney(subscription.cost, subscription.currency)}
               <Typography component="span" variant="body2">
                 /{subscription.billingIntervalUnit}
               </Typography>
@@ -191,7 +192,7 @@ export default function GridSubscriptionCard({ subscription, onEdit, onCancel }:
           <Box display="flex" justifyContent="space-between" pt={1} borderTop={1} borderColor="divider" mt="auto">
             <Typography variant="caption">Total Paid</Typography>
             <Typography variant="caption" fontWeight={500}>
-              ${subscription.totalPaid.toFixed(2)}
+              {formatMoney(subscription.totalPaid, subscription.currency)}
             </Typography>
           </Box>
         </Box>

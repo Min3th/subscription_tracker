@@ -2,6 +2,7 @@ import { Card, Box, Typography, Avatar, Chip } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { alpha, useTheme } from "@mui/material/styles";
 import type { DetailedSubscription } from "../types/subscription";
+import { formatMoney } from "../utils/money";
 
 export interface MiniSubscriptionCardProps {
   sub: DetailedSubscription;
@@ -81,7 +82,7 @@ export default function MiniSubscriptionCard({ sub, t }: MiniSubscriptionCardPro
 
             <Typography variant="body2" color="text.secondary" fontWeight="500">
               <Typography component="span" fontWeight="700" color="text.primary">
-                ${Number(sub.cost).toFixed(2)}
+                {formatMoney(sub.cost, sub.currency)}
               </Typography>{" "}
               {sub.type === "one-time"
                 ? "one-time"

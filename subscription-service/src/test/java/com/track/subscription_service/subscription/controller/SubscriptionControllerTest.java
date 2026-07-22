@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.core.Authentication;
 
 import java.time.LocalDate;
+import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.*;
@@ -25,7 +26,8 @@ class SubscriptionControllerTest {
 
         UpdateSubscriptionRequest request = new UpdateSubscriptionRequest(
                 "Example",
-                12.50,
+                new BigDecimal("12.50"),
+                "USD",
                 SubscriptionType.RECURRING,
                 null,
                 SubscriptionCategory.SOFTWARE,

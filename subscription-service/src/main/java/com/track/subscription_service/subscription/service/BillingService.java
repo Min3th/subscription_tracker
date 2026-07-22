@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import com.track.subscription_service.subscription.model.BillingUnit;
 
 import java.time.LocalDate;
+import java.math.BigDecimal;
 
 @Service
 public class BillingService {
@@ -31,10 +32,10 @@ public class BillingService {
         return next;
     }
 
-    public double calculateTotalPaid(LocalDate startDate, BillingUnit unit, Integer count, double cost) {
+    public BigDecimal calculateTotalPaid(LocalDate startDate, BillingUnit unit, Integer count, BigDecimal cost) {
         validateRecurringInputs(startDate, unit, count);
-        if (cost <= 0) throw new IllegalArgumentException("Cost must be positive");
-        if (startDate.isAfter(LocalDate.now())) return 0;
+        if (cost == null || cost.signum() <= 0) throw new IllegalArgumentException("Cost must be positive");
+        if (startDate.isAfter(LocalDate.now())) return BigDecimal.ZERO;
 
         long cycles = 0;
         LocalDate current = startDate;
@@ -51,9 +52,8 @@ public class BillingService {
             };
         }
 
-        return cycles * cost;
+        return cost.multiply(BigDecimal.valueOf(cycles));
     }
-
     private void validateRecurringInputs(LocalDate startDate, BillingUnit unit, Integer count) {
         if (startDate == null) throw new IllegalArgumentException("Start date is required");
         if (unit == null) throw new IllegalArgumentException("Billing unit is required");

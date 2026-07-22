@@ -6,6 +6,12 @@ import com.track.subscription_service.subscription.model.BillingUnit;
 import com.track.subscription_service.subscription.model.SubscriptionCategory;
 import com.track.subscription_service.subscription.model.SubscriptionType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Pattern;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 
@@ -26,9 +32,15 @@ public class Subscription {
 
     @Column(nullable = false, length = 120)
     private String name;
+    @DecimalMin(value = "0.0", inclusive = false)
+    @Digits(integer = 15, fraction = 4)
+    @JsonSerialize(using = ToStringSerializer.class)
+    @Column(nullable = false, precision = 19, scale = 4)
+    private BigDecimal cost;
 
-    @Column(nullable = false)
-    private Double cost;
+    @Pattern(regexp = "^[A-Z]{3}$")
+    @Column(nullable = false, length = 3)
+    private String currency;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -99,13 +111,17 @@ public class Subscription {
         this.duration = duration;
     }
 
-    public Double getCost() {
+    public BigDecimal getCost() {
         return cost;
     }
 
-    public void setCost(Double cost) {
+    public void setCost(BigDecimal cost) {
         this.cost = cost;
     }
+
+    public String getCurrency() { return currency; }
+
+    public void setCurrency(String currency) { this.currency = currency; }
 
     public User getUser() {
         return user;

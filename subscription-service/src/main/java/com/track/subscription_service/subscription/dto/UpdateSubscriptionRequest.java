@@ -11,10 +11,14 @@ import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.URL;
 
 import java.time.LocalDate;
+import java.math.BigDecimal;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Pattern;
 
 public record UpdateSubscriptionRequest(
         @NotBlank @Size(max = 120) String name,
-        @NotNull @Positive Double cost,
+        @NotNull @Positive @Digits(integer = 15, fraction = 4) BigDecimal cost,
+        @NotBlank @Pattern(regexp = "^[A-Z]{3}$") String currency,
         @NotNull SubscriptionType type,
         @Size(max = 50) String duration,
         @NotNull SubscriptionCategory category,
@@ -28,6 +32,7 @@ public record UpdateSubscriptionRequest(
 ) {
     public UpdateSubscriptionRequest {
         name = normalizeRequired(name);
+        currency = currency == null ? null : currency.trim().toUpperCase();
         duration = normalizeOptional(duration);
         description = normalizeOptional(description);
         paymentMethod = normalizeOptional(paymentMethod);

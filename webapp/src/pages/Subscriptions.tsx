@@ -14,6 +14,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../app/store";
 import { fetchSubscriptions } from "../app/subscriptionSlice";
+import { parseDecimal } from "../utils/money";
 
 export default function Subscriptions() {
   const { t } = useTranslation();
@@ -43,7 +44,7 @@ export default function Subscriptions() {
         case "name":
           return a.name.localeCompare(b.name);
         case "cost":
-          return b.cost - a.cost;
+          return parseDecimal(b.cost) > parseDecimal(a.cost) ? 1 : parseDecimal(b.cost) < parseDecimal(a.cost) ? -1 : 0;
         case "nextBilling":
           return (a.nextBillingDate?.getTime() ?? Number.POSITIVE_INFINITY)
             - (b.nextBillingDate?.getTime() ?? Number.POSITIVE_INFINITY);

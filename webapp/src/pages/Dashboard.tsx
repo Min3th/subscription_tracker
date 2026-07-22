@@ -24,17 +24,20 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../app/store";
 import { fetchSubscriptions } from "../app/subscriptionSlice";
 import { formatDate } from "../utils/DateFunctions";
+import type { DetailedSubscription } from "../types/subscription";
+import { divideRounded, formatDecimal, parseDecimal, toChartNumber } from "../utils/money";
 
-const getMonthlyCost = (cost: number, unit: string, count: number): number => {
-  if (!cost || !unit || !count) return 0;
-  if (unit === "day") return (cost / count) * 30.416;
-  if (unit === "week") return (cost / count) * 4.333;
-  if (unit === "month") return cost / count;
-  if (unit === "year") return cost / (count * 12);
-  return 0;
+const getMonthlyCost = (cost: string, unit: string, count: number): bigint => {
+  if (!cost || !unit || !count) return 0n;
+  const amount = parseDecimal(cost);
+  if (unit === "day") return divideRounded(amount * 30416n, BigInt(count) * 1000n);
+  if (unit === "week") return divideRounded(amount * 4333n, BigInt(count) * 1000n);
+  if (unit === "month") return divideRounded(amount, BigInt(count));
+  if (unit === "year") return divideRounded(amount, BigInt(count) * 12n);
+  return 0n;
 };
 
-const generatePast6MonthsSpending = (subscriptions: any[]) => {
+const generatePast6MonthsSpending = (subscriptions: DetailedSubscription[]) => {
   const monthsData = [];
   const now = new Date();
 
@@ -43,13 +46,13 @@ const generatePast6MonthsSpending = (subscriptions: any[]) => {
     const targetMonthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0);
     const monthLabel = targetMonth.toLocaleDateString("en-US", { month: "short" });
 
-    let amount = 0;
+    let amount = 0n;
 
     subscriptions.forEach((sub) => {
       if (sub.type === "one-time") {
         const d = new Date(sub.startDate);
         if (d >= targetMonth && d <= targetMonthEnd) {
-          amount += sub.cost;
+          amount += parseDecimal(sub.cost);
         }
       } else {
         if (!sub.startDate || !sub.billingIntervalUnit || !sub.billingIntervalCount) return;
@@ -59,7 +62,7 @@ const generatePast6MonthsSpending = (subscriptions: any[]) => {
         let current = new Date(start);
         while (current <= targetMonthEnd) {
           if (current >= targetMonth) {
-            amount += sub.cost;
+            amount += parseDecimal(sub.cost);
           }
           if (sub.billingIntervalUnit === "day") current.setDate(current.getDate() + sub.billingIntervalCount);
           else if (sub.billingIntervalUnit === "week")
@@ -72,7 +75,7 @@ const generatePast6MonthsSpending = (subscriptions: any[]) => {
       }
     });
 
-    monthsData.push({ month: monthLabel, amount: Number(amount.toFixed(2)) });
+    monthsData.push({ month: monthLabel, amount: toChartNumber(amount) });
   }
   return monthsData;
 };
@@ -82,22 +85,27 @@ export default function Dashboard() {
   const theme = useTheme();
   const dispatch = useDispatch<AppDispatch>();
   const subscriptions = useSelector((state: RootState) => state.subscriptions.list);
+  const displayCurrency = useSelector((state: RootState) => state.preferences.currency || "USD");
+  const moneySubscriptions = useMemo(
+    () => subscriptions.filter((subscription) => subscription.currency === displayCurrency),
+    [subscriptions, displayCurrency],
+  );
   const totalMonthly = useMemo(
     () =>
-      subscriptions.reduce((sum, sub) => {
+      moneySubscriptions.reduce((sum, sub) => {
         if (sub.type === "one-time") return sum;
         return sum + getMonthlyCost(sub.cost, sub.billingIntervalUnit, sub.billingIntervalCount);
-      }, 0),
-    [subscriptions],
+      }, 0n),
+    [moneySubscriptions],
   );
 
   const totalYearly = useMemo(
     () =>
-      subscriptions.reduce((sum, sub) => {
+      moneySubscriptions.reduce((sum, sub) => {
         if (sub.type === "one-time") return sum;
-        return sum + getMonthlyCost(sub.cost, sub.billingIntervalUnit, sub.billingIntervalCount) * 12;
-      }, 0),
-    [subscriptions],
+        return sum + getMonthlyCost(sub.cost, sub.billingIntervalUnit, sub.billingIntervalCount) * 12n;
+      }, 0n),
+    [moneySubscriptions],
   );
 
   const nextBilling = useMemo(() => {
@@ -110,27 +118,27 @@ export default function Dashboard() {
     )[0];
   }, [subscriptions]);
 
-  const monthlySpendingData = useMemo(() => generatePast6MonthsSpending(subscriptions), [subscriptions]);
+  const monthlySpendingData = useMemo(() => generatePast6MonthsSpending(moneySubscriptions), [moneySubscriptions]);
 
   // Category aggregation
   const categoryData = useMemo(
     () =>
       Object.entries(
-        subscriptions.reduce(
+        moneySubscriptions.reduce(
           (acc, sub) => {
-            let cost = 0;
+            let cost = 0n;
             if (sub.type !== "one-time") {
               cost = getMonthlyCost(sub.cost, sub.billingIntervalUnit, sub.billingIntervalCount);
             }
-            if (cost > 0) {
-              acc[sub.category] = (acc[sub.category] || 0) + cost;
+            if (cost > 0n) {
+              acc[sub.category] = (acc[sub.category] || 0n) + cost;
             }
             return acc;
           },
-          {} as Record<string, number>,
+          {} as Record<string, bigint>,
         ),
-      ).sort((a, b) => b[1] - a[1]),
-    [subscriptions],
+      ).sort((a, b) => (b[1] > a[1] ? 1 : b[1] < a[1] ? -1 : 0)),
+    [moneySubscriptions],
   );
 
   useEffect(() => {
@@ -174,14 +182,14 @@ export default function Dashboard() {
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard
             title={t("dashboard.monthly_spent")}
-            value={`$${totalMonthly.toFixed(2)}`}
+            value={`${displayCurrency} ${formatDecimal(totalMonthly)}`}
             icon={<AttachMoneyIcon sx={{ color: theme.palette.purpink }} />}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
           <StatCard
             title={t("dashboard.yearly_projected")}
-            value={`$${totalYearly.toFixed(2)}`}
+            value={`${displayCurrency} ${formatDecimal(totalYearly)}`}
             icon={<TrendingUpIcon sx={{ color: theme.palette.purpink }} />}
           />
         </Grid>
@@ -222,10 +230,11 @@ export default function Dashboard() {
                     <YAxis
                       axisLine={false}
                       tickLine={false}
-                      tickFormatter={(val) => `$${val}`}
+                      tickFormatter={(val) => `${displayCurrency} ${val}`}
                       tick={{ fontSize: 13, fill: theme.palette.text.secondary }}
                     />
                     <Tooltip
+                      formatter={(value) => [`${displayCurrency} ${value}`, "Amount"]}
                       cursor={{ fill: alpha(theme.palette.primary.main, 0.05) }}
                       contentStyle={{ borderRadius: 8, border: "none", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
                     />
@@ -251,8 +260,7 @@ export default function Dashboard() {
               <Stack spacing={3}>
                 {categoryData.length > 0 ? (
                   categoryData.map(([category, value]) => {
-                    const numValue = value as number;
-                    const percent = totalMonthly > 0 ? (numValue / totalMonthly) * 100 : 0;
+                    const percent = totalMonthly > 0n ? Number((value * 10000n) / totalMonthly) / 100 : 0;
                     return (
                       <Box key={category}>
                         <Box
@@ -266,7 +274,7 @@ export default function Dashboard() {
                             {category}
                           </Typography>
                           <Typography variant="body2" fontWeight="700" color="text.primary">
-                            ${numValue.toFixed(2)}
+                            {displayCurrency} {formatDecimal(value)}
                           </Typography>
                         </Box>
                         <LinearProgress

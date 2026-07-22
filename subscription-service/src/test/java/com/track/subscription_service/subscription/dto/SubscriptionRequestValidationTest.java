@@ -8,6 +8,7 @@ import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -32,7 +33,7 @@ class SubscriptionRequestValidationTest {
 
     private CreateSubscriptionRequest request(String name, String website, BillingUnit unit, Integer count) {
         return new CreateSubscriptionRequest(
-                name, 10.0, SubscriptionType.RECURRING, null, SubscriptionCategory.SOFTWARE,
+                name, new BigDecimal("10.0"), "USD", SubscriptionType.RECURRING, null, SubscriptionCategory.SOFTWARE,
                 "  description  ", "  card  ", website, LocalDate.now(), unit, count, true
         );
     }

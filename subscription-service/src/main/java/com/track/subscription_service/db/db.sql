@@ -10,7 +10,8 @@ CREATE TABLE IF NOT EXISTS public.subscription
     name character varying(255) COLLATE pg_catalog."default" NOT NULL,
     type character varying(255) COLLATE pg_catalog."default" NOT NULL,
     duration character varying(255) COLLATE pg_catalog."default",
-    cost double precision NOT NULL,
+    cost numeric(19,4) NOT NULL,
+    currency character varying(3) NOT NULL DEFAULT 'USD',
     user_id bigint,
     category character varying(255) COLLATE pg_catalog."default",
     CONSTRAINT subscription_pkey PRIMARY KEY (id),
@@ -18,7 +19,9 @@ CREATE TABLE IF NOT EXISTS public.subscription
         REFERENCES public.users (id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE CASCADE,
-    CONSTRAINT subscription_type_check CHECK (type::text = ANY (ARRAY['recurring'::character varying::text, 'one-time'::character varying::text]))
+    CONSTRAINT subscription_type_check CHECK (type::text = ANY (ARRAY['recurring'::character varying::text, 'one-time'::character varying::text])),
+    CONSTRAINT subscription_cost_positive CHECK (cost > 0),
+    CONSTRAINT subscription_currency_format CHECK (currency ~ '^[A-Z]{3}$')
 )
 
 TABLESPACE pg_default;

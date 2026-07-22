@@ -2,7 +2,8 @@ export interface Subscription {
   id: number;
   name: string;
   category: SubscriptionCategory;
-  cost: number;
+  cost: string;
+  currency: string;
   type: SubscriptionType;
   billingIntervalCount: number;
   billingIntervalUnit: BillingUnit;
@@ -12,7 +13,8 @@ export interface Subscription {
 export interface DetailedSubscription {
   id: number;
   name: string;
-  cost: number;
+  cost: string;
+  currency: string;
   type: SubscriptionType;
   billingIntervalUnit: BillingUnit;
   billingIntervalCount: number;
@@ -24,7 +26,7 @@ export interface DetailedSubscription {
   description: string;
   website: string;
   autoRenew: boolean;
-  totalPaid: number;
+  totalPaid: string;
   emailNotificationsEnabled: boolean;
 }
 
@@ -32,7 +34,8 @@ export interface UpdateSubscriptionPayload {
   id: number;
   name?: string;
   description?: string;
-  cost?: number;
+  cost?: string;
+  currency?: string;
   type?: SubscriptionType;
   category?: SubscriptionCategory;
   startDate?: string;

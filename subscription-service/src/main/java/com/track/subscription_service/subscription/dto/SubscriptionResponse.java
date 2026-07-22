@@ -3,12 +3,17 @@ package com.track.subscription_service.subscription.dto;
 import com.track.subscription_service.subscription.model.BillingUnit;
 import com.track.subscription_service.subscription.model.SubscriptionCategory;
 import com.track.subscription_service.subscription.model.SubscriptionType;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class SubscriptionResponse {
     public Long id;
     public String name;
-    public double cost;
+    @JsonSerialize(using = ToStringSerializer.class)
+    public BigDecimal cost;
+    public String currency;
     public SubscriptionType type;
     public String duration;
     public SubscriptionCategory category;
@@ -19,5 +24,6 @@ public class SubscriptionResponse {
     public BillingUnit billingIntervalUnit;
     public Integer billingIntervalCount;
     public LocalDate nextBillingDate;
-    public double totalPaid;
+    @JsonSerialize(using = ToStringSerializer.class)
+    public BigDecimal totalPaid;
 }
