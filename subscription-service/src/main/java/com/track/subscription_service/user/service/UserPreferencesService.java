@@ -5,16 +5,24 @@ import com.track.subscription_service.user.entity.UserPreferences;
 import com.track.subscription_service.user.repository.UserPreferencesRepository;
 import com.track.subscription_service.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import com.track.subscription_service.notification.service.ReminderScheduleService;
+import com.track.subscription_service.subscription.repository.SubscriptionRepository;
 
 @Service
 public class UserPreferencesService {
 
     private final UserPreferencesRepository repo;
     private final UserRepository userRepository;
+    private final SubscriptionRepository subscriptionRepository;
+    private final ReminderScheduleService reminderScheduleService;
 
-    public UserPreferencesService(UserPreferencesRepository repo,UserRepository userRepository) {
+    public UserPreferencesService(UserPreferencesRepository repo, UserRepository userRepository,
+                                  SubscriptionRepository subscriptionRepository,
+                                  ReminderScheduleService reminderScheduleService) {
         this.repo = repo;
         this.userRepository = userRepository;
+        this.subscriptionRepository = subscriptionRepository;
+        this.reminderScheduleService = reminderScheduleService;
     }
 
     public UserPreferences getByGoogleId(String googleId) {
@@ -40,8 +48,11 @@ public class UserPreferencesService {
         existing.setTheme(updated.getTheme());
         existing.setEmailNotificationsEnabled(updated.getEmailNotificationsEnabled());
         existing.setReminderDaysBefore(updated.getReminderDaysBefore());
+        existing.setReminderTime(updated.getReminderTime());
 
-        return repo.save(existing);
+        UserPreferences saved = repo.save(existing);
+        subscriptionRepository.findByUser_GoogleId(googleId).forEach(reminderScheduleService::refresh);
+        return saved;
     }
 
     private UserPreferences createDefaultPreferences(User user) {
@@ -55,6 +66,8 @@ public class UserPreferencesService {
                 true,
                 3        );
 
-        return repo.save(prefs);
+        UserPreferences saved = repo.save(prefs);
+        subscriptionRepository.findByUser_GoogleId(user.getGoogleId()).forEach(reminderScheduleService::refresh);
+        return saved;
     }
 }

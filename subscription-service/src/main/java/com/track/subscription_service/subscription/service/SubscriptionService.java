@@ -10,6 +10,7 @@ import com.track.subscription_service.subscription.model.SubscriptionType;
 import com.track.subscription_service.user.entity.User;
 import com.track.subscription_service.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import com.track.subscription_service.notification.service.ReminderScheduleService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,15 +23,18 @@ public class SubscriptionService {
     private final SubscriptionRepository repo;
     private final UserRepository userRepository;
     private final BillingService billingService;
+    private final ReminderScheduleService reminderScheduleService;
 
     public SubscriptionService(
             SubscriptionRepository repo,
             UserRepository userRepository,
-            BillingService billingService
+            BillingService billingService,
+            ReminderScheduleService reminderScheduleService
     ) {
         this.repo = repo;
         this.userRepository = userRepository;
         this.billingService = billingService;
+        this.reminderScheduleService = reminderScheduleService;
     }
 
     public List<Subscription> getAll(){
@@ -56,7 +60,9 @@ public class SubscriptionService {
         subscription.setEmailNotificationsEnabled(request.emailNotificationsEnabled());
         validateCost(subscription.getCost());
         subscription.setUser(user);
-        return repo.save(subscription);
+        Subscription saved = repo.save(subscription);
+        reminderScheduleService.refresh(saved);
+        return saved;
     }
 
     public List<Subscription> getByGoogleId(String googleId){
@@ -86,7 +92,9 @@ public class SubscriptionService {
         existing.setEmailNotificationsEnabled(request.emailNotificationsEnabled());
         validateCost(existing.getCost());
 
-        return repo.save(existing);
+        Subscription saved = repo.save(existing);
+        reminderScheduleService.refresh(saved);
+        return saved;
     }
 
     public void delete(Long id,String googleId){
