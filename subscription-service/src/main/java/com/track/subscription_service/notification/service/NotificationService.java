@@ -23,16 +23,25 @@ public class NotificationService {
     private final TemplateService templateService;
     private final NotificationDeliveryRepository deliveryRepository;
     private final Clock clock;
+    private final EmailSuppressionService suppressionService;
+    private final UnsubscribeService unsubscribeService;
 
     public NotificationService(EmailService emailService, TemplateService templateService,
-                               NotificationDeliveryRepository deliveryRepository, Clock clock) {
+                               NotificationDeliveryRepository deliveryRepository, Clock clock,
+                               EmailSuppressionService suppressionService,
+                               UnsubscribeService unsubscribeService) {
         this.emailService = emailService;
         this.templateService = templateService;
         this.deliveryRepository = deliveryRepository;
         this.clock = clock;
+        this.suppressionService = suppressionService;
+        this.unsubscribeService = unsubscribeService;
     }
 
     public boolean sendSubscriptionReminder(User user, Subscription sub, LocalDate nextDate) {
+        if (suppressionService.isSuppressed(user.getEmail())) {
+            return false;
+        }
         String subject = "Upcoming Subscription Payment";
         int created = deliveryRepository.createIfAbsent(
                 sub.getId(), nextDate, RENEWAL_REMINDER, clock.instant()
@@ -54,6 +63,10 @@ public class NotificationService {
     }
 
     public boolean retry(NotificationDelivery delivery) {
+        if (suppressionService.isSuppressed(delivery.getSubscription().getUser().getEmail())) {
+            deliveryRepository.markDead(delivery.getId(), clock.instant(), "Email recipient is suppressed");
+            return false;
+        }
         try {
             send(delivery.getSubscription().getUser(), delivery.getSubscription(),
                     delivery.getBillingDate(), "Upcoming Subscription Payment");
@@ -79,8 +92,11 @@ public class NotificationService {
 
     private void send(User user, Subscription subscription, LocalDate billingDate, String subject) {
         String formattedDate = billingDate.format(DateTimeFormatter.ofPattern("MMM d, yyyy"));
-        String template = templateService.loadTemplate(subscription.getName(), formattedDate);
-        emailService.sendEmail(user.getEmail(), subject, template);
+        String unsubscribeUrl = unsubscribeService.createLink(user);
+        String template = templateService.loadTemplate(
+                subscription.getName(), formattedDate, unsubscribeUrl
+        );
+        emailService.sendEmail(user.getEmail(), subject, template, unsubscribeUrl);
     }
 
     private String errorMessage(RuntimeException exception) {

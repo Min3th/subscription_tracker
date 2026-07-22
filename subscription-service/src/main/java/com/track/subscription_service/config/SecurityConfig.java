@@ -33,7 +33,8 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth ->auth
-                        .requestMatchers("/auth/google", "/auth/refresh", "/auth/logout").permitAll()
+                        .requestMatchers("/auth/google", "/auth/refresh", "/auth/logout",
+                                "/notifications/unsubscribe", "/notifications/webhooks/sendgrid").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

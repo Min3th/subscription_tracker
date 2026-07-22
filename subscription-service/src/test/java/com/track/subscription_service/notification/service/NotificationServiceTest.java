@@ -24,6 +24,8 @@ class NotificationServiceTest {
     private TemplateService templateService;
     private NotificationDeliveryRepository deliveryRepository;
     private NotificationService service;
+    private EmailSuppressionService suppressionService;
+    private UnsubscribeService unsubscribeService;
     private Subscription subscription;
     private User user;
     private LocalDate billingDate;
@@ -33,8 +35,12 @@ class NotificationServiceTest {
         emailService = mock(EmailService.class);
         templateService = mock(TemplateService.class);
         deliveryRepository = mock(NotificationDeliveryRepository.class);
+        suppressionService = mock(EmailSuppressionService.class);
+        unsubscribeService = mock(UnsubscribeService.class);
+        when(unsubscribeService.createLink(any())).thenReturn("https://api.example.com/notifications/unsubscribe?token=x");
         service = new NotificationService(emailService, templateService, deliveryRepository,
-                Clock.fixed(Instant.parse("2026-07-22T03:30:00Z"), ZoneOffset.UTC));
+                Clock.fixed(Instant.parse("2026-07-22T03:30:00Z"), ZoneOffset.UTC),
+                suppressionService, unsubscribeService);
 
         subscription = new Subscription();
         subscription.setId(42L);
@@ -62,20 +68,21 @@ class NotificationServiceTest {
     void firstDeliveryIsRecordedAndMarkedSent() {
         when(deliveryRepository.createIfAbsent(eq(42L), eq(billingDate), eq("RENEWAL_REMINDER"), any(Instant.class)))
                 .thenReturn(1);
-        when(templateService.loadTemplate(eq("Example"), anyString())).thenReturn("<p>Reminder</p>");
+        when(templateService.loadTemplate(eq("Example"), anyString(), anyString())).thenReturn("<p>Reminder</p>");
 
         assertTrue(service.sendSubscriptionReminder(user, subscription, billingDate));
 
-        verify(emailService).sendEmail("user@example.com", "Upcoming Subscription Payment", "<p>Reminder</p>");
+        verify(emailService).sendEmail("user@example.com", "Upcoming Subscription Payment", "<p>Reminder</p>",
+                "https://api.example.com/notifications/unsubscribe?token=x");
         verify(deliveryRepository).markSent(eq(42L), eq(billingDate), eq("RENEWAL_REMINDER"), any(Instant.class));
     }
 
     @Test
     void initialFailureIsScheduledForRetryWithoutEscaping() {
         when(deliveryRepository.createIfAbsent(anyLong(), any(), anyString(), any())).thenReturn(1);
-        when(templateService.loadTemplate(anyString(), anyString())).thenReturn("template");
+        when(templateService.loadTemplate(anyString(), anyString(), anyString())).thenReturn("template");
         doThrow(new RuntimeException("temporary failure")).when(emailService)
-                .sendEmail(anyString(), anyString(), anyString());
+                .sendEmail(anyString(), anyString(), anyString(), anyString());
 
         assertFalse(service.sendSubscriptionReminder(user, subscription, billingDate));
 
@@ -91,9 +98,9 @@ class NotificationServiceTest {
         when(delivery.getBillingDate()).thenReturn(billingDate);
         when(delivery.getAttempts()).thenReturn(3);
         subscription.setUser(user);
-        when(templateService.loadTemplate(anyString(), anyString())).thenReturn("template");
+        when(templateService.loadTemplate(anyString(), anyString(), anyString())).thenReturn("template");
         doThrow(new RuntimeException("still unavailable")).when(emailService)
-                .sendEmail(anyString(), anyString(), anyString());
+                .sendEmail(anyString(), anyString(), anyString(), anyString());
 
         assertFalse(service.retry(delivery));
 
@@ -109,9 +116,9 @@ class NotificationServiceTest {
         when(delivery.getBillingDate()).thenReturn(billingDate);
         when(delivery.getAttempts()).thenReturn(NotificationService.MAX_ATTEMPTS);
         subscription.setUser(user);
-        when(templateService.loadTemplate(anyString(), anyString())).thenReturn("template");
+        when(templateService.loadTemplate(anyString(), anyString(), anyString())).thenReturn("template");
         doThrow(new RuntimeException("permanent failure")).when(emailService)
-                .sendEmail(anyString(), anyString(), anyString());
+                .sendEmail(anyString(), anyString(), anyString(), anyString());
 
         assertFalse(service.retry(delivery));
 
@@ -122,5 +129,14 @@ class NotificationServiceTest {
     @Test
     void retryDelayIsCappedToAvoidOverflow() {
         assertTrue(NotificationService.retryDelay(100).compareTo(Duration.ofHours(24)) < 0);
+    }
+
+    @Test
+    void suppressedRecipientIsNeverSentOrAddedToTheLedger() {
+        when(suppressionService.isSuppressed("user@example.com")).thenReturn(true);
+
+        assertFalse(service.sendSubscriptionReminder(user, subscription, billingDate));
+
+        verifyNoInteractions(emailService, templateService, deliveryRepository, unsubscribeService);
     }
 }

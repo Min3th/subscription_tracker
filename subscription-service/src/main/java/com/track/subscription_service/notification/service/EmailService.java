@@ -27,13 +27,15 @@ public class EmailService {
         this.props = props;
     }
 
-    public void sendEmail(String to, String subject, String html) {
+    public void sendEmail(String to, String subject, String html, String unsubscribeUrl) {
 
         Email from = new Email(props.getFromEmail(), props.getFromName());
         Email toEmail = new Email(to);
         Content content = new Content("text/html", html);
 
         Mail mail = new Mail(from, subject, toEmail, content);
+        mail.addHeader("List-Unsubscribe", "<" + unsubscribeUrl + ">");
+        mail.addHeader("List-Unsubscribe-Post", "List-Unsubscribe=One-Click");
 
         Request request = new Request();
 

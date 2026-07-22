@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class TemplateService {
 
-    public String loadTemplate(String name, String date) {
+    public String loadTemplate(String name, String date, String unsubscribeUrl) {
         try {
             InputStream inputStream =
                     new ClassPathResource("templates/reminder.html").getInputStream();
@@ -18,6 +18,7 @@ public class TemplateService {
 
             html = html.replace("{{subscription_name}}", name);
             html = html.replace("{{renewal_date}}", date);
+            html = html.replace("{{unsubscribe_url}}", unsubscribeUrl);
 
             return html;
 

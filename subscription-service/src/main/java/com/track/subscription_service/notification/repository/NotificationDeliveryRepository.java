@@ -111,4 +111,19 @@ public interface NotificationDeliveryRepository extends JpaRepository<Notificati
 
     @EntityGraph(attributePaths = {"subscription", "subscription.user"})
     List<NotificationDelivery> findAllByClaimToken(String claimToken);
+
+    @Modifying
+    @Transactional
+    @Query(value = """
+            UPDATE notification_delivery delivery
+            SET status = 'DEAD', dead_at = :now, last_error = :reason,
+                next_attempt_at = NULL, claim_token = NULL
+            FROM subscription subscription
+            WHERE delivery.subscription_id = subscription.id
+              AND subscription.user_id = :userId
+              AND delivery.status IN ('PENDING', 'PROCESSING', 'RETRY_SCHEDULED')
+            """, nativeQuery = true)
+    int markOpenDeliveriesDeadForUser(@Param("userId") Long userId,
+                                     @Param("now") Instant now,
+                                     @Param("reason") String reason);
 }

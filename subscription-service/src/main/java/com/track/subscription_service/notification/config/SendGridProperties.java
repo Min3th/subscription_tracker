@@ -23,6 +23,7 @@ public class SendGridProperties {
 
     @NotBlank
     private String fromName;
+    private String eventWebhookPublicKey;
 
     public String getApiKey() {
         return apiKey;
@@ -46,5 +47,10 @@ public class SendGridProperties {
 
     public void setFromName(String fromName) {
         this.fromName = fromName;
+    }
+
+    public String getEventWebhookPublicKey() { return eventWebhookPublicKey; }
+    public void setEventWebhookPublicKey(String eventWebhookPublicKey) {
+        this.eventWebhookPublicKey = eventWebhookPublicKey;
     }
 }
