@@ -1,4 +1,12 @@
 {
   "editor.formatOnSave": true,
-  "java.compile.nullAnalysis.mode": "disabled"
+  "java.compile.nullAnalysis.mode": "disabled",
+  "java.import.exclusions": [
+    "**/bin/**",
+    "**/target/**"
+  ],
+  "files.exclude": {
+    "**/bin": true,
+    "**/target": true
+  }
 }
