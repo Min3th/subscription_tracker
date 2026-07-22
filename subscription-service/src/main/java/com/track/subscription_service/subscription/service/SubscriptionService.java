@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Currency;
+import java.util.Locale;
 
 @Service
 public class SubscriptionService {
@@ -34,7 +36,9 @@ public class SubscriptionService {
     public Subscription create(Subscription subscription,String googleId){
         User user = userRepository.findByGoogleId(googleId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        validateCost(subscription.getCost());
         subscription.setUser(user);
+        subscription.setCurrency(normalizeCurrency(subscription.getCurrency(), user));
         return repo.save(subscription);
     }
 
@@ -61,7 +65,11 @@ public class SubscriptionService {
 
         if (updated.getName() != null) existing.setName(updated.getName());
         if (updated.getCategory() != null) existing.setCategory(updated.getCategory());
-        if (updated.getCost() != null) existing.setCost(updated.getCost());
+        if (updated.getCost() != null) {
+            validateCost(updated.getCost());
+            existing.setCost(updated.getCost());
+        }
+        if (updated.getCurrency() != null) existing.setCurrency(normalizeCurrency(updated.getCurrency(), existing.getUser()));
         if (updated.getDuration() != null) existing.setDuration(updated.getDuration());
         if (updated.getType() != null) existing.setType(updated.getType());
 
@@ -89,6 +97,7 @@ public class SubscriptionService {
         res.id =subscription.getId();
         res.name = subscription.getName();
         res.cost = subscription.getCost();
+        res.currency = subscription.getCurrency();
         res.type = subscription.getType();
         res.duration = subscription.getDuration();
         res.category = subscription.getCategory();
@@ -113,5 +122,20 @@ public class SubscriptionService {
         );
 
         return res;
+    }
+
+    private String normalizeCurrency(String requestedCurrency, User user) {
+        String fallback = user.getPreferences() == null || user.getPreferences().getCurrency() == null
+                ? "USD" : user.getPreferences().getCurrency();
+        String code = requestedCurrency == null || requestedCurrency.isBlank() ? fallback : requestedCurrency;
+        code = code.trim().toUpperCase(Locale.ROOT);
+        Currency.getInstance(code);
+        return code;
+    }
+
+    private void validateCost(java.math.BigDecimal cost) {
+        if (cost == null || cost.signum() <= 0 || cost.scale() > 4 || cost.precision() - cost.scale() > 15) {
+            throw new IllegalArgumentException("Cost must be positive with at most 15 integer and 4 decimal digits");
+        }
     }
 }

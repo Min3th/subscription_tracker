@@ -12,6 +12,7 @@ const mapToDetailed = (item: any): DetailedSubscription => ({
   id: item.id,
   name: item.name,
   cost: item.cost,
+  currency: item.currency,
   billingIntervalUnit: item.billingIntervalUnit,
   billingIntervalCount: item.billingIntervalCount,
   nextBillingDate: new Date(item.nextBillingDate),

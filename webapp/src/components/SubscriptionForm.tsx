@@ -20,9 +20,10 @@ import { useEffect } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useTheme } from "@mui/material";
 import { updateSubscriptionThunk, createSubscriptionThunk, fetchSubscriptionById } from "../app/subscriptionSlice";
-import { useDispatch } from "react-redux";
-import type { AppDispatch } from "../app/store";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../app/store";
 import type { UpdateSubscriptionPayload, SubscriptionType, BillingUnit } from "../types/subscription";
+import { parseDecimal, SUPPORTED_CURRENCIES } from "../utils/money";
 
 type Props = {
   open: boolean;
@@ -34,7 +35,8 @@ type Props = {
 type FormValues = {
   name: string;
   description: string;
-  cost: number | "";
+  cost: string;
+  currency: string;
   type: SubscriptionType;
   category: string;
   startDate: string;
@@ -51,11 +53,22 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
   const snackbar = useSnackbar();
   const theme = useTheme();
   const dispatch = useDispatch<AppDispatch>();
+  const preferredCurrency = useSelector((state: RootState) => state.preferences.currency || "USD");
 
   const validationSchema = Yup.object({
     name: Yup.string().required("Name is required"),
     description: Yup.string(),
-    cost: Yup.number().typeError("Amount must be a number").positive("Must be positive").required("Amount is required"),
+    cost: Yup.string()
+      .matches(/^\d+(\.\d{1,4})?$/, "Use a positive amount with at most 4 decimal places")
+      .test("positive", "Must be positive", (value) => {
+        try {
+          return Boolean(value && parseDecimal(value) > 0n);
+        } catch {
+          return false;
+        }
+      })
+      .required("Amount is required"),
+    currency: Yup.string().oneOf([...SUPPORTED_CURRENCIES]).required("Currency is required"),
     type: Yup.string().required("Type is required"),
     category: Yup.string().required("Category is required"),
     startDate: Yup.date().required("Date is required"),
@@ -67,7 +80,8 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
     initialValues: {
       name: "",
       description: "",
-      cost: 0,
+      cost: "",
+      currency: preferredCurrency,
       type: "recurring",
       category: "",
       startDate: "",
@@ -84,7 +98,8 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
           id: editId,
           name: values.name,
           description: values.description,
-          cost: Number(values.cost),
+          cost: values.cost,
+          currency: values.currency,
           type: values.type,
           category: values.category,
           startDate: values.startDate,
@@ -100,7 +115,8 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
             id: editId,
             name: values.name,
             description: values.description,
-            cost: Number(values.cost),
+            cost: values.cost,
+            currency: values.currency,
             type: values.type,
             category: values.category,
             startDate: values.startDate,
@@ -140,6 +156,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
             name: data.name || "",
             description: data.description || "",
             cost: data.cost || "",
+            currency: data.currency || preferredCurrency,
             type: data.type || "recurring",
             category: data.category || "",
             startDate: data.startDate || "",
@@ -158,7 +175,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
           setLoading(false);
         });
     } else if (open && !editId) {
-      formik.resetForm();
+      formik.resetForm({ values: { ...formik.initialValues, currency: preferredCurrency } });
     }
   }, [open, editId]);
 
@@ -305,7 +322,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                   <TextField
                     fullWidth
                     margin="normal"
-                    label="Amount ($)"
+                    label={`Amount (${formik.values.currency})`}
                     name="cost"
                     type="number"
                     value={formik.values.cost}
@@ -324,6 +341,23 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                         },
                     }}
                   />
+
+                  <TextField
+                    fullWidth
+                    margin="normal"
+                    select
+                    label="Currency"
+                    name="currency"
+                    value={formik.values.currency}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    error={formik.touched.currency && Boolean(formik.errors.currency)}
+                    helperText={formik.touched.currency && formik.errors.currency}
+                  >
+                    {SUPPORTED_CURRENCIES.map((currency) => (
+                      <MenuItem key={currency} value={currency}>{currency}</MenuItem>
+                    ))}
+                  </TextField>
 
                   <TextField
                     fullWidth

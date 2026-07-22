@@ -3,6 +3,12 @@ package com.track.subscription_service.subscription.entity;
 
 import com.track.subscription_service.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.Pattern;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 
@@ -22,7 +28,15 @@ public class Subscription {
     private Long id;
 
     private String name;
-    private Double cost;
+    @DecimalMin(value = "0.0", inclusive = false)
+    @Digits(integer = 15, fraction = 4)
+    @JsonSerialize(using = ToStringSerializer.class)
+    @Column(nullable = false, precision = 19, scale = 4)
+    private BigDecimal cost;
+
+    @Pattern(regexp = "^[A-Z]{3}$")
+    @Column(nullable = false, length = 3)
+    private String currency;
     private String type;
     private String duration;
     private String category;
@@ -48,11 +62,12 @@ public class Subscription {
     private User user;
 
     public Subscription(){}
-    public Subscription(String name, String type, String duration, Double cost,String category, String description, String paymentMethod,String website, LocalDate startDate, String billingIntervalUnit, Integer billingIntervalCount, boolean emailNotificationsEnabled) {
+    public Subscription(String name, String type, String duration, BigDecimal cost, String currency, String category, String description, String paymentMethod,String website, LocalDate startDate, String billingIntervalUnit, Integer billingIntervalCount, boolean emailNotificationsEnabled) {
         this.name = name;
         this.type = type;
         this.duration = duration;
         this.cost = cost;
+        this.currency = currency;
         this.category = category;
         this.description = description;
         this.paymentMethod = paymentMethod;
@@ -95,13 +110,17 @@ public class Subscription {
         this.duration = duration;
     }
 
-    public Double getCost() {
+    public BigDecimal getCost() {
         return cost;
     }
 
-    public void setCost(Double cost) {
+    public void setCost(BigDecimal cost) {
         this.cost = cost;
     }
+
+    public String getCurrency() { return currency; }
+
+    public void setCurrency(String currency) { this.currency = currency; }
 
     public User getUser() {
         return user;

@@ -3,6 +3,7 @@ package com.track.subscription_service.subscription.service;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.math.BigDecimal;
 
 @Service
 public class BillingService {
@@ -33,8 +34,8 @@ public class BillingService {
         return next;
     }
 
-    public double calculateTotalPaid(LocalDate startDate, String unit, int count, double cost) {
-        if (startDate.isAfter(LocalDate.now())) return 0;
+    public BigDecimal calculateTotalPaid(LocalDate startDate, String unit, int count, BigDecimal cost) {
+        if (startDate.isAfter(LocalDate.now())) return BigDecimal.ZERO;
 
         long cycles = 0;
         LocalDate current = startDate;
@@ -52,6 +53,6 @@ public class BillingService {
             };
         }
 
-        return cycles * cost;
+        return cost.multiply(BigDecimal.valueOf(cycles));
     }
 }

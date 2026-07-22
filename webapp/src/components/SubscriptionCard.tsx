@@ -27,6 +27,7 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { Switch } from "@mui/material";
 import { useTheme } from "@mui/material";
 import type { DetailedSubscription } from "../types/subscription";
+import { formatMoney } from "../utils/money";
 import { t } from "i18next";
 import { useSnackbar } from "../utils/Snackbar";
 import { useDispatch } from "react-redux";
@@ -147,7 +148,7 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
               <Box display="grid" gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }} gap={1}>
                 <Box display="flex" alignItems="center" gap={1}>
                   <AttachMoneyIcon fontSize="small" />
-                  <Typography fontWeight="bold">${subscription.cost.toFixed(2)}</Typography>
+                  <Typography fontWeight="bold">{formatMoney(subscription.cost, subscription.currency)}</Typography>
                   <Typography variant="body2">/ {subscription.billingIntervalUnit}</Typography>
                 </Box>
 
@@ -170,7 +171,7 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
 
                 <Box display="flex" alignItems="center" gap={1}>
                   <TrendingUpIcon fontSize="small" />
-                  <Typography variant="body2">Total Paid: ${subscription.totalPaid}</Typography>
+                  <Typography variant="body2">Total Paid: {formatMoney(subscription.totalPaid, subscription.currency)}</Typography>
                 </Box>
 
                 <Box display="flex" alignItems="center" gap={1}>

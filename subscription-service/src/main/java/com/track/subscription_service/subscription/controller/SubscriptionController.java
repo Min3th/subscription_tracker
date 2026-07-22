@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.net.URI;
 import java.util.List;
@@ -49,7 +50,7 @@ public class SubscriptionController {
 
     @PostMapping
     public ResponseEntity<SubscriptionResponse> createSubscription(
-            @RequestBody Subscription subscription){
+            @Valid @RequestBody Subscription subscription){
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String googleId = auth.getName();
@@ -63,7 +64,7 @@ public class SubscriptionController {
 
     @PutMapping("/{id}")
     public ResponseEntity<SubscriptionResponse> updateSubscription(
-            @RequestBody Subscription updated
+            @Valid @RequestBody Subscription updated
     ){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String googleId = auth.getName();
