@@ -1,3 +1,8 @@
+ALTER TABLE subscription DROP CONSTRAINT IF EXISTS subscription_type_check;
+ALTER TABLE subscription DROP CONSTRAINT IF EXISTS subscription_cost_positive;
+ALTER TABLE subscription DROP CONSTRAINT IF EXISTS subscription_category_check;
+ALTER TABLE subscription DROP CONSTRAINT IF EXISTS subscription_billing_check;
+
 UPDATE subscription
 SET name = LEFT(TRIM(COALESCE(name, 'Untitled')), 120),
     cost = CASE WHEN cost IS NULL OR cost <= 0 THEN 0.01 ELSE cost END,
@@ -43,11 +48,6 @@ UPDATE subscription
 SET billing_interval_unit = NULL,
     billing_interval_count = NULL
 WHERE type = 'ONE_TIME';
-
-ALTER TABLE subscription DROP CONSTRAINT IF EXISTS subscription_type_check;
-ALTER TABLE subscription DROP CONSTRAINT IF EXISTS subscription_cost_positive;
-ALTER TABLE subscription DROP CONSTRAINT IF EXISTS subscription_category_check;
-ALTER TABLE subscription DROP CONSTRAINT IF EXISTS subscription_billing_check;
 
 ALTER TABLE subscription ALTER COLUMN name TYPE VARCHAR(120);
 ALTER TABLE subscription ALTER COLUMN name SET NOT NULL;
