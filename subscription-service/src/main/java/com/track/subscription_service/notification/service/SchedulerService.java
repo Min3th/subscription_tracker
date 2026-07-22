@@ -85,7 +85,7 @@ public class SchedulerService {
     @Scheduled(cron = "0 */5 * * * ?")
     public void checkSubscriptions(){
         List<Subscription> subscriptions = subscriptionRepository.findAll();
-        System.out.println("Scheduler running...");
+//        System.out.println("Scheduler running...");
         for (Subscription sub: subscriptions){
             if (isDueSoon(sub)){
                 notificationService.sendSubscriptionReminder(sub.getUser(),sub);
