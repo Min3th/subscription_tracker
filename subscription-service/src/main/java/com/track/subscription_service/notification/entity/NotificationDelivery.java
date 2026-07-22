@@ -42,6 +42,18 @@ public class NotificationDelivery {
     @Column(name = "sent_at")
     private Instant sentAt;
 
+    @Column(name = "next_attempt_at")
+    private Instant nextAttemptAt;
+
+    @Column(name = "last_attempt_at", nullable = false)
+    private Instant lastAttemptAt;
+
+    @Column(name = "dead_at")
+    private Instant deadAt;
+
+    @Column(name = "claim_token", length = 36)
+    private String claimToken;
+
     @Column(name = "last_error", length = 1000)
     private String lastError;
 
@@ -53,5 +65,9 @@ public class NotificationDelivery {
     public int getAttempts() { return attempts; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getSentAt() { return sentAt; }
+    public Instant getNextAttemptAt() { return nextAttemptAt; }
+    public Instant getLastAttemptAt() { return lastAttemptAt; }
+    public Instant getDeadAt() { return deadAt; }
+    public String getClaimToken() { return claimToken; }
     public String getLastError() { return lastError; }
 }
