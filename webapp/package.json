@@ -10,6 +10,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:e2e": "node scripts/run-e2e.mjs --project=chromium --project=firefox --project=webkit",
+    "test:e2e:headed": "node scripts/run-e2e.mjs --headed",
+    "test:e2e:ui": "node scripts/run-e2e.mjs --ui",
+    "test:e2e:chrome": "node scripts/run-e2e.mjs --project=google-chrome",
+    "test:e2e:brave": "node scripts/run-e2e.mjs --project=brave",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -36,7 +41,9 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
     "@eslint/js": "^9.39.4",
+    "@playwright/test": "^1.61.1",
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",

@@ -59,7 +59,7 @@ const generatePast6MonthsSpending = (subscriptions: DetailedSubscription[]) => {
         const start = new Date(sub.startDate);
         if (start > targetMonthEnd) return;
 
-        let current = new Date(start);
+        const current = new Date(start);
         while (current <= targetMonthEnd) {
           if (current >= targetMonth) {
             amount += parseDecimal(sub.cost);
@@ -113,8 +113,8 @@ export default function Dashboard() {
     const recurringSubs = subscriptions.filter((sub) => sub.type !== "one-time");
     if (!recurringSubs.length) return null;
     return recurringSubs.sort(
-      (a, b) => (a.nextBillingDate?.getTime() ?? Number.POSITIVE_INFINITY)
-        - (b.nextBillingDate?.getTime() ?? Number.POSITIVE_INFINITY),
+      (a, b) => (a.nextBillingDate ? new Date(a.nextBillingDate).getTime() : Number.POSITIVE_INFINITY)
+        - (b.nextBillingDate ? new Date(b.nextBillingDate).getTime() : Number.POSITIVE_INFINITY),
     )[0];
   }, [subscriptions]);
 

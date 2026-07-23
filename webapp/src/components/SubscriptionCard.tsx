@@ -156,7 +156,7 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
                   <CalendarTodayIcon fontSize="small" />
                   <Typography variant="body2">
                     {subscription.nextBillingDate
-                      ? `Next: ${subscription.nextBillingDate.toLocaleDateString()}`
+                      ? `Next: ${new Date(subscription.nextBillingDate).toLocaleDateString()}`
                       : "One-time purchase"}
                   </Typography>
                 </Box>
@@ -193,10 +193,15 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
           <Box display="flex" flexDirection="column" alignItems="flex-end" gap={2}>
             <Box display="flex" alignItems="center" gap={1}>
               <Typography variant="body2">Auto-renew</Typography>
-              <Switch checked={subscription.autoRenew} onChange={() => {}} size="small" />
+              <Switch
+                checked={subscription.autoRenew}
+                onChange={() => {}}
+                size="small"
+                slotProps={{ input: { "aria-label": `Auto-renew ${subscription.name}` } }}
+              />
             </Box>
 
-            <IconButton onClick={handleOpen}>
+            <IconButton aria-label={`Open actions for ${subscription.name}`} onClick={handleOpen}>
               <MoreVertIcon />
             </IconButton>
 

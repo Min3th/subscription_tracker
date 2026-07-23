@@ -115,7 +115,9 @@ export default function MiniDrawer() {
       <CssBaseline />
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-          <IconButton>{theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}</IconButton>
+          <Box aria-hidden="true" sx={{ display: "flex", p: 1 }}>
+            {theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+          </Box>
         </DrawerHeader>
         <Divider />
         <List>
@@ -270,6 +272,7 @@ export default function MiniDrawer() {
           }}
         >
           <IconButton
+            aria-label={open ? "Collapse navigation" : "Expand navigation"}
             onClick={toggleDrawer}
             sx={{
               bgcolor: "background.paper",
