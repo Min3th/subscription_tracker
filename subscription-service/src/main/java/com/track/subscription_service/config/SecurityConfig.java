@@ -33,6 +33,8 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth ->auth
+                        .requestMatchers("/swagger-ui.html", "/swagger-ui/**",
+                                "/v3/api-docs", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/auth/google", "/auth/refresh", "/auth/logout",
                                 "/notifications/unsubscribe", "/notifications/webhooks/sendgrid").permitAll()
                         .anyRequest().authenticated()
