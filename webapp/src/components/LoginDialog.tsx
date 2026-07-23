@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, Box, Typography, Stack } from "@mui/material";
 import GoogleAuthButton from "./GoogleAuthButton";
-import { jwtDecode } from "jwt-decode";
+import type { CredentialResponse } from "@react-oauth/google";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setAuth } from "../app/authSlice";
@@ -16,16 +16,18 @@ type Props = {
 export default function LoginDialog({ open, onClose }: Props) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const handleGoogleSuccess = async (credentialResponse: any) => {
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
     try {
+      if (!credentialResponse.credential) {
+        throw new Error("Google did not return an ID credential");
+      }
       const res = await api.post("/auth/google", {
         credential: credentialResponse.credential,
       });
 
-      const user: any = jwtDecode(credentialResponse.credential);
       dispatch(
         setAuth({
-          user,
+          user: res.data.user,
           token: res.data.accessToken,
         }),
       );

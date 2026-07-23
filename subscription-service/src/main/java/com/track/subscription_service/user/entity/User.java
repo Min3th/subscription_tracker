@@ -25,6 +25,9 @@ public class User {
 
     private String name;
 
+    @Column(length = 2048)
+    private String picture;
+
     // for future proofness.
     private String provider = "Google";
 
@@ -79,6 +82,14 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getPicture() {
+        return picture;
+    }
+
+    public void setPicture(String picture) {
+        this.picture = picture;
     }
 
     public String getProvider() {

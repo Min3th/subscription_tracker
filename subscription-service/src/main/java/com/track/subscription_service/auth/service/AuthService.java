@@ -60,6 +60,7 @@ public class AuthService {
         String googleId = payload.getSubject();
         String email = payload.getEmail();
         String name = (String) payload.get("name");
+        String picture = (String) payload.get("picture");
 
         Optional<User> existingUser = userRepository.findByGoogleId(googleId);
 
@@ -68,6 +69,9 @@ public class AuthService {
         if (existingUser.isPresent()) {
 
             user = existingUser.get();
+            user.setEmail(email);
+            user.setName(name);
+            user.setPicture(picture);
             user.setUpdatedAt(Instant.now());
         } else {
 
@@ -75,6 +79,7 @@ public class AuthService {
             user.setGoogleId(googleId);
             user.setEmail(email);
             user.setName(name);
+            user.setPicture(picture);
             user.setCreatedAt(Instant.now());
             user.setUpdatedAt(Instant.now());
         }

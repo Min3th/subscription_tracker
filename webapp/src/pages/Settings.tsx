@@ -255,7 +255,12 @@ export function Settings() {
 
               <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 3 }}>
                 <Box sx={{ position: "relative" }}>
-                  <Avatar src={user.picture} alt={user.name} sx={{ width: 100, height: 100 }} />
+                  <Avatar
+                    src={user.picture}
+                    alt={user.name}
+                    sx={{ width: 100, height: 100 }}
+                    imgProps={{ referrerPolicy: "no-referrer" }}
+                  />
                   <IconButton
                     sx={{
                       position: "absolute",
