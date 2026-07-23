@@ -190,6 +190,7 @@ Frontend:
 
 ```bash
 cd webapp
+npm test
 npm run lint
 npm run build
 ```

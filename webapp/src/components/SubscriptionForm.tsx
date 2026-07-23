@@ -304,6 +304,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                       <Typography>Every</Typography>
                       <TextField
                         name="billingIntervalCount"
+                        label="Billing interval count"
                         type="number"
                         value={formik.values.billingIntervalCount}
                         onChange={formik.handleChange}
@@ -316,6 +317,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                       <TextField
                         select
                         name="billingIntervalUnit"
+                        label="Billing interval unit"
                         value={formik.values.billingIntervalUnit}
                         onChange={formik.handleChange}
                         sx={{ minWidth: 120 }}
