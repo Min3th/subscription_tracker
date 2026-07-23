@@ -1,6 +1,7 @@
 package com.track.subscription_service.auth.util;
 
 import com.track.subscription_service.user.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class AuthResponse {
     private String accessToken;
@@ -19,6 +20,7 @@ public class AuthResponse {
         this.user = user;
     }
 
+    @JsonIgnore
     public String getRefreshToken() {
         return refreshToken;
     }

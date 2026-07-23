@@ -8,10 +8,16 @@ import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import com.track.subscription_service.notification.config.SendGridProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 public class EmailService {
+
+    private static final Logger log = LoggerFactory.getLogger(EmailService.class);
 
     private final SendGrid sendGrid;
     private final SendGridProperties props;
@@ -21,27 +27,31 @@ public class EmailService {
         this.props = props;
     }
 
-    public void sendEmail(String to, String subject, String html) {
+    public void sendEmail(String to, String subject, String html, String unsubscribeUrl) {
 
         Email from = new Email(props.getFromEmail(), props.getFromName());
         Email toEmail = new Email(to);
         Content content = new Content("text/html", html);
 
         Mail mail = new Mail(from, subject, toEmail, content);
+        mail.addHeader("List-Unsubscribe", "<" + unsubscribeUrl + ">");
+        mail.addHeader("List-Unsubscribe-Post", "List-Unsubscribe=One-Click");
 
         Request request = new Request();
 
+        request.setMethod(Method.POST);
+        request.setEndpoint("mail/send");
+
         try {
-            request.setMethod(Method.POST);
-            request.setEndpoint("mail/send");
             request.setBody(mail.build());
-
             Response response = sendGrid.api(request);
-
-            System.out.println("SendGrid status: " + response.getStatusCode());
-            System.out.println("SendGrid body: " + response.getBody());
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to send email", e);
+            int statusCode = response.getStatusCode();
+            if (statusCode < 200 || statusCode >= 300) {
+                throw EmailDeliveryException.providerRejected(statusCode);
+            }
+            log.debug("SendGrid accepted email with status {}", statusCode);
+        } catch (IOException exception) {
+            throw EmailDeliveryException.transportFailure(exception);
         }
     }
 }

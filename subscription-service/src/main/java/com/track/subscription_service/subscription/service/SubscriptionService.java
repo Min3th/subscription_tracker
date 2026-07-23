@@ -1,11 +1,16 @@
 package com.track.subscription_service.subscription.service;
 
+import com.track.subscription_service.subscription.dto.CreateSubscriptionRequest;
+import com.track.subscription_service.common.error.ResourceNotFoundException;
 import com.track.subscription_service.subscription.dto.SubscriptionResponse;
+import com.track.subscription_service.subscription.dto.UpdateSubscriptionRequest;
 import com.track.subscription_service.subscription.entity.Subscription;
 import com.track.subscription_service.subscription.repository.SubscriptionRepository;
+import com.track.subscription_service.subscription.model.SubscriptionType;
 import com.track.subscription_service.user.entity.User;
 import com.track.subscription_service.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import com.track.subscription_service.notification.service.ReminderScheduleService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,28 +23,46 @@ public class SubscriptionService {
     private final SubscriptionRepository repo;
     private final UserRepository userRepository;
     private final BillingService billingService;
+    private final ReminderScheduleService reminderScheduleService;
 
     public SubscriptionService(
             SubscriptionRepository repo,
             UserRepository userRepository,
-            BillingService billingService
+            BillingService billingService,
+            ReminderScheduleService reminderScheduleService
     ) {
         this.repo = repo;
         this.userRepository = userRepository;
         this.billingService = billingService;
+        this.reminderScheduleService = reminderScheduleService;
     }
 
     public List<Subscription> getAll(){
         return repo.findAll();
     }
 
-    public Subscription create(Subscription subscription,String googleId){
+    public Subscription create(CreateSubscriptionRequest request, String googleId){
         User user = userRepository.findByGoogleId(googleId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        Subscription subscription = new Subscription();
+        subscription.setName(request.name());
+        subscription.setCost(request.cost());
+        subscription.setCurrency(normalizeCurrency(request.currency(), user));
+        subscription.setType(request.type());
+        subscription.setDuration(request.duration());
+        subscription.setCategory(request.category());
+        subscription.setDescription(request.description());
+        subscription.setPaymentMethod(request.paymentMethod());
+        subscription.setWebsite(request.website());
+        subscription.setStartDate(request.startDate());
+        subscription.setBillingIntervalUnit(request.type() == SubscriptionType.RECURRING ? request.billingIntervalUnit() : null);
+        subscription.setBillingIntervalCount(request.type() == SubscriptionType.RECURRING ? request.billingIntervalCount() : null);
+        subscription.setEmailNotificationsEnabled(request.emailNotificationsEnabled());
         validateCost(subscription.getCost());
         subscription.setUser(user);
-        subscription.setCurrency(normalizeCurrency(subscription.getCurrency(), user));
-        return repo.save(subscription);
+        Subscription saved = repo.save(subscription);
+        reminderScheduleService.refresh(saved);
+        return saved;
     }
 
     public List<Subscription> getByGoogleId(String googleId){
@@ -48,42 +71,30 @@ public class SubscriptionService {
 
     public Subscription getByIdAndGoogleId(Long id, String googleId){
         return repo.findByIdAndUser_GoogleId(id, googleId)
-                .orElseThrow(() -> new RuntimeException("Subscription not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Subscription not found"));
     }
 
-    public Subscription update(Long id,Subscription updated,String googleId){
+    public Subscription update(Long id, UpdateSubscriptionRequest request, String googleId){
         Subscription existing = getByIdAndGoogleId(id,googleId);
 
-//        if ("recurring".equalsIgnoreCase(updated.getType())) {
-//            if (updated.getStartDate() == null ||
-//                    updated.getBillingIntervalUnit() == null ||
-//                    updated.getBillingIntervalCount() == null) {
-//
-//                throw new RuntimeException("Recurring subscriptions require billing details");
-//            }
-//        }
+        existing.setName(request.name());
+        existing.setCost(request.cost());
+        existing.setCurrency(normalizeCurrency(request.currency(), existing.getUser()));
+        existing.setType(request.type());
+        existing.setDuration(request.duration());
+        existing.setCategory(request.category());
+        existing.setDescription(request.description());
+        existing.setPaymentMethod(request.paymentMethod());
+        existing.setWebsite(request.website());
+        existing.setStartDate(request.startDate());
+        existing.setBillingIntervalUnit(request.type() == SubscriptionType.RECURRING ? request.billingIntervalUnit() : null);
+        existing.setBillingIntervalCount(request.type() == SubscriptionType.RECURRING ? request.billingIntervalCount() : null);
+        existing.setEmailNotificationsEnabled(request.emailNotificationsEnabled());
+        validateCost(existing.getCost());
 
-        if (updated.getName() != null) existing.setName(updated.getName());
-        if (updated.getCategory() != null) existing.setCategory(updated.getCategory());
-        if (updated.getCost() != null) {
-            validateCost(updated.getCost());
-            existing.setCost(updated.getCost());
-        }
-        if (updated.getCurrency() != null) existing.setCurrency(normalizeCurrency(updated.getCurrency(), existing.getUser()));
-        if (updated.getDuration() != null) existing.setDuration(updated.getDuration());
-        if (updated.getType() != null) existing.setType(updated.getType());
-
-        if (updated.getDescription() != null) existing.setDescription(updated.getDescription());
-        if (updated.getPaymentMethod() != null) existing.setPaymentMethod(updated.getPaymentMethod());
-        if (updated.getWebsite() != null) existing.setWebsite(updated.getWebsite());
-        if (updated.getStartDate() != null) existing.setStartDate(updated.getStartDate());
-        if (updated.getBillingIntervalUnit() != null) existing.setBillingIntervalUnit(updated.getBillingIntervalUnit());
-        if (updated.getBillingIntervalCount() != null) existing.setBillingIntervalCount(updated.getBillingIntervalCount());
-        if (updated.isEmailNotificationsEnabled() != null) {
-            existing.setEmailNotificationsEnabled(updated.isEmailNotificationsEnabled());
-        }
-
-        return repo.save(existing);
+        Subscription saved = repo.save(existing);
+        reminderScheduleService.refresh(saved);
+        return saved;
     }
 
     public void delete(Long id,String googleId){
@@ -106,20 +117,26 @@ public class SubscriptionService {
         res.website = subscription.getWebsite();
         res.billingIntervalUnit = subscription.getBillingIntervalUnit();
         res.billingIntervalCount =subscription.getBillingIntervalCount();
+        res.emailNotificationsEnabled = subscription.isEmailNotificationsEnabled();
         res.startDate = subscription.getStartDate();
 
-        res.nextBillingDate = billingService.getNextBillingDate(
-                subscription.getStartDate(),
-                subscription.getBillingIntervalUnit(),
-                subscription.getBillingIntervalCount()
-        );
-
-        res.totalPaid = billingService.calculateTotalPaid(
-                subscription.getStartDate(),
-                subscription.getBillingIntervalUnit(),
-                subscription.getBillingIntervalCount(),
-                subscription.getCost()
-        );
+        if (subscription.getType() == SubscriptionType.RECURRING) {
+            res.nextBillingDate = billingService.getNextBillingDate(
+                    subscription.getStartDate(),
+                    subscription.getBillingIntervalUnit(),
+                    subscription.getBillingIntervalCount()
+            );
+            res.totalPaid = billingService.calculateTotalPaid(
+                    subscription.getStartDate(),
+                    subscription.getBillingIntervalUnit(),
+                    subscription.getBillingIntervalCount(),
+                    subscription.getCost()
+            );
+        } else {
+            res.nextBillingDate = null;
+            res.totalPaid = subscription.getStartDate().isAfter(LocalDate.now())
+                    ? java.math.BigDecimal.ZERO : subscription.getCost();
+        }
 
         return res;
     }

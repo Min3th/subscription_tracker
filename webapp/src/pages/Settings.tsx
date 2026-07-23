@@ -11,7 +11,6 @@ import {
   FormControl,
   InputLabel,
   Switch,
-  Divider,
   Avatar,
   IconButton,
   Grid,
@@ -28,7 +27,6 @@ import PersonIcon from "@mui/icons-material/Person";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import PublicIcon from "@mui/icons-material/Public";
 import PaletteIcon from "@mui/icons-material/Palette";
-import CreditCardIcon from "@mui/icons-material/CreditCard";
 import PhotoCameraIcon from "@mui/icons-material/PhotoCamera";
 import SaveIcon from "@mui/icons-material/Save";
 import type { SelectChangeEvent } from "@mui/material";
@@ -255,7 +253,12 @@ export function Settings() {
 
               <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 3 }}>
                 <Box sx={{ position: "relative" }}>
-                  <Avatar src={user.picture} alt={user.name} sx={{ width: 100, height: 100 }} />
+                  <Avatar
+                    src={user.picture}
+                    alt={user.name}
+                    sx={{ width: 100, height: 100 }}
+                    imgProps={{ referrerPolicy: "no-referrer" }}
+                  />
                   <IconButton
                     sx={{
                       position: "absolute",
@@ -418,10 +421,10 @@ export function Settings() {
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <Box sx={{ textAlign: "left" }}>
                     <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                      Email Notifications
+                      Renewal reminder emails
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      Receive email updates about your account
+                      Receive an email before recurring subscriptions renew
                     </Typography>
                   </Box>
                   <Switch
@@ -457,136 +460,6 @@ export function Settings() {
                     />
                   </RadioGroup>
                 </Box>
-
-                <Divider />
-
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <Box sx={{ textAlign: "left" }}>
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                      {t("settings.upcoming_alerts")}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {t("settings.upcoming_alerts_desc")}
-                    </Typography>
-                  </Box>
-                  <Switch
-                    checked={formData.emailNotificationsEnabled}
-                    onChange={handleEmailNotificationsChange}
-                    name="emailNotificationsEnabled"
-                  />
-                </Box>
-
-                <Divider />
-
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <Box sx={{ textAlign: "left" }}>
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                      {t("settings.renewal_reminders")}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {t("settings.renewal_reminders_desc")}
-                    </Typography>
-                  </Box>
-                  <Switch
-                    checked={formData.emailNotificationsEnabled}
-                    onChange={handleEmailNotificationsChange}
-                    name="emailNotificationsEnabled"
-                  />
-                </Box>
-
-                <Divider />
-
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <Box sx={{ textAlign: "left" }}>
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                      {t("settings.price_change")}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {t("settings.price_change_desc")}
-                    </Typography>
-                  </Box>
-                  <Switch
-                    checked={formData.emailNotificationsEnabled}
-                    onChange={handleEmailNotificationsChange}
-                    name="emailNotificationsEnabled"
-                  />
-                </Box>
-
-                <Divider />
-
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                  <Box sx={{ textAlign: "left" }}>
-                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                      {t("settings.weekly_report")}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {t("settings.weekly_report_desc")}
-                    </Typography>
-                  </Box>
-                  <Switch
-                    checked={formData.emailNotificationsEnabled}
-                    onChange={handleEmailNotificationsChange}
-                    name="emailNotificationsEnabled"
-                  />
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid size={{ xs: 12 }}>
-          <Card elevation={0} sx={{ bgcolor: "transparent", backgroundImage: "none" }}>
-            <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
-                <CreditCardIcon sx={{ color: "primary.main" }} />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  {t("settings.payment_methods")}
-                </Typography>
-              </Box>
-
-              <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                <Box
-                  sx={{
-                    p: 2,
-                    border: "1px solid",
-                    borderColor: "divider",
-                    borderRadius: 1,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                    <Box
-                      sx={{
-                        width: 48,
-                        height: 32,
-                        bgcolor: "action.hover",
-                        borderRadius: 0.5,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <CreditCardIcon sx={{ color: "primary.main" }} />
-                    </Box>
-                    <Box>
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                        Visa ending in 4242
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Expires 12/2026
-                      </Typography>
-                    </Box>
-                  </Box>
-                  <Button variant="outlined" size="small">
-                    {t("settings.edit")}
-                  </Button>
-                </Box>
-
-                <Button variant="outlined" fullWidth>
-                  {t("settings.add_payment")}
-                </Button>
               </Box>
             </CardContent>
           </Card>

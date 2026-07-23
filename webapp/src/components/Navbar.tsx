@@ -3,21 +3,21 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import Badge from "@mui/material/Badge";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import MailIcon from "@mui/icons-material/Mail";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { Button } from "@mui/material";
 import LoginDialog from "./LoginDialog";
 import Avatar from "@mui/material/Avatar";
 import AddIcon from "@mui/icons-material/Add";
 import SubscriptionForm from "./SubscriptionForm";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Subtrak from "../../public/Subtrak.png";
 import { useNavigate, useLocation } from "react-router-dom";
+import type { AppDispatch, RootState } from "../app/store";
+import { logoutUser } from "../app/authSlice";
 
 export default function Navbar({
   onClick: _onClick,
@@ -32,7 +32,8 @@ export default function Navbar({
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
   const [openLogin, setOpenLogin] = React.useState(false);
   const [openAdd, setOpenAdd] = React.useState(false);
-  const user = useSelector((state: any) => state.auth.user);
+  const user = useSelector((state: RootState) => state.auth.user);
+  const dispatch = useDispatch<AppDispatch>();
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const navigate = useNavigate();
@@ -64,6 +65,12 @@ export default function Navbar({
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const handleLogout = async () => {
+    handleMenuClose();
+    await dispatch(logoutUser());
+    navigate("/", { replace: true });
+  };
+
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -83,6 +90,10 @@ export default function Navbar({
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleLogout} sx={{ color: "error.main", gap: 1 }}>
+        <LogoutIcon fontSize="small" />
+        Logout
+      </MenuItem>
     </Menu>
   );
 
@@ -103,22 +114,6 @@ export default function Navbar({
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
       <MenuItem onClick={handleProfileMenuOpen}>
         <IconButton
           size="large"

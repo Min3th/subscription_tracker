@@ -21,7 +21,7 @@ public class AuthService {
     private String clientId;
 
     private final UserRepository userRepository;
-    private final JwtService jwtService;
+    private final RefreshTokenService refreshTokenService;
 
     private GoogleIdToken.Payload verifyGoogleToken(String idTokenString) {
 
@@ -48,9 +48,9 @@ public class AuthService {
 
 
 
-    public AuthService(UserRepository userRepository, JwtService jwtService) {
+    public AuthService(UserRepository userRepository, RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
-        this.jwtService = jwtService;
+        this.refreshTokenService = refreshTokenService;
     }
 
     public AuthResponse handleGoogleLogin(String credential) {
@@ -60,6 +60,7 @@ public class AuthService {
         String googleId = payload.getSubject();
         String email = payload.getEmail();
         String name = (String) payload.get("name");
+        String picture = (String) payload.get("picture");
 
         Optional<User> existingUser = userRepository.findByGoogleId(googleId);
 
@@ -68,6 +69,9 @@ public class AuthService {
         if (existingUser.isPresent()) {
 
             user = existingUser.get();
+            user.setEmail(email);
+            user.setName(name);
+            user.setPicture(picture);
             user.setUpdatedAt(Instant.now());
         } else {
 
@@ -75,15 +79,13 @@ public class AuthService {
             user.setGoogleId(googleId);
             user.setEmail(email);
             user.setName(name);
+            user.setPicture(picture);
             user.setCreatedAt(Instant.now());
             user.setUpdatedAt(Instant.now());
         }
 
         userRepository.save(user);
 
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
-
-        return new AuthResponse(accessToken,refreshToken, user);
+        return refreshTokenService.createSession(user);
     }
 }

@@ -1,9 +1,6 @@
 package com.track.subscription_service.config;
 
 import com.track.subscription_service.auth.util.JwtAuthFilter;
-import io.jsonwebtoken.Jwt;
-import jakarta.servlet.http.HttpServlet;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,9 +17,11 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
+    private final FrontendOriginPolicy frontendOriginPolicy;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter){
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter, FrontendOriginPolicy frontendOriginPolicy){
         this.jwtAuthFilter = jwtAuthFilter;
+        this.frontendOriginPolicy = frontendOriginPolicy;
     }
 
     @Bean
@@ -34,7 +33,8 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth ->auth
-                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/auth/google", "/auth/refresh", "/auth/logout",
+                                "/notifications/unsubscribe", "/notifications/webhooks/sendgrid").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -42,17 +42,16 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Value("${app.frontend.url}")
-    private String frontendUrl;
-
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of("https://localhost:5173",frontendUrl));
+        config.setAllowedOrigins(frontendOriginPolicy.allowedOrigins());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "X-Requested-With"));
+        config.setExposedHeaders(List.of("Location"));
         config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

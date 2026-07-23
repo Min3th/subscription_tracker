@@ -95,7 +95,7 @@ export default function MiniSubscriptionCard({ sub, t }: MiniSubscriptionCardPro
               <Box display="flex" alignItems="center" gap={0.8} mt={1}>
                 <CalendarTodayIcon sx={{ fontSize: 14, color: theme.palette.text.secondary }} />
                 <Typography variant="caption" color="text.secondary" fontWeight="500">
-                  {t("dashboard.next_billing_date")} {new Date(sub.nextBillingDate).toDateString()}
+                  {t("dashboard.next_billing_date")} {sub.nextBillingDate?.toDateString() ?? "N/A"}
                 </Typography>
               </Box>
             )}

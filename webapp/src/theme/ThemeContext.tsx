@@ -19,9 +19,8 @@ export const ColorModeContext = createContext<ColorModeContextType>({
 });
 
 export default function ThemeContextProvider({ children }: { children: ReactNode }) {
-  const token = localStorage.getItem("token");
-
   const dispatch = useDispatch<AppDispatch>();
+  const isAuthenticated = useSelector((state: RootState) => Boolean(state.auth.token));
   const preferenceTheme = useSelector((state: RootState) => state.preferences.theme);
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
@@ -37,19 +36,19 @@ export default function ThemeContextProvider({ children }: { children: ReactNode
       mode: computedMode,
       setMode: (mode: "light" | "dark" | "auto") => {
         dispatch(setPreferences({ theme: mode }));
-        if (token) {
+        if (isAuthenticated) {
           dispatch(updatePreferences({ theme: mode }));
         }
       },
       toggleColorMode: () => {
         const nextTheme = computedMode === "light" ? "dark" : "light";
         dispatch(setPreferences({ theme: nextTheme }));
-        if (token) {
+        if (isAuthenticated) {
           dispatch(updatePreferences({ theme: nextTheme }));
         }
       },
     }),
-    [computedMode, dispatch],
+    [computedMode, dispatch, isAuthenticated],
   );
 
   const theme = useMemo(() => getTheme(computedMode), [computedMode]);

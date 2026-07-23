@@ -11,11 +11,12 @@ import type { DetailedSubscription, UpdateSubscriptionPayload } from "../types/s
 const mapToDetailed = (item: any): DetailedSubscription => ({
   id: item.id,
   name: item.name,
-  cost: item.cost,
+  // JSON decimal values may arrive as numbers even though form values are strings.
+  cost: String(item.cost),
   currency: item.currency,
   billingIntervalUnit: item.billingIntervalUnit,
   billingIntervalCount: item.billingIntervalCount,
-  nextBillingDate: new Date(item.nextBillingDate),
+  nextBillingDate: item.nextBillingDate ? new Date(item.nextBillingDate) : null,
   category: item.category || "General",
   status: "active",
   type: item.type,
@@ -24,7 +25,7 @@ const mapToDetailed = (item: any): DetailedSubscription => ({
   description: item.description,
   website: item.website,
   autoRenew: item.type === "recurring",
-  totalPaid: item.totalPaid,
+  totalPaid: String(item.totalPaid ?? "0"),
   emailNotificationsEnabled: item.emailNotificationsEnabled,
 });
 

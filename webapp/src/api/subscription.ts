@@ -15,7 +15,8 @@ export const getSubscriptionById = async (id: number) => {
 };
 
 export const updateSubscriptions = async (data: UpdateSubscriptionPayload) => {
-  const response = await api.put(`/subscriptions/${data.id}`, data);
+  const { id, ...request } = data;
+  const response = await api.put(`/subscriptions/${id}`, request);
   return response;
 };
 

@@ -155,7 +155,9 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
                 <Box display="flex" alignItems="center" gap={1}>
                   <CalendarTodayIcon fontSize="small" />
                   <Typography variant="body2">
-                    Next: {new Date(subscription.nextBillingDate).toLocaleDateString()}
+                    {subscription.nextBillingDate
+                      ? `Next: ${subscription.nextBillingDate.toLocaleDateString()}`
+                      : "One-time purchase"}
                   </Typography>
                 </Box>
 

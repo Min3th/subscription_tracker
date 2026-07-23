@@ -113,7 +113,8 @@ export default function Dashboard() {
     const recurringSubs = subscriptions.filter((sub) => sub.type !== "one-time");
     if (!recurringSubs.length) return null;
     return recurringSubs.sort(
-      (a, b) => new Date(a.nextBillingDate).getTime() - new Date(b.nextBillingDate).getTime(),
+      (a, b) => (a.nextBillingDate?.getTime() ?? Number.POSITIVE_INFINITY)
+        - (b.nextBillingDate?.getTime() ?? Number.POSITIVE_INFINITY),
     )[0];
   }, [subscriptions]);
 

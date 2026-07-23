@@ -101,10 +101,9 @@ export default function MiniDrawer() {
     setLogoutDialogOpen(false);
   };
 
-  const handleLogoutConfirm = () => {
+  const handleLogoutConfirm = async () => {
     setLogoutDialogOpen(false);
-    dispatch(logoutUser());
-    localStorage.clear();
+    await dispatch(logoutUser());
     navigate("/");
   };
 

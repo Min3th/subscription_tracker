@@ -108,7 +108,7 @@ The backend reads the following environment variables:
 
 You can export these variables in your shell or provide them through your IDE's run configuration.
 
-For a different deployed frontend URL, update `app.frontend.url` in `subscription-service/src/main/resources/application.properties` so that the backend CORS configuration allows it.
+Set `FRONTEND_ORIGINS` to the comma-separated frontend origins that may call the API, for example `https://app.example.com,https://admin.example.com`. Do not include paths or trailing slashes. The default includes the local Vite origin and the current hosted frontend.
 
 Start the API:
 
