@@ -175,14 +175,14 @@ Run these commands from the `subscription-service` directory:
 When the backend is running, Swagger UI is available at:
 
 ```text
-https://localhost:8080/swagger-ui.html
+http://localhost:8080/swagger-ui.html
 ```
 
 The generated OpenAPI documents are available at:
 
 ```text
-https://localhost:8080/v3/api-docs
-https://localhost:8080/v3/api-docs.yaml
+http://localhost:8080/v3/api-docs
+http://localhost:8080/v3/api-docs.yaml
 ```
 
 Use Swagger UI's **Authorize** action with an access token for protected endpoints.
