@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "test:e2e": "playwright test",
+    "test:e2e:mobile": "playwright test --project=mobile-small --project=mobile-standard",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -34,6 +36,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
+    "@playwright/test": "^1.61.1",
     "@types/node": "^24.12.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

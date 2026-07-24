@@ -15,7 +15,6 @@ import Avatar from "@mui/material/Avatar";
 import AddIcon from "@mui/icons-material/Add";
 import SubscriptionForm from "./SubscriptionForm";
 import { useDispatch, useSelector } from "react-redux";
-import Subtrak from "../../public/Subtrak.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import type { AppDispatch, RootState } from "../app/store";
 import { logoutUser } from "../app/authSlice";
@@ -167,7 +166,7 @@ export default function Navbar({
           >
             <Box
               component="img"
-              src={Subtrak}
+              src="/Subtrak.png"
               alt="Subtrak Logo"
               sx={{
                 height: 40,
