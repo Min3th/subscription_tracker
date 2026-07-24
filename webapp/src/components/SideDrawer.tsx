@@ -409,7 +409,18 @@ export default function MiniDrawer({ mobileOpen, onMobileClose }: SideDrawerProp
             {t("sidebar.logoutConfirmMessage", "Are you sure you want to log out?")}
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions
+          sx={{
+            flexDirection: { xs: "column", sm: "row" },
+            alignItems: "stretch",
+            gap: { xs: 1, sm: 0 },
+            "& .MuiButton-root": {
+              width: { xs: "100%", sm: "auto" },
+              minHeight: { xs: 44, sm: "auto" },
+              m: { xs: "0 !important", sm: undefined },
+            },
+          }}
+        >
           <Button onClick={handleLogoutCancel} color="inherit">
             {t("common.cancel", "Cancel")}
           </Button>

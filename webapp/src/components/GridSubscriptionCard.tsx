@@ -235,7 +235,18 @@ export default function GridSubscriptionCard({ subscription, onEdit, onCancel }:
             {t("subscriptions.delete_confirm_message", "Are you sure you want to delete this subscription?")}
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions
+          sx={{
+            flexDirection: { xs: "column", sm: "row" },
+            alignItems: "stretch",
+            gap: { xs: 1, sm: 0 },
+            "& .MuiButton-root": {
+              width: { xs: "100%", sm: "auto" },
+              minHeight: { xs: 44, sm: "auto" },
+              m: { xs: "0 !important", sm: undefined },
+            },
+          }}
+        >
           <Button onClick={handleDeleteCancel} color="inherit">
             {t("common.cancel", "Cancel")}
           </Button>

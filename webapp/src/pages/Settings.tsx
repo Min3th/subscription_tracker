@@ -466,7 +466,12 @@ export function Settings() {
         </Grid>
       </Grid>
       <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end", gap: 2 }}>
-        <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSave}>
+        <Button
+          variant="contained"
+          startIcon={<SaveIcon />}
+          onClick={handleSave}
+          sx={{ width: { xs: "100%", sm: "auto" }, minHeight: { xs: 44, sm: "auto" } }}
+        >
           {t("settings.save")}
         </Button>
       </Box>
@@ -477,7 +482,18 @@ export function Settings() {
         <DialogContent>
           <DialogContentText>{t("settings.confirm_desc")}</DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions
+          sx={{
+            flexDirection: { xs: "column", sm: "row" },
+            alignItems: "stretch",
+            gap: { xs: 1, sm: 0 },
+            "& .MuiButton-root": {
+              width: { xs: "100%", sm: "auto" },
+              minHeight: { xs: 44, sm: "auto" },
+              m: { xs: "0 !important", sm: undefined },
+            },
+          }}
+        >
           <Button onClick={handleCloseDialog} color="inherit">
             {t("settings.cancel")}
           </Button>
@@ -495,7 +511,18 @@ export function Settings() {
             {t("settings.unsaved_changes_desc", "You have unsaved changes. Do you want to confirm the changes or not?")}
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions
+          sx={{
+            flexDirection: { xs: "column", sm: "row" },
+            alignItems: "stretch",
+            gap: { xs: 1, sm: 0 },
+            "& .MuiButton-root": {
+              width: { xs: "100%", sm: "auto" },
+              minHeight: { xs: 44, sm: "auto" },
+              m: { xs: "0 !important", sm: undefined },
+            },
+          }}
+        >
           <Button onClick={() => blocker.state === "blocked" && blocker.reset()} color="inherit">
             {t("settings.cancel", "Cancel")}
           </Button>
