@@ -93,14 +93,15 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
   };
 
   return (
-    <Card sx={{ "&:hover": { boxShadow: 6 }, transition: "0.3s" }}>
+    <Card sx={{ minWidth: 0, overflow: "hidden", "&:hover": { boxShadow: 6 }, transition: "0.3s" }}>
       <CardContent>
         <Box display="flex" flexDirection={{ xs: "column", lg: "row" }} gap={3}>
-          <Box display="flex" gap={2} flex={1}>
+          <Box display="flex" gap={{ xs: 1.5, sm: 2 }} flex={1} minWidth={0}>
             <Box
               sx={{
-                width: 64,
-                height: 64,
+                width: { xs: 52, sm: 64 },
+                height: { xs: 52, sm: 64 },
+                flexShrink: 0,
                 borderRadius: 2,
                 background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
                 display: "flex",
@@ -114,10 +115,12 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
               {subscription.name.charAt(0)}
             </Box>
 
-            <Box flex={1} display="flex" flexDirection="column">
+            <Box flex={1} minWidth={0} display="flex" flexDirection="column">
               <Box flex={1} display="flex" flexDirection="column" sx={{ alignItems: "start" }}>
-                <Box display="flex" gap={1} alignItems="center">
-                  <Typography variant="h6">{subscription.name}</Typography>
+                <Box display="flex" gap={1} alignItems="center" flexWrap={{ xs: "wrap", sm: "nowrap" }} minWidth={0}>
+                  <Typography variant="h6" sx={{ overflowWrap: "anywhere" }}>
+                    {subscription.name}
+                  </Typography>
 
                   <Chip
                     label={subscription.status}
@@ -145,7 +148,7 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
                 </Box>
               </Box>
 
-              <Box display="grid" gridTemplateColumns={{ xs: "1fr", md: "1fr 1fr" }} gap={1}>
+              <Box display="grid" minWidth={0} gridTemplateColumns={{ xs: "minmax(0, 1fr)", md: "1fr 1fr" }} gap={1}>
                 <Box display="flex" alignItems="center" gap={1}>
                   <AttachMoneyIcon fontSize="small" />
                   <Typography fontWeight="bold">{formatMoney(subscription.cost, subscription.currency)}</Typography>
@@ -182,7 +185,13 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
                     href={subscription.website}
                     target="_blank"
                     underline="hover"
-                    sx={{ color: theme.palette.purpink }}
+                    sx={{
+                      color: theme.palette.purpink,
+                      minWidth: 0,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
                   >
                     {subscription.website}
                   </Link>
@@ -190,13 +199,23 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
               </Box>
             </Box>
           </Box>
-          <Box display="flex" flexDirection="column" alignItems="flex-end" gap={2}>
+          <Box
+            display="flex"
+            flexDirection={{ xs: "row", md: "column" }}
+            justifyContent={{ xs: "space-between", md: "flex-start" }}
+            alignItems="center"
+            gap={2}
+          >
             <Box display="flex" alignItems="center" gap={1}>
               <Typography variant="body2">Auto-renew</Typography>
               <Switch checked={subscription.autoRenew} onChange={() => {}} size="small" />
             </Box>
 
-            <IconButton onClick={handleOpen}>
+            <IconButton
+              aria-label={`Open actions for ${subscription.name}`}
+              onClick={handleOpen}
+              sx={{ minWidth: { xs: 44, md: "auto" }, minHeight: { xs: 44, md: "auto" } }}
+            >
               <MoreVertIcon />
             </IconButton>
 

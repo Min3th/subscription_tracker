@@ -87,7 +87,15 @@ export default function GridSubscriptionCard({ subscription, onEdit, onCancel }:
 
   return (
     <Card
-      sx={{ height: "100%", display: "flex", flexDirection: "column", "&:hover": { boxShadow: 6 }, transition: "0.3s" }}
+      sx={{
+        height: "100%",
+        minWidth: 0,
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        "&:hover": { boxShadow: 6 },
+        transition: "0.3s",
+      }}
     >
       <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <Box display="flex" flexDirection="column" gap={2} flexGrow={1}>
@@ -110,7 +118,12 @@ export default function GridSubscriptionCard({ subscription, onEdit, onCancel }:
             </Box>
 
             <Box>
-              <IconButton size="small" onClick={handleOpen}>
+              <IconButton
+                size="small"
+                aria-label={`Open actions for ${subscription.name}`}
+                onClick={handleOpen}
+                sx={{ minWidth: { xs: 44, md: "auto" }, minHeight: { xs: 44, md: "auto" } }}
+              >
                 <MoreVertIcon />
               </IconButton>
               <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
@@ -146,13 +159,15 @@ export default function GridSubscriptionCard({ subscription, onEdit, onCancel }:
           </Box>
 
           <Box display="flex" flexDirection="column" alignItems="start">
-            <Typography fontWeight={600}>{subscription.name}</Typography>
+            <Typography fontWeight={600} sx={{ maxWidth: "100%", overflowWrap: "anywhere" }}>
+              {subscription.name}
+            </Typography>
 
             <Typography variant="body2" color="text.secondary">
               {subscription.description}
             </Typography>
 
-            <Box display="flex" gap={1} mt={1}>
+            <Box display="flex" flexWrap="wrap" gap={1} mt={1}>
               <Chip
                 label={subscription.status}
                 size="small"
@@ -189,7 +204,16 @@ export default function GridSubscriptionCard({ subscription, onEdit, onCancel }:
             </Box>
           </Box>
 
-          <Box display="flex" justifyContent="space-between" pt={1} borderTop={1} borderColor="divider" mt="auto">
+          <Box
+            display="flex"
+            flexWrap="wrap"
+            gap={1}
+            justifyContent="space-between"
+            pt={1}
+            borderTop={1}
+            borderColor="divider"
+            mt="auto"
+          >
             <Typography variant="caption">Total Paid</Typography>
             <Typography variant="caption" fontWeight={500}>
               {formatMoney(subscription.totalPaid, subscription.currency)}
