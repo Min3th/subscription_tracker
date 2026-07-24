@@ -225,6 +225,35 @@ cd subscription-service
 GitHub Actions runs these tests as part of the normal backend package build, so an isolation
 regression blocks deployment.
 
+### Authenticated API integration tests
+
+The authenticated API suite verifies security and request behavior through the real Spring
+Security filter chain, controllers, services, Flyway migrations, and PostgreSQL database.
+Coverage includes:
+
+- Access-token acceptance and rejection of malformed, expired, refresh-type, incorrectly signed,
+  wrong-issuer, and wrong-audience tokens
+- Stable `401` and `403` API error responses
+- Refresh-token rotation, replay containment, session revocation, logout, and secure cookies
+- Subscription and preference validation, normalization, default preferences, and error schemas
+- Credentialed CORS preflights and rejected origins
+- Public Swagger/OpenAPI access and bearer-token documentation
+- SendGrid webhook acceptance, signature failures, and malformed payload responses
+
+Run only these authenticated API and boundary tests:
+
+```bash
+cd subscription-service
+./mvnw -Dtest='AuthenticatedApi*IntegrationTest,RefreshTokenHttpIntegrationTest,ApiBoundaryIntegrationTest' test
+```
+
+On Windows PowerShell:
+
+```powershell
+cd subscription-service
+.\mvnw.cmd "-Dtest=AuthenticatedApi*IntegrationTest,RefreshTokenHttpIntegrationTest,ApiBoundaryIntegrationTest" test
+```
+
 ## API Overview
 
 ### Interactive API documentation
