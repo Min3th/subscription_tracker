@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../app/store";
 import { fetchSubscriptions } from "../app/subscriptionSlice";
 import { parseDecimal } from "../utils/money";
+import AddIcon from "@mui/icons-material/Add";
 
 export default function Subscriptions() {
   const { t } = useTranslation();
@@ -69,11 +70,29 @@ export default function Subscriptions() {
       }}
     >
       <Box sx={{ width: "100%", maxWidth: 1400 }}>
-        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={3}>
+        <Stack
+          direction={{ xs: "column", md: "row" }}
+          justifyContent="space-between"
+          alignItems={{ xs: "stretch", md: "center" }}
+          spacing={{ xs: 2, md: 0 }}
+          mb={3}
+        >
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            onClick={() => setIsAddFormOpen(true)}
+            sx={{
+              display: { xs: "inline-flex", md: "none" },
+              minHeight: 44,
+              textTransform: "none",
+            }}
+          >
+            {t("subscriptions.add", "Add Subscription")}
+          </Button>
           <TextField
             placeholder={t("subscriptions.search", "Search subscriptions...")}
             size="small"
-            sx={{ width: 300 }}
+            sx={{ width: { xs: "100%", md: 300 } }}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             InputProps={{
@@ -85,11 +104,23 @@ export default function Subscriptions() {
             }}
           />
 
-          <Stack direction="row" spacing={1}>
+          <Stack
+            direction="row"
+            spacing={1}
+            useFlexGap
+            flexWrap={{ xs: "wrap", md: "nowrap" }}
+            sx={{
+              width: { xs: "100%", md: "auto" },
+              "& > .MuiButton-root": {
+                minHeight: { xs: 44, md: "auto" },
+              },
+            }}
+          >
             <Button
               variant="outlined"
               onClick={(e) => setFilterAnchorEl(e.currentTarget)}
               startIcon={<FilterAltOutlinedIcon fontSize="small" />}
+              sx={{ flex: { xs: "1 1 auto", md: "0 0 auto" } }}
             >
               {filterCategory === "all" ? t("subscriptions.all_categories", "All Categories") : filterCategory}
             </Button>
@@ -110,6 +141,7 @@ export default function Subscriptions() {
               variant="outlined"
               onClick={(e) => setSortAnchorEl(e.currentTarget)}
               startIcon={<SwapVertOutlinedIcon fontSize="small" />}
+              sx={{ flex: { xs: "1 1 auto", md: "0 0 auto" } }}
             >
               {t("subscriptions.sort", "Sort")}
             </Button>
@@ -146,7 +178,13 @@ export default function Subscriptions() {
                 if (newView !== null) setView(newView);
               }}
               size="small"
-              aria-label="Subscription view"
+              sx={{
+                ml: { xs: "auto", md: 0 },
+                "& .MuiToggleButton-root": {
+                  minWidth: { xs: 44, md: "auto" },
+                  minHeight: { xs: 44, md: "auto" },
+                },
+              }}
             >
               <ToggleButton value="list" aria-label="List view">
                 <ViewListIcon fontSize="small" />

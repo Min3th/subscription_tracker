@@ -228,7 +228,14 @@ export function Settings() {
       display="flex"
       flexDirection="column"
       gap={3}
-      sx={{ maxWidth: 1000, mx: "auto", p: 3 }}
+      sx={{
+        width: "100%",
+        minWidth: 0,
+        maxWidth: 1000,
+        boxSizing: "border-box",
+        mx: "auto",
+        p: { xs: 0, md: 3 },
+      }}
       justifyContent="center"
     >
       <Box sx={{ mb: 4 }}>
@@ -243,7 +250,7 @@ export function Settings() {
       <Grid container spacing={3}>
         <Grid size={{ xs: 12 }}>
           <Card elevation={0} sx={{ bgcolor: "transparent", backgroundImage: "none" }}>
-            <CardContent sx={{ p: 3 }}>
+            <CardContent sx={{ p: { xs: 0, md: 3 } }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
                 <PersonIcon sx={{ color: "primary.main" }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -251,8 +258,16 @@ export function Settings() {
                 </Typography>
               </Box>
 
-              <Box sx={{ display: "flex", alignItems: "center", gap: 3, mb: 3 }}>
-                <Box sx={{ position: "relative" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                  alignItems: { xs: "stretch", md: "center" },
+                  gap: 3,
+                  mb: 3,
+                }}
+              >
+                <Box sx={{ position: "relative", alignSelf: { xs: "center", md: "auto" } }}>
                   <Avatar
                     src={user.picture}
                     alt={user.name}
@@ -266,8 +281,8 @@ export function Settings() {
                       right: -5,
                       bgcolor: "primary.main",
                       color: "white",
-                      width: 36,
-                      height: 36,
+                      width: { xs: 44, md: 36 },
+                      height: { xs: 44, md: 36 },
                       "&:hover": {
                         bgcolor: "primary.dark",
                       },
@@ -285,7 +300,7 @@ export function Settings() {
                     {t("settings.profile_photo_desc")}
                   </Typography>
                 </Box>
-                <Grid container spacing={2}>
+                <Grid container spacing={2} sx={{ width: "100%", minWidth: 0, flex: 1 }}>
                   <Grid size={{ xs: 12, sm: 6 }}>
                     <TextField
                       fullWidth
@@ -314,7 +329,7 @@ export function Settings() {
         {/* Preferences */}
         <Grid size={{ xs: 12 }}>
           <Card elevation={0} sx={{ bgcolor: "transparent", backgroundImage: "none" }}>
-            <CardContent sx={{ p: 3 }}>
+            <CardContent sx={{ p: { xs: 0, md: 3 } }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
                 <PublicIcon sx={{ color: "primary.main" }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -377,7 +392,7 @@ export function Settings() {
         </Grid>
         <Grid size={{ xs: 12 }}>
           <Card elevation={0} sx={{ bgcolor: "transparent", backgroundImage: "none" }}>
-            <CardContent sx={{ p: 3 }}>
+            <CardContent sx={{ p: { xs: 0, md: 3 } }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
                 <PaletteIcon sx={{ color: "primary.main" }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -409,7 +424,7 @@ export function Settings() {
 
         <Grid size={{ xs: 12 }}>
           <Card elevation={0} sx={{ bgcolor: "transparent", backgroundImage: "none" }}>
-            <CardContent sx={{ p: 3 }}>
+            <CardContent sx={{ p: { xs: 0, md: 3 } }}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
                 <NotificationsIcon sx={{ color: "primary.main" }} />
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -466,7 +481,12 @@ export function Settings() {
         </Grid>
       </Grid>
       <Box sx={{ mt: 4, display: "flex", justifyContent: "flex-end", gap: 2 }}>
-        <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSave}>
+        <Button
+          variant="contained"
+          startIcon={<SaveIcon />}
+          onClick={handleSave}
+          sx={{ width: { xs: "100%", sm: "auto" }, minHeight: { xs: 44, sm: "auto" } }}
+        >
           {t("settings.save")}
         </Button>
       </Box>
@@ -477,7 +497,18 @@ export function Settings() {
         <DialogContent>
           <DialogContentText>{t("settings.confirm_desc")}</DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions
+          sx={{
+            flexDirection: { xs: "column", sm: "row" },
+            alignItems: "stretch",
+            gap: { xs: 1, sm: 0 },
+            "& .MuiButton-root": {
+              width: { xs: "100%", sm: "auto" },
+              minHeight: { xs: 44, sm: "auto" },
+              m: { xs: "0 !important", sm: undefined },
+            },
+          }}
+        >
           <Button onClick={handleCloseDialog} color="inherit">
             {t("settings.cancel")}
           </Button>
@@ -495,7 +526,18 @@ export function Settings() {
             {t("settings.unsaved_changes_desc", "You have unsaved changes. Do you want to confirm the changes or not?")}
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions
+          sx={{
+            flexDirection: { xs: "column", sm: "row" },
+            alignItems: "stretch",
+            gap: { xs: 1, sm: 0 },
+            "& .MuiButton-root": {
+              width: { xs: "100%", sm: "auto" },
+              minHeight: { xs: 44, sm: "auto" },
+              m: { xs: "0 !important", sm: undefined },
+            },
+          }}
+        >
           <Button onClick={() => blocker.state === "blocked" && blocker.reset()} color="inherit">
             {t("settings.cancel", "Cancel")}
           </Button>

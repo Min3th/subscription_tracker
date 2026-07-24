@@ -222,17 +222,42 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
 
   return (
     <>
-      <Dialog open={open} onClose={handleDialogClose} fullWidth maxWidth="sm">
-        <DialogTitle>{editId ? "Edit Subscription" : "Add Subscription"}</DialogTitle>
+      <Dialog
+        open={open}
+        onClose={handleDialogClose}
+        fullWidth
+        maxWidth="sm"
+        slotProps={{
+          paper: {
+            sx: {
+              m: { xs: 1, sm: 4 },
+              width: { xs: "calc(100% - 16px)", sm: "calc(100% - 64px)" },
+              maxHeight: { xs: "calc(100% - 16px)", sm: "calc(100% - 64px)" },
+            },
+          },
+        }}
+      >
+        <DialogTitle sx={{ px: { xs: 2, sm: 3 }, py: { xs: 1.5, sm: 2 } }}>
+          {editId ? "Edit Subscription" : "Add Subscription"}
+        </DialogTitle>
 
-        <DialogContent>
+        <DialogContent sx={{ px: { xs: 2, sm: 3 } }}>
           {loading ? (
             <Box display="flex" justifyContent="center" p={4}>
               <CircularProgress />
             </Box>
           ) : (
             <>
-              <Stepper activeStep={activeStep} sx={{ pt: 2, pb: 4 }}>
+              <Stepper
+                activeStep={activeStep}
+                sx={{
+                  pt: 2,
+                  pb: { xs: 3, sm: 4 },
+                  "& .MuiStepLabel-label": {
+                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                  },
+                }}
+              >
                 {steps.map((label) => (
                   <Step key={label}>
                     <StepLabel>{label}</StepLabel>
@@ -300,7 +325,16 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                   </TextField>
 
                   {formik.values.type === "recurring" && (
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, mt: 2, mb: 1 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", sm: "row" },
+                        alignItems: { xs: "stretch", sm: "center" },
+                        gap: { xs: 1.5, sm: 2 },
+                        mt: 2,
+                        mb: 1,
+                      }}
+                    >
                       <Typography>Every</Typography>
                       <TextField
                         name="billingIntervalCount"
@@ -311,8 +345,8 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                         onBlur={formik.handleBlur}
                         error={formik.touched.billingIntervalCount && Boolean(formik.errors.billingIntervalCount)}
                         helperText={formik.touched.billingIntervalCount && formik.errors.billingIntervalCount}
-                        sx={{ width: 80 }}
-                        InputProps={{ inputProps: { min: 1 } }}
+                        sx={{ width: { xs: "100%", sm: 80 } }}
+                        inputProps={{ min: 1, "aria-label": "Billing interval count" }}
                       />
                       <TextField
                         select
@@ -320,7 +354,8 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                         label="Billing interval unit"
                         value={formik.values.billingIntervalUnit}
                         onChange={formik.handleChange}
-                        sx={{ minWidth: 120 }}
+                        SelectProps={{ inputProps: { "aria-label": "Billing interval unit" } }}
+                        sx={{ width: { xs: "100%", sm: "auto" }, minWidth: { xs: 0, sm: 120 } }}
                       >
                         <MenuItem value="day">Day</MenuItem>
                         <MenuItem value="week">Week</MenuItem>
@@ -427,7 +462,20 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
           )}
         </DialogContent>
 
-        <DialogActions sx={{ px: 3, pb: 2 }}>
+        <DialogActions
+          sx={{
+            flexDirection: { xs: "column", sm: "row" },
+            alignItems: "stretch",
+            gap: { xs: 1, sm: 0 },
+            px: { xs: 2, sm: 3 },
+            pb: 2,
+            "& .MuiButton-root": {
+              minHeight: { xs: 44, sm: "auto" },
+              width: { xs: "100%", sm: "auto" },
+              m: { xs: "0 !important", sm: undefined },
+            },
+          }}
+        >
           {activeStep === 0 ? (
             <>
               <Button onClick={handleDialogClose} disabled={loading} sx={{ color: theme.palette.text.primary }}>

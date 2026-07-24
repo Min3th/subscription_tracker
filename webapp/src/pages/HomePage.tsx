@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Box, Button, Typography, Container, Stack, Grid, Card, useTheme } from "@mui/material";
-import Navbar from "../components/Navbar";
 import LoginDialog from "../components/LoginDialog";
 
 // MUI Icons
@@ -22,15 +21,14 @@ export default function HomePage() {
   };
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "background.default" }}>
-      <Navbar open={false} onClick={() => {}} />
       <LoginDialog open={loginOpen} onClose={() => setLoginOpen(false)} />
 
       {/* HERO SECTION */}
       <Box
         sx={{
           position: "relative",
-          pt: { xs: 6, md: 8 },
-          pb: { xs: 10, md: 15 },
+          pt: { xs: 4, sm: 6, md: 8 },
+          pb: { xs: 8, md: 15 },
           overflow: "hidden",
           background:
             theme.palette.mode === "dark"
@@ -199,14 +197,20 @@ export default function HomePage() {
           />
         ))}
 
-        <Container maxWidth="md" sx={{ position: "relative", zIndex: 1 }}>
-          <Stack spacing={4} alignItems="center" justifyContent="center" sx={{ textAlign: "center" }}>
+        <Container maxWidth="md" sx={{ position: "relative", zIndex: 1, minWidth: 0 }}>
+          <Stack
+            spacing={{ xs: 3, md: 4 }}
+            alignItems="center"
+            justifyContent="center"
+            sx={{ minWidth: 0, textAlign: "center" }}
+          >
             <Box
               sx={{
                 display: "inline-flex",
                 alignItems: "center",
                 gap: 1,
-                px: 2.5,
+                maxWidth: "100%",
+                px: { xs: 1.5, md: 2.5 },
                 py: 1,
                 borderRadius: "999px",
                 backgroundColor: theme.palette.mode === "dark" ? "rgba(100, 0, 239, 0.15)" : "rgba(100, 0, 239, 0.05)",
@@ -214,15 +218,32 @@ export default function HomePage() {
                 mb: 1,
               }}
             >
-              <AutoAwesomeIcon sx={{ fontSize: 18, color: theme.palette.purpink }} />
-              <Typography variant="body2" sx={{ color: theme.palette.purpink, fontWeight: 600 }}>
+              <AutoAwesomeIcon sx={{ flexShrink: 0, fontSize: 18, color: theme.palette.purpink }} />
+              <Typography
+                variant="body2"
+                sx={{
+                  minWidth: 0,
+                  color: theme.palette.purpink,
+                  fontWeight: 600,
+                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                  lineHeight: 1.35,
+                }}
+              >
                 Stay in control of your subscriptions
               </Typography>
             </Box>
 
             <Typography
               variant="h2"
-              sx={{ fontWeight: 800, color: "text.primary", fontSize: { xs: "3rem", md: "4.5rem" }, lineHeight: 1.1 }}
+              sx={{
+                maxWidth: "100%",
+                fontWeight: 800,
+                color: "text.primary",
+                fontSize: { xs: "clamp(2.25rem, 11vw, 3rem)", md: "4.5rem" },
+                lineHeight: { xs: 1.08, md: 1.1 },
+                letterSpacing: { xs: "-0.04em", md: "normal" },
+                overflowWrap: "anywhere",
+              }}
             >
               Track Subscriptions
               <br />
@@ -230,24 +251,37 @@ export default function HomePage() {
                 Effortlessly
               </Box>
             </Typography>
-            <Typography variant="h6" sx={{ maxWidth: "600px", color: "text.secondary", fontWeight: 400, mt: 1 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                maxWidth: "600px",
+                color: "text.secondary",
+                fontWeight: 400,
+                fontSize: { xs: "1rem", md: "1.25rem" },
+                lineHeight: 1.6,
+                mt: 1,
+              }}
+            >
               Get notified before your trials end. Avoid unexpected charges and stay in control of your subscriptions in
               one central place.
             </Typography>
 
-            <Box sx={{ mt: 2 }}>
+            <Box sx={{ width: { xs: "100%", sm: "auto" }, mt: 2 }}>
               <Button
                 onClick={handleRegisterClick}
                 variant="contained"
                 size="large"
                 sx={{
-                  px: 5,
-                  py: 2,
+                  width: { xs: "100%", sm: "auto" },
+                  maxWidth: { xs: 260, sm: "none" },
+                  minHeight: 48,
+                  px: { xs: 3, md: 5 },
+                  py: { xs: 1.5, md: 2 },
                   borderRadius: "999px",
                   background: "linear-gradient(135deg, #6400ef, #d880f1)",
                   boxShadow: "0 8px 20px rgba(100, 0, 239, 0.3)",
                   textTransform: "none",
-                  fontSize: "1.2rem",
+                  fontSize: { xs: "1rem", md: "1.2rem" },
                   fontWeight: 600,
                   "&:hover": {
                     background: "linear-gradient(135deg, #5000c0, #c468dd)",
@@ -262,7 +296,19 @@ export default function HomePage() {
             <Typography
               variant="caption"
               color="text.secondary"
-              sx={{ fontSize: "0.9rem", display: "flex", alignItems: "center", gap: 1, mt: 1 }}
+              sx={{
+                maxWidth: "100%",
+                fontSize: { xs: 0, sm: "0.9rem" },
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
+                alignItems: "center",
+                justifyContent: "center",
+                gap: { xs: 0.75, sm: 1 },
+                mt: 1,
+                "& > .MuiBox-root": {
+                  fontSize: { xs: "0.8rem", sm: "inherit" },
+                },
+              }}
             >
               <Box component="span" sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                 <AutoAwesomeIcon sx={{ fontSize: 14, color: "text.disabled" }} /> No ads
@@ -283,7 +329,10 @@ export default function HomePage() {
       {/* WHY YOU NEED THIS SECTION */}
       <Box
         id="why-you-need"
-        sx={{ py: 10, backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.02)" : "#f8f9fa" }}
+        sx={{
+          py: { xs: 7, md: 10 },
+          backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.02)" : "#f8f9fa",
+        }}
       >
         <Container maxWidth="lg">
           <Typography
@@ -291,14 +340,14 @@ export default function HomePage() {
             sx={{
               textAlign: "center",
               fontWeight: 700,
-              mb: 6,
+              mb: { xs: 4, md: 6 },
               color: "text.primary",
               fontSize: { xs: "2rem", md: "3rem" },
             }}
           >
             Why You Need a Tracker
           </Typography>
-          <Grid container spacing={4} justifyContent="center" alignItems="stretch">
+          <Grid container spacing={{ xs: 2.5, md: 4 }} justifyContent="center" alignItems="stretch">
             {[
               {
                 icon: <EventBusyIcon sx={{ fontSize: 40, color: "#f44336" }} />,
@@ -328,7 +377,7 @@ export default function HomePage() {
                     flexDirection: "column",
                     alignItems: "center",
                     textAlign: "center",
-                    p: 4,
+                    p: { xs: 3, md: 4 },
                     backgroundColor: theme.palette.mode === "dark" ? "background.paper" : "#ffffff",
                     transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
                     "&:hover": {
@@ -356,7 +405,7 @@ export default function HomePage() {
       <Box
         id="everything-you-need"
         sx={{
-          py: 10,
+          py: { xs: 7, md: 10 },
           backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.02)" : "#f8f9fa",
         }}
       >
@@ -366,14 +415,14 @@ export default function HomePage() {
             sx={{
               textAlign: "center",
               fontWeight: 700,
-              mb: 8,
+              mb: { xs: 4, md: 8 },
               color: "text.primary",
               fontSize: { xs: "2rem", md: "3rem" },
             }}
           >
             Everything You Need
           </Typography>
-          <Grid container spacing={4} alignItems="stretch" justifyContent="center">
+          <Grid container spacing={{ xs: 2.5, md: 4 }} alignItems="stretch" justifyContent="center">
             {[
               {
                 icon: <NotificationsActiveIcon sx={{ fontSize: 32, color: theme.palette.purpink }} />,
@@ -399,7 +448,7 @@ export default function HomePage() {
               <Grid size={{ xs: 12, sm: 6 }} key={i} sx={{ display: "flex" }}>
                 <Card
                   sx={{
-                    minHeight: 300,
+                    minHeight: { xs: "auto", md: 300 },
                     width: "100%",
                     borderRadius: 4,
                     boxShadow:
@@ -408,7 +457,7 @@ export default function HomePage() {
                     flexDirection: "column",
                     alignItems: "center",
                     textAlign: "center",
-                    p: 4,
+                    p: { xs: 3, md: 4 },
                     backgroundColor: theme.palette.mode === "dark" ? "background.paper" : "#ffffff",
                     transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
                     "&:hover": {
@@ -423,8 +472,8 @@ export default function HomePage() {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      width: 72,
-                      height: 72,
+                      width: { xs: 64, md: 72 },
+                      height: { xs: 64, md: 72 },
                       borderRadius: "20px",
                       backgroundColor:
                         theme.palette.mode === "dark" ? "rgba(100, 0, 239, 0.2)" : "rgba(100, 0, 239, 0.1)",
@@ -449,7 +498,7 @@ export default function HomePage() {
       <Box
         id="how-it-works"
         sx={{
-          py: 10,
+          py: { xs: 7, md: 10 },
           backgroundColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.02)" : "#f8f9fa",
         }}
       >
@@ -459,14 +508,14 @@ export default function HomePage() {
             sx={{
               textAlign: "center",
               fontWeight: 700,
-              mb: 8,
+              mb: { xs: 4, md: 8 },
               color: "text.primary",
               fontSize: { xs: "2rem", md: "3rem" },
             }}
           >
             How It Works
           </Typography>
-          <Grid container spacing={4} justifyContent="center" alignItems="stretch">
+          <Grid container spacing={{ xs: 2.5, md: 4 }} justifyContent="center" alignItems="stretch">
             {[
               { step: "1", title: "Add Services", desc: "Enter your subscriptions and billing details in seconds." },
               { step: "2", title: "Set Reminders", desc: "Choose when you want to be notified before a charge." },
@@ -488,7 +537,7 @@ export default function HomePage() {
                     flexDirection: "column",
                     alignItems: "center",
                     textAlign: "center",
-                    p: 4,
+                    p: { xs: 3, md: 4 },
                     backgroundColor: "transparent",
                     transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
                     "&:hover": {
@@ -531,7 +580,7 @@ export default function HomePage() {
       </Box>
 
       {/* FINAL CTA SECTION */}
-      <Container maxWidth="md" sx={{ py: { xs: 10, md: 15 }, textAlign: "center" }}>
+      <Container maxWidth="md" sx={{ py: { xs: 8, md: 15 }, textAlign: "center" }}>
         <Typography variant="h3" sx={{ fontWeight: 700, mb: 3, fontSize: { xs: "2rem", md: "3rem" } }}>
           Ready to save money?
         </Typography>
@@ -543,13 +592,16 @@ export default function HomePage() {
           variant="contained"
           size="large"
           sx={{
-            px: 6,
-            py: 2,
+            width: { xs: "100%", sm: "auto" },
+            maxWidth: { xs: 280, sm: "none" },
+            minHeight: 48,
+            px: { xs: 3, md: 6 },
+            py: { xs: 1.5, md: 2 },
             borderRadius: "999px",
             background: "linear-gradient(135deg, #6400ef, #d880f1)",
             boxShadow: "0 8px 20px rgba(100, 0, 239, 0.3)",
             textTransform: "none",
-            fontSize: "1.2rem",
+            fontSize: { xs: "1rem", md: "1.2rem" },
             fontWeight: 600,
             "&:hover": {
               background: "linear-gradient(135deg, #5000c0, #c468dd)",

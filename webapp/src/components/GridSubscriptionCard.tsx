@@ -87,7 +87,15 @@ export default function GridSubscriptionCard({ subscription, onEdit, onCancel }:
 
   return (
     <Card
-      sx={{ height: "100%", display: "flex", flexDirection: "column", "&:hover": { boxShadow: 6 }, transition: "0.3s" }}
+      sx={{
+        height: "100%",
+        minWidth: 0,
+        overflow: "hidden",
+        display: "flex",
+        flexDirection: "column",
+        "&:hover": { boxShadow: 6 },
+        transition: "0.3s",
+      }}
     >
       <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
         <Box display="flex" flexDirection="column" gap={2} flexGrow={1}>
@@ -114,6 +122,7 @@ export default function GridSubscriptionCard({ subscription, onEdit, onCancel }:
                 size="small"
                 aria-label={`Open actions for ${subscription.name}`}
                 onClick={handleOpen}
+                sx={{ minWidth: { xs: 44, md: "auto" }, minHeight: { xs: 44, md: "auto" } }}
               >
                 <MoreVertIcon />
               </IconButton>
@@ -150,13 +159,15 @@ export default function GridSubscriptionCard({ subscription, onEdit, onCancel }:
           </Box>
 
           <Box display="flex" flexDirection="column" alignItems="start">
-            <Typography fontWeight={600}>{subscription.name}</Typography>
+            <Typography fontWeight={600} sx={{ maxWidth: "100%", overflowWrap: "anywhere" }}>
+              {subscription.name}
+            </Typography>
 
             <Typography variant="body2" color="text.secondary">
               {subscription.description}
             </Typography>
 
-            <Box display="flex" gap={1} mt={1}>
+            <Box display="flex" flexWrap="wrap" gap={1} mt={1}>
               <Chip
                 label={subscription.status}
                 size="small"
@@ -195,7 +206,16 @@ export default function GridSubscriptionCard({ subscription, onEdit, onCancel }:
             </Box>
           </Box>
 
-          <Box display="flex" justifyContent="space-between" pt={1} borderTop={1} borderColor="divider" mt="auto">
+          <Box
+            display="flex"
+            flexWrap="wrap"
+            gap={1}
+            justifyContent="space-between"
+            pt={1}
+            borderTop={1}
+            borderColor="divider"
+            mt="auto"
+          >
             <Typography variant="caption">Total Paid</Typography>
             <Typography variant="caption" fontWeight={500}>
               {formatMoney(subscription.totalPaid, subscription.currency)}
@@ -217,7 +237,18 @@ export default function GridSubscriptionCard({ subscription, onEdit, onCancel }:
             {t("subscriptions.delete_confirm_message", "Are you sure you want to delete this subscription?")}
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions
+          sx={{
+            flexDirection: { xs: "column", sm: "row" },
+            alignItems: "stretch",
+            gap: { xs: 1, sm: 0 },
+            "& .MuiButton-root": {
+              width: { xs: "100%", sm: "auto" },
+              minHeight: { xs: 44, sm: "auto" },
+              m: { xs: "0 !important", sm: undefined },
+            },
+          }}
+        >
           <Button onClick={handleDeleteCancel} color="inherit">
             {t("common.cancel", "Cancel")}
           </Button>
