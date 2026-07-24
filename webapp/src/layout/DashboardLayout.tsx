@@ -19,6 +19,7 @@ export default function DashboardLayout() {
         <Navbar onClick={() => setOpen(true)} open={open} showDrawerButton={true} />
         <Toolbar />
         <Box
+          component="main"
           sx={{
             flex: 1,
             display: "flex",

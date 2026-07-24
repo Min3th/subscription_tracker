@@ -11,11 +11,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Cookie;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/auth")
@@ -63,7 +65,8 @@ public class AuthController {
         String refreshToken = readRefreshToken(request);
 
         if (refreshToken == null){
-            return ResponseEntity.status(401).body("No refresh token available!");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                    "No refresh token available");
         }
 
         try {
@@ -73,7 +76,8 @@ public class AuthController {
         }
         catch (Exception e){
             clearRefreshCookie(response);
-            return ResponseEntity.status(401).body("Invalid refresh token!");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+                    "Invalid refresh token");
         }
     }
 

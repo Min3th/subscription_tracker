@@ -6,9 +6,27 @@ import {
   getSubscriptionById,
   createSubscription,
 } from "../api/subscription";
-import type { DetailedSubscription, UpdateSubscriptionPayload } from "../types/subscription";
+import type { DetailedSubscription, Subscription, UpdateSubscriptionPayload } from "../types/subscription";
 
-const mapToDetailed = (item: any): DetailedSubscription => ({
+type SubscriptionApiResponse = {
+  id: number;
+  name: string;
+  cost: string | number;
+  currency: string;
+  billingIntervalUnit: DetailedSubscription["billingIntervalUnit"];
+  billingIntervalCount: number;
+  nextBillingDate?: string | null;
+  category?: DetailedSubscription["category"];
+  type: DetailedSubscription["type"];
+  paymentMethod: string;
+  startDate: string;
+  description: string;
+  website: string;
+  totalPaid?: string | number | null;
+  emailNotificationsEnabled: boolean;
+};
+
+const mapToDetailed = (item: SubscriptionApiResponse): DetailedSubscription => ({
   id: item.id,
   name: item.name,
   // JSON decimal values may arrive as numbers even though form values are strings.
@@ -16,7 +34,7 @@ const mapToDetailed = (item: any): DetailedSubscription => ({
   currency: item.currency,
   billingIntervalUnit: item.billingIntervalUnit,
   billingIntervalCount: item.billingIntervalCount,
-  nextBillingDate: item.nextBillingDate ? new Date(item.nextBillingDate) : null,
+  nextBillingDate: item.nextBillingDate ? String(item.nextBillingDate) : null,
   category: item.category || "General",
   status: "active",
   type: item.type,
@@ -29,19 +47,22 @@ const mapToDetailed = (item: any): DetailedSubscription => ({
   emailNotificationsEnabled: item.emailNotificationsEnabled,
 });
 
-export const createSubscriptionThunk = createAsyncThunk("subscriptions/create", async (data: any) => {
-  const response = await createSubscription(data);
-  return response.data;
-});
+export const createSubscriptionThunk = createAsyncThunk(
+  "subscriptions/create",
+  async (data: Omit<Subscription, "id">) => {
+    const response = await createSubscription(data);
+    return response.data as SubscriptionApiResponse;
+  },
+);
 
 export const fetchSubscriptions = createAsyncThunk("subscriptions/fetch", async () => {
   const res = await getSubscriptions();
-  return res.data.map(mapToDetailed);
+  return (res.data as SubscriptionApiResponse[]).map(mapToDetailed);
 });
 
 export const fetchSubscriptionById = createAsyncThunk("subscriptions/fetchById", async (id: number) => {
   const res = await getSubscriptionById(id);
-  return mapToDetailed(res.data);
+  return mapToDetailed(res.data as SubscriptionApiResponse);
 });
 
 export const deleteSubscriptionThunk = createAsyncThunk("subscriptions/delete", async (id: number) => {
@@ -53,7 +74,7 @@ export const updateSubscriptionThunk = createAsyncThunk(
   "subscriptions/update",
   async (subscriptionData: UpdateSubscriptionPayload) => {
     const response = await updateSubscriptions(subscriptionData);
-    return response.data;
+    return response.data as SubscriptionApiResponse;
   },
 );
 

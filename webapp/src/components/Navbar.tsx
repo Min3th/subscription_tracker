@@ -14,13 +14,11 @@ import Avatar from "@mui/material/Avatar";
 import AddIcon from "@mui/icons-material/Add";
 import SubscriptionForm from "./SubscriptionForm";
 import { useDispatch, useSelector } from "react-redux";
-import Subtrak from "../../public/Subtrak.png";
 import { useNavigate, useLocation } from "react-router-dom";
 import type { AppDispatch, RootState } from "../app/store";
 import { logoutUser } from "../app/authSlice";
 
 export default function Navbar({
-  onClick: _onClick,
   open,
   showDrawerButton = false,
 }: {
@@ -152,7 +150,7 @@ export default function Navbar({
           >
             <Box
               component="img"
-              src={Subtrak}
+              src="/Subtrak.png"
               alt="Subtrak Logo"
               sx={{
                 height: 40,
@@ -236,14 +234,17 @@ export default function Navbar({
                   textTransform: "none",
                   fontWeight: 600,
                   fontSize: "0.9rem",
-                  background: "#c468dd",
+                  background: "#6400ef",
+                  "&:hover": {
+                    background: "#5000c0",
+                  },
                 }}
               >
                 Login
               </Button>
             )}
             {user && (
-              <IconButton onClick={handleProfileMenuOpen}>
+              <IconButton aria-label="Open account menu" onClick={handleProfileMenuOpen}>
                 <Avatar
                   src={user.picture}
                   alt={user?.name}

@@ -46,8 +46,8 @@ export default function Subscriptions() {
         case "cost":
           return parseDecimal(b.cost) > parseDecimal(a.cost) ? 1 : parseDecimal(b.cost) < parseDecimal(a.cost) ? -1 : 0;
         case "nextBilling":
-          return (a.nextBillingDate?.getTime() ?? Number.POSITIVE_INFINITY)
-            - (b.nextBillingDate?.getTime() ?? Number.POSITIVE_INFINITY);
+          return (a.nextBillingDate ? new Date(a.nextBillingDate).getTime() : Number.POSITIVE_INFINITY)
+            - (b.nextBillingDate ? new Date(b.nextBillingDate).getTime() : Number.POSITIVE_INFINITY);
         default:
           return 0;
       }
@@ -146,12 +146,13 @@ export default function Subscriptions() {
                 if (newView !== null) setView(newView);
               }}
               size="small"
+              aria-label="Subscription view"
             >
-              <ToggleButton value="list">
+              <ToggleButton value="list" aria-label="List view">
                 <ViewListIcon fontSize="small" />
               </ToggleButton>
 
-              <ToggleButton value="grid">
+              <ToggleButton value="grid" aria-label="Grid view">
                 <GridViewIcon fontSize="small" />
               </ToggleButton>
             </ToggleButtonGroup>

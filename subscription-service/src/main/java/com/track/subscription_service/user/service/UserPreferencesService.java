@@ -2,8 +2,10 @@ package com.track.subscription_service.user.service;
 
 import com.track.subscription_service.user.entity.User;
 import com.track.subscription_service.user.entity.UserPreferences;
+import com.track.subscription_service.user.dto.UpdateUserPreferencesRequest;
 import com.track.subscription_service.user.repository.UserPreferencesRepository;
 import com.track.subscription_service.user.repository.UserRepository;
+import com.track.subscription_service.common.error.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import com.track.subscription_service.notification.service.ReminderScheduleService;
 import com.track.subscription_service.subscription.repository.SubscriptionRepository;
@@ -28,7 +30,7 @@ public class UserPreferencesService {
     public UserPreferences getByGoogleId(String googleId) {
 
         User user = userRepository.findByGoogleId(googleId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         return repo.findByUser(user)
                 .orElseGet(() -> createDefaultPreferences(user));
@@ -38,17 +40,17 @@ public class UserPreferencesService {
         return repo.save(userPreferences);
     }
 
-    public UserPreferences updatePreferences(String googleId, UserPreferences updated) {
+    public UserPreferences updatePreferences(String googleId, UpdateUserPreferencesRequest updated) {
 
         UserPreferences existing = getByGoogleId(googleId);
 
-        existing.setCurrency(updated.getCurrency());
-        existing.setLanguage(updated.getLanguage());
-        existing.setTimezone(updated.getTimezone());
-        existing.setTheme(updated.getTheme());
-        existing.setEmailNotificationsEnabled(updated.getEmailNotificationsEnabled());
-        existing.setReminderDaysBefore(updated.getReminderDaysBefore());
-        existing.setReminderTime(updated.getReminderTime());
+        existing.setCurrency(updated.currency());
+        existing.setLanguage(updated.language());
+        existing.setTimezone(updated.timezone());
+        existing.setTheme(updated.theme());
+        existing.setEmailNotificationsEnabled(updated.emailNotificationsEnabled());
+        existing.setReminderDaysBefore(updated.reminderDaysBefore());
+        existing.setReminderTime(updated.reminderTime());
 
         UserPreferences saved = repo.save(existing);
         subscriptionRepository.findByUser_GoogleId(googleId).forEach(reminderScheduleService::refresh);
