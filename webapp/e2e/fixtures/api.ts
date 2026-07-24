@@ -77,3 +77,9 @@ export async function mockAuthenticatedApi(page: Page) {
     return fulfillJson(route, {});
   });
 }
+
+export async function mockAnonymousApi(page: Page) {
+  await page.route(/\/api\/auth\/refresh$/, (route) =>
+    fulfillJson(route, { message: "No refresh session" }, 401),
+  );
+}

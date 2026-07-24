@@ -5,7 +5,6 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
-import AccountCircle from "@mui/icons-material/AccountCircle";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
@@ -65,6 +64,11 @@ export default function Navbar({
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const handleMobileSectionNavigate = (sectionId: string) => {
+    handleMobileMenuClose();
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+  };
+
   const handleLogout = async () => {
     handleMenuClose();
     await dispatch(logoutUser());
@@ -114,18 +118,62 @@ export default function Navbar({
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
+      {!showDrawerButton && [
+        ["why-you-need", "Why Track"],
+        ["features", "Features"],
+        ["how-it-works", "How It Works"],
+      ].map(([sectionId, label]) => (
+        <MenuItem
+          key={sectionId}
+          onClick={() => handleMobileSectionNavigate(sectionId)}
+          sx={{ minHeight: 48 }}
         >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
+          {label}
+        </MenuItem>
+      ))}
+      {user ? [
+        !isLandingPage ? (
+          <MenuItem
+            key="add-subscription"
+            onClick={() => {
+              handleMobileMenuClose();
+              setOpenAdd(true);
+            }}
+            sx={{ minHeight: 48, gap: 1 }}
+          >
+            <AddIcon fontSize="small" />
+            Add Subscription
+          </MenuItem>
+        ) : null,
+        <MenuItem
+          key="account-settings"
+          onClick={() => {
+            handleMobileMenuClose();
+            navigate("/settings");
+          }}
+          sx={{ minHeight: 48 }}
+        >
+          Account Settings
+        </MenuItem>,
+        <MenuItem
+          key="logout"
+          onClick={handleLogout}
+          sx={{ minHeight: 48, color: "error.main", gap: 1 }}
+        >
+          <LogoutIcon fontSize="small" />
+          Logout
+        </MenuItem>,
+      ] : (
+        <MenuItem
+          onClick={() => {
+            handleMobileMenuClose();
+            setOpenLogin(true);
+          }}
+          sx={{ minHeight: 48 }}
+        >
+          Login
+        </MenuItem>
+      )}
     </Menu>
   );
 
@@ -270,7 +318,7 @@ export default function Navbar({
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
-              aria-label="show more"
+              aria-label="Open navigation menu"
               aria-controls={mobileMenuId}
               aria-haspopup="true"
               onClick={handleMobileMenuOpen}
@@ -278,12 +326,12 @@ export default function Navbar({
             >
               <MoreIcon />
             </IconButton>
-            <LoginDialog open={openLogin} onClose={() => setOpenLogin(false)} />
           </Box>
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
+      <LoginDialog open={openLogin} onClose={() => setOpenLogin(false)} />
       <SubscriptionForm
         open={openAdd}
         handleClose={() => setOpenAdd(false)}

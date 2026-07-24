@@ -50,7 +50,7 @@ test("mobile dashboard navigation opens, navigates, and closes", async ({
   test.skip(!testInfo.project.name.startsWith("mobile-"), "Mobile navigation test");
 
   await page.goto("/dashboard");
-  await page.getByRole("button", { name: "Open navigation" }).click();
+  await page.getByRole("button", { name: "Open navigation", exact: true }).click();
 
   const closeButton = page.getByRole("button", { name: "Close navigation" });
   await expect(closeButton).toBeVisible();
@@ -89,4 +89,21 @@ test("mobile user can open and complete the add subscription form", async ({
   await page.getByRole("button", { name: "Add", exact: true }).click();
 
   await expect(dialog).toBeHidden();
+});
+
+test("authenticated mobile navbar exposes add and account actions", async ({
+  page,
+}, testInfo) => {
+  test.skip(!testInfo.project.name.startsWith("mobile-"), "Mobile navbar test");
+
+  await page.goto("/dashboard");
+  await page.getByRole("button", { name: "Open navigation menu" }).click();
+
+  const menu = page.getByRole("menu");
+  await expect(menu.getByRole("menuitem", { name: "Add Subscription" })).toBeVisible();
+  await expect(menu.getByRole("menuitem", { name: "Account Settings" })).toBeVisible();
+  await expect(menu.getByRole("menuitem", { name: "Logout" })).toBeVisible();
+
+  await menu.getByRole("menuitem", { name: "Add Subscription" }).click();
+  await expect(page.getByRole("dialog", { name: "Add Subscription" })).toBeVisible();
 });
