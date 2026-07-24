@@ -194,6 +194,37 @@ cd subscription-service
 The first run can take longer while Testcontainers downloads the PostgreSQL and cleanup images.
 The build fails when Docker is unavailable; integration tests are not silently skipped.
 
+### Tenant-isolation tests
+
+Tenant isolation means one authenticated user cannot read, create for, update, delete, or trigger
+lifecycle changes against another user's data. The integration suite exercises the real JWT
+filter, HTTP controllers, services, repositories, Flyway schema, and PostgreSQL constraints.
+
+The covered boundaries include:
+
+- Subscription listing, lookup, creation, update, and deletion
+- Preference reads and updates, including an injected foreign `userId`
+- Account-wide refresh-session revocation
+- Unsubscribe tokens, notification preferences, reminder schedules, delivery state, and suppression
+- Positive owner access and checks that rejected operations leave the other tenant's data unchanged
+
+Run only tenant-isolation tests:
+
+```bash
+cd subscription-service
+./mvnw -Dtest='*TenantIsolation*' test
+```
+
+On Windows PowerShell:
+
+```powershell
+cd subscription-service
+.\mvnw.cmd "-Dtest=*TenantIsolation*" test
+```
+
+GitHub Actions runs these tests as part of the normal backend package build, so an isolation
+regression blocks deployment.
+
 ## API Overview
 
 ### Interactive API documentation

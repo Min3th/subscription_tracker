@@ -158,11 +158,24 @@ Add or update tests whenever behavior changes. At minimum, cover the regression 
 High-priority backend coverage:
 
 - Authentication token type, issuer, audience, expiry, rotation, reuse, and revocation.
-- Tenant ownership and cross-user access rejection.
+- Tenant ownership and cross-user access rejection through the authenticated HTTP boundary.
 - DTO validation, normalization, malformed input, and stable error responses.
 - Billing intervals, month-end dates, leap years, zero intervals, and exact decimal arithmetic.
 - Flyway migration from an empty PostgreSQL database and from the prior schema.
 - Reminder timezone boundaries, idempotency, retries, dead-letter behavior, suppression, and concurrent claiming.
+
+Tenant-isolation regressions require integration tests, not only mocked controller or repository
+tests. For every user-owned resource or lifecycle operation:
+
+- Create at least two tenants with distinguishable data.
+- Authenticate as one tenant through the real JWT filter.
+- Include a positive control proving the owner can perform the operation.
+- Attempt cross-tenant reads and every supported mutation.
+- Verify both the HTTP response and the persisted database state.
+- Prefer `404` for foreign resource identifiers when revealing existence would leak information.
+- Test body, query, and path identifiers that could conflict with the authenticated identity.
+- Verify invalid, expired, or replayed capability tokens cannot affect either tenant.
+- Keep tenant tests under `src/test/java/.../integration` so they run against Testcontainers.
 
 Frontend work should add unit/component tests when a test framework is available. Authentication flows and critical subscription workflows should eventually have browser-level end-to-end coverage.
 
