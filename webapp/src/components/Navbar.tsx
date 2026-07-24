@@ -7,6 +7,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MoreIcon from "@mui/icons-material/MoreVert";
+import MenuIcon from "@mui/icons-material/Menu";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Button } from "@mui/material";
 import LoginDialog from "./LoginDialog";
@@ -20,7 +21,7 @@ import type { AppDispatch, RootState } from "../app/store";
 import { logoutUser } from "../app/authSlice";
 
 export default function Navbar({
-  onClick: _onClick,
+  onClick,
   open,
   showDrawerButton = false,
 }: {
@@ -134,13 +135,27 @@ export default function Navbar({
       <AppBar
         position="fixed"
         sx={{
-          zIndex: (theme) => theme.zIndex.drawer + 1,
+          zIndex: (theme) => ({
+            xs: theme.zIndex.appBar,
+            md: theme.zIndex.drawer + 1,
+          }),
           transition: "margin 0.3s, width 0.3s",
-          ml: open ? "240px" : "64px",
-          width: open ? "calc(100% - 240px)" : "100%",
+          ml: { xs: 0, md: open ? "240px" : "64px" },
+          width: { xs: "100%", md: open ? "calc(100% - 240px)" : "100%" },
         }}
       >
         <Toolbar>
+          {showDrawerButton && (
+            <IconButton
+              color="inherit"
+              aria-label="Open navigation"
+              edge="start"
+              onClick={onClick}
+              sx={{ display: { xs: "inline-flex", md: "none" }, mr: 1 }}
+            >
+              <MenuIcon />
+            </IconButton>
+          )}
           <Box
             sx={{
               display: "flex",
