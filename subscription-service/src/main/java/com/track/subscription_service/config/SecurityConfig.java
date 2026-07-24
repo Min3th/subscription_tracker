@@ -18,10 +18,14 @@ public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final FrontendOriginPolicy frontendOriginPolicy;
+    private final SecurityErrorHandler securityErrorHandler;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter, FrontendOriginPolicy frontendOriginPolicy){
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter,
+                          FrontendOriginPolicy frontendOriginPolicy,
+                          SecurityErrorHandler securityErrorHandler){
         this.jwtAuthFilter = jwtAuthFilter;
         this.frontendOriginPolicy = frontendOriginPolicy;
+        this.securityErrorHandler = securityErrorHandler;
     }
 
     @Bean
@@ -31,6 +35,10 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(securityErrorHandler)
+                        .accessDeniedHandler(securityErrorHandler)
                 )
                 .authorizeHttpRequests(auth ->auth
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**",
