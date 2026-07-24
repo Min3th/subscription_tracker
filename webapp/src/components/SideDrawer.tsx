@@ -223,7 +223,9 @@ export default function MiniDrawer({ mobileOpen, onMobileClose }: SideDrawerProp
         sx={{ display: { xs: "none", md: "block" } }}
       >
         <DrawerHeader>
-          <IconButton>{theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}</IconButton>
+          <Box aria-hidden="true" sx={{ display: "flex", p: 1 }}>
+            {theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+          </Box>
         </DrawerHeader>
         <Divider />
         <List>
@@ -378,6 +380,7 @@ export default function MiniDrawer({ mobileOpen, onMobileClose }: SideDrawerProp
           }}
         >
           <IconButton
+            aria-label={open ? "Collapse navigation" : "Expand navigation"}
             onClick={toggleDrawer}
             sx={{
               bgcolor: "background.paper",

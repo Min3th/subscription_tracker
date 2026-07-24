@@ -298,14 +298,17 @@ export default function Navbar({
                   textTransform: "none",
                   fontWeight: 600,
                   fontSize: "0.9rem",
-                  background: "#c468dd",
+                  background: "#6400ef",
+                  "&:hover": {
+                    background: "#5000c0",
+                  },
                 }}
               >
                 Login
               </Button>
             )}
             {user && (
-              <IconButton onClick={handleProfileMenuOpen}>
+              <IconButton aria-label="Open account menu" onClick={handleProfileMenuOpen}>
                 <Avatar
                   src={user.picture}
                   alt={user?.name}
