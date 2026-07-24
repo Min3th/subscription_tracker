@@ -42,6 +42,8 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",
+    "@emnapi/core": "^1.11.2",
+    "@emnapi/runtime": "^1.11.2",
     "@eslint/js": "^9.39.4",
     "@playwright/test": "^1.61.1",
     "@testing-library/jest-dom": "^7.0.0",
