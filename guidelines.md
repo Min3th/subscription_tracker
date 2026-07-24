@@ -196,7 +196,12 @@ npm run lint
 npm run build
 ```
 
-Backend tests require PostgreSQL and the environment variables documented in `README.md`. A successful compilation alone is not sufficient when behavior, persistence, authentication, or migrations changed.
+Backend integration tests require a running Docker-compatible runtime. Testcontainers provisions
+an isolated PostgreSQL database and supplies its connection details, so tests must not depend on a
+developer database or `DB_URL`, `DB_USERNAME`, and `DB_PASSWORD`. Runtime configuration for the
+deployed backend still uses the environment variables documented in `README.md`. A successful
+compilation alone is not sufficient when behavior, persistence, authentication, or migrations
+changed.
 
 Before handing off work:
 

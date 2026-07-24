@@ -77,6 +77,7 @@ Install the following before running the project locally:
 - Node.js and npm
 - Java 25
 - PostgreSQL
+- Docker Desktop or another Docker-compatible runtime for backend integration tests
 - A Google OAuth 2.0 web client
 - A SendGrid account and verified sender if you want email reminders
 
@@ -89,7 +90,9 @@ cd subscription_tracker
 
 ### 2. Create a PostgreSQL database
 
-Create an empty PostgreSQL database for Subtrak. Hibernate is configured with `ddl-auto=update`, so the application will create and update the required tables when the backend starts.
+Create an empty PostgreSQL database for Subtrak. Flyway applies the versioned migrations in
+`subscription-service/src/main/resources/db/migration` when the backend starts, and Hibernate
+validates that the resulting schema matches the entities.
 
 ### 3. Configure the backend
 
@@ -164,9 +167,32 @@ Run these commands from the `subscription-service` directory:
 
 ```bash
 ./mvnw spring-boot:run   # Start the API
-./mvnw test              # Run backend tests
+./mvnw test              # Run backend tests (Docker must be running)
 ./mvnw package           # Build the backend JAR
 ```
+
+### Backend integration tests
+
+The backend integration tests use Testcontainers to start a disposable PostgreSQL 16 database.
+They do not use `DB_URL`, `DB_USERNAME`, or `DB_PASSWORD`, and they never modify your development
+database. Docker must be running before `./mvnw test` or `./mvnw package` is executed.
+
+Run only the PostgreSQL integration tests:
+
+```bash
+cd subscription-service
+./mvnw -Dtest='*IntegrationTest' test
+```
+
+On Windows PowerShell:
+
+```powershell
+cd subscription-service
+.\mvnw.cmd "-Dtest=*IntegrationTest" test
+```
+
+The first run can take longer while Testcontainers downloads the PostgreSQL and cleanup images.
+The build fails when Docker is unavailable; integration tests are not silently skipped.
 
 ## API Overview
 
