@@ -1,7 +1,8 @@
 package com.track.subscription_service.user.controller;
 
-import com.track.subscription_service.user.entity.UserPreferences;
+import com.track.subscription_service.user.dto.UpdateUserPreferencesRequest;
 import com.track.subscription_service.user.service.UserPreferencesService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,7 +27,8 @@ public class UserPreferencesController {
     }
 
     @PutMapping
-    public ResponseEntity<?> updatePreferences(@RequestBody UserPreferences updated){
+    public ResponseEntity<?> updatePreferences(
+            @Valid @RequestBody UpdateUserPreferencesRequest updated){
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String googleId = auth.getName();
 

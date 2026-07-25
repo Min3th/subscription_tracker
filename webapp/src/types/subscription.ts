@@ -18,7 +18,7 @@ export interface DetailedSubscription {
   type: SubscriptionType;
   billingIntervalUnit: BillingUnit;
   billingIntervalCount: number;
-  nextBillingDate: Date | null;
+  nextBillingDate: string | null;
   category: SubscriptionCategory;
   status: "active" | "cancelled" | "paused";
   paymentMethod: string;

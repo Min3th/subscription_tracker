@@ -35,7 +35,7 @@ public class RefreshTokenService {
         return new AuthResponse(jwtService.generateAccessToken(user), issued.token(), user);
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = RefreshTokenCompromiseException.class)
     public AuthResponse rotate(String refreshToken) {
         Claims claims = jwtService.validateRefreshToken(refreshToken);
         String presentedHash = hash(refreshToken);
@@ -46,12 +46,12 @@ public class RefreshTokenService {
         if (current.getRevokedAt() != null || !current.getExpiresAt().isAfter(now)) {
             // Reuse of a rotated token is treated as session-family compromise.
             revokeAllForUser(current.getUser());
-            throw new IllegalArgumentException("Refresh session is no longer active");
+            throw new RefreshTokenCompromiseException("Refresh session is no longer active");
         }
         if (!current.getTokenId().equals(claims.getId()) ||
                 !current.getUser().getGoogleId().equals(claims.getSubject())) {
             revokeAllForUser(current.getUser());
-            throw new IllegalArgumentException("Refresh session does not match token claims");
+            throw new RefreshTokenCompromiseException("Refresh session does not match token claims");
         }
 
         IssuedRefreshToken replacement = issueRefreshToken(current.getUser());
@@ -108,4 +108,10 @@ public class RefreshTokenService {
     }
 
     private record IssuedRefreshToken(String tokenId, String token) { }
+
+    private static final class RefreshTokenCompromiseException extends IllegalArgumentException {
+        private RefreshTokenCompromiseException(String message) {
+            super(message);
+        }
+    }
 }

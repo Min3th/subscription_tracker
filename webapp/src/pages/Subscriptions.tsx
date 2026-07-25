@@ -47,8 +47,8 @@ export default function Subscriptions() {
         case "cost":
           return parseDecimal(b.cost) > parseDecimal(a.cost) ? 1 : parseDecimal(b.cost) < parseDecimal(a.cost) ? -1 : 0;
         case "nextBilling":
-          return (a.nextBillingDate?.getTime() ?? Number.POSITIVE_INFINITY)
-            - (b.nextBillingDate?.getTime() ?? Number.POSITIVE_INFINITY);
+          return (a.nextBillingDate ? new Date(a.nextBillingDate).getTime() : Number.POSITIVE_INFINITY)
+            - (b.nextBillingDate ? new Date(b.nextBillingDate).getTime() : Number.POSITIVE_INFINITY);
         default:
           return 0;
       }

@@ -194,7 +194,9 @@ export default function GridSubscriptionCard({ subscription, onEdit, onCancel }:
             <Box display="flex" alignItems="center" gap={1}>
               <CalendarTodayIcon sx={{ fontSize: 14 }} />
               <Typography variant="caption">
-                {subscription.nextBillingDate ? subscription.nextBillingDate.toLocaleDateString() : "One-time purchase"}
+                {subscription.nextBillingDate
+                  ? new Date(subscription.nextBillingDate).toLocaleDateString()
+                  : "One-time purchase"}
               </Typography>
             </Box>
 

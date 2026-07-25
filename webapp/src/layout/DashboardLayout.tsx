@@ -26,6 +26,7 @@ export default function DashboardLayout() {
         />
         <Toolbar />
         <Box
+          component="main"
           sx={{
             flex: 1,
             display: "flex",

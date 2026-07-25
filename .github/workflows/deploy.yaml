@@ -16,21 +16,6 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_DB: subscription
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd="pg_isready -U postgres -d subscription"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     defaults:
       run:
         working-directory: subscription-service
@@ -49,9 +34,6 @@ jobs:
 
       - name: Build and test
         env:
-          DB_URL: jdbc:postgresql://localhost:5432/subscription
-          DB_USERNAME: postgres
-          DB_PASSWORD: postgres
           JWT_SECRET: github-actions-test-secret-key-that-is-longer-than-32-bytes
           GOOGLE_CLIENT_ID: test-google-client-id
           SENDGRID_API_KEY: SGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
