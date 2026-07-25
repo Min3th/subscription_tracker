@@ -19,7 +19,7 @@ const preferences = {
 const subscriptions = [
   {
     id: 101,
-    name: "Very Long Subscription Service Name",
+    name: "Netflix",
     cost: "19.9900",
     currency: "USD",
     type: "recurring",
@@ -32,6 +32,23 @@ const subscriptions = [
     billingIntervalCount: 1,
     nextBillingDate: "2026-08-01",
     totalPaid: "139.9300",
+    emailNotificationsEnabled: true,
+  },
+  {
+    id: 102,
+    name: "Cloud Storage",
+    cost: "9.9900",
+    currency: "USD",
+    type: "recurring",
+    category: "Software",
+    description: "Cloud storage subscription.",
+    paymentMethod: "Personal card",
+    website: "https://example.com/cloud-storage",
+    startDate: "2026-02-01",
+    billingIntervalUnit: "month",
+    billingIntervalCount: 1,
+    nextBillingDate: "2026-08-15",
+    totalPaid: "59.9400",
     emailNotificationsEnabled: true,
   },
 ];
@@ -66,7 +83,7 @@ export async function mockAuthenticatedApi(page: Page) {
         route,
         {
           ...request.postDataJSON(),
-          id: 102,
+          id: 103,
           nextBillingDate: "2026-09-01",
           totalPaid: "0.0000",
         },
