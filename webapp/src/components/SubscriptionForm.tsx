@@ -346,7 +346,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                         error={formik.touched.billingIntervalCount && Boolean(formik.errors.billingIntervalCount)}
                         helperText={formik.touched.billingIntervalCount && formik.errors.billingIntervalCount}
                         sx={{ width: { xs: "100%", sm: 80 } }}
-                        inputProps={{ min: 1, "aria-label": "Billing interval count" }}
+                        inputProps={{ min: 1 }}
                       />
                       <TextField
                         select
@@ -354,7 +354,6 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                         label="Billing interval unit"
                         value={formik.values.billingIntervalUnit}
                         onChange={formik.handleChange}
-                        SelectProps={{ inputProps: { "aria-label": "Billing interval unit" } }}
                         sx={{ width: { xs: "100%", sm: "auto" }, minWidth: { xs: 0, sm: 120 } }}
                       >
                         <MenuItem value="day">Day</MenuItem>
