@@ -6,7 +6,7 @@ import Footer from "../components/Footer";
 import SideDrawer from "../components/SideDrawer";
 
 export default function DashboardLayout() {
-  const [open, setOpen] = useState(false);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   return (
     <Box
       sx={{
@@ -14,9 +14,16 @@ export default function DashboardLayout() {
         display: "flex",
       }}
     >
-      <SideDrawer />
-      <Box sx={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <Navbar onClick={() => setOpen(true)} open={open} showDrawerButton={true} />
+      <SideDrawer
+        mobileOpen={mobileDrawerOpen}
+        onMobileClose={() => setMobileDrawerOpen(false)}
+      />
+      <Box sx={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column" }}>
+        <Navbar
+          onClick={() => setMobileDrawerOpen(true)}
+          open={false}
+          showDrawerButton={true}
+        />
         <Toolbar />
         <Box
           component="main"

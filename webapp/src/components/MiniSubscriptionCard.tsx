@@ -16,7 +16,9 @@ export default function MiniSubscriptionCard({ sub, t }: MiniSubscriptionCardPro
     <Card
       sx={{
         borderRadius: 3,
-        p: 2.5,
+        p: { xs: 2, md: 2.5 },
+        minWidth: 0,
+        overflow: "hidden",
         boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
         width: "100%",
         transition: "transform 0.2s, box-shadow 0.2s",
@@ -57,13 +59,14 @@ export default function MiniSubscriptionCard({ sub, t }: MiniSubscriptionCardPro
               sx={{
                 display: "flex",
                 alignItems: "center",
+                flexWrap: { xs: "wrap", sm: "nowrap" },
                 gap: 1,
                 mb: 0.5,
                 width: "100%",
                 minWidth: 0,
               }}
             >
-              <Typography fontWeight="700" fontSize="1.05rem">
+              <Typography fontWeight="700" fontSize="1.05rem" sx={{ overflowWrap: "anywhere" }}>
                 {sub.name}
               </Typography>
 

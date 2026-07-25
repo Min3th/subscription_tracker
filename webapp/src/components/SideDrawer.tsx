@@ -28,6 +28,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
+import CloseIcon from "@mui/icons-material/Close";
 import { logoutUser } from "../app/authSlice";
 import type { AppDispatch } from "../app/store";
 
@@ -86,7 +87,12 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== "open" 
   ],
 }));
 
-export default function MiniDrawer() {
+type SideDrawerProps = {
+  mobileOpen: boolean;
+  onMobileClose: () => void;
+};
+
+export default function MiniDrawer({ mobileOpen, onMobileClose }: SideDrawerProps) {
   const { t } = useTranslation();
   const theme = useTheme();
   const dispatch = useDispatch<AppDispatch>();
@@ -110,10 +116,112 @@ export default function MiniDrawer() {
   const toggleDrawer = () => {
     setOpen((prev) => !prev);
   };
+
+  const navigation = (
+    <>
+      <List>
+        <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItemButton
+            component={Link}
+            to="/dashboard"
+            onClick={onMobileClose}
+            sx={{ minHeight: 48, px: 2.5 }}
+          >
+            <ListItemIcon sx={{ minWidth: 0, justifyContent: "center", mr: 3 }}>
+              <DashboardIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t("sidebar.dashboard", "Dashboard")}
+              sx={{ opacity: 1, whiteSpace: "nowrap" }}
+            />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItemButton
+            component={Link}
+            to="/subscriptions"
+            onClick={onMobileClose}
+            sx={{ minHeight: 48, px: 2.5 }}
+          >
+            <ListItemIcon sx={{ minWidth: 0, justifyContent: "center", mr: 3 }}>
+              <SubscriptionsIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t("sidebar.subscriptions", "Subscriptions")}
+              sx={{ opacity: 1, whiteSpace: "nowrap" }}
+            />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItemButton
+            component={Link}
+            to="/settings"
+            onClick={onMobileClose}
+            sx={{ minHeight: 48, px: 2.5 }}
+          >
+            <ListItemIcon sx={{ minWidth: 0, justifyContent: "center", mr: 3 }}>
+              <SettingsIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t("sidebar.settings", "Settings")}
+              sx={{ opacity: 1, whiteSpace: "nowrap" }}
+            />
+          </ListItemButton>
+        </ListItem>
+      </List>
+      <Divider />
+      <List>
+        <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItemButton
+            onClick={() => {
+              onMobileClose();
+              handleLogoutClick();
+            }}
+            sx={{ minHeight: 48, px: 2.5 }}
+          >
+            <ListItemIcon sx={{ minWidth: 0, justifyContent: "center", mr: 3 }}>
+              <LogoutIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t("sidebar.logout", "Logout")}
+              sx={{ opacity: 1, whiteSpace: "nowrap" }}
+            />
+          </ListItemButton>
+        </ListItem>
+      </List>
+    </>
+  );
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <Drawer variant="permanent" open={open}>
+      <MuiDrawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={onMobileClose}
+        ModalProps={{ keepMounted: true }}
+        sx={{
+          display: { xs: "block", md: "none" },
+          "& .MuiDrawer-paper": {
+            width: "min(280px, calc(100vw - 56px))",
+            boxSizing: "border-box",
+          },
+        }}
+      >
+        <DrawerHeader>
+          <IconButton aria-label="Close navigation" onClick={onMobileClose}>
+            <CloseIcon />
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        {navigation}
+      </MuiDrawer>
+
+      <Drawer
+        variant="permanent"
+        open={open}
+        sx={{ display: { xs: "none", md: "block" } }}
+      >
         <DrawerHeader>
           <Box aria-hidden="true" sx={{ display: "flex", p: 1 }}>
             {theme.direction === "rtl" ? <ChevronRightIcon /> : <ChevronLeftIcon />}
@@ -304,7 +412,18 @@ export default function MiniDrawer() {
             {t("sidebar.logoutConfirmMessage", "Are you sure you want to log out?")}
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
+        <DialogActions
+          sx={{
+            flexDirection: { xs: "column", sm: "row" },
+            alignItems: "stretch",
+            gap: { xs: 1, sm: 0 },
+            "& .MuiButton-root": {
+              width: { xs: "100%", sm: "auto" },
+              minHeight: { xs: 44, sm: "auto" },
+              m: { xs: "0 !important", sm: undefined },
+            },
+          }}
+        >
           <Button onClick={handleLogoutCancel} color="inherit">
             {t("common.cancel", "Cancel")}
           </Button>

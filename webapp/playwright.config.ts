@@ -63,6 +63,24 @@ export default defineConfig({
       name: "google-chrome",
       use: { ...devices["Desktop Chrome"], channel: "chrome" },
     },
+    {
+      name: "mobile-small",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 320, height: 720 },
+        hasTouch: true,
+        isMobile: true,
+      },
+    },
+    {
+      name: "mobile-standard",
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 390, height: 844 },
+        hasTouch: true,
+        isMobile: true,
+      },
+    },
     ...optionalBraveProject,
   ],
 });

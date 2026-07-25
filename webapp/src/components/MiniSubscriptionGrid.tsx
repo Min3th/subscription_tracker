@@ -13,7 +13,11 @@ export default function SubscriptionGrid({ subscriptions, t }: SubscriptionGridP
   return (
     <Grid container spacing={3}>
       {subscriptions.map((sub) => (
-        <Grid key={sub.id} size={{ xs: 12, md: 6, lg: 4 }} sx={{ minWidth: "300px" }}>
+        <Grid
+          key={sub.id}
+          size={{ xs: 12, md: 6, lg: 4 }}
+          sx={{ minWidth: { xs: 0, md: "300px" } }}
+        >
           <MiniSubscriptionCard sub={sub} t={t} />
         </Grid>
       ))}

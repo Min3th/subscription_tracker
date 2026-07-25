@@ -30,3 +30,7 @@ test-results
 
 
 .vercel
+
+coverage/
+playwright-report/
+test-results/
