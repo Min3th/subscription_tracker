@@ -6,8 +6,10 @@ import {
   DialogActions,
   DialogContent,
   IconButton,
+  LinearProgress,
   MobileStepper,
   Stack,
+  Switch,
   Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
@@ -27,6 +29,149 @@ type Props = {
 };
 
 const slideIcons = [WalletIcon, AddCardIcon, InsightsIcon, NotificationsActiveIcon];
+
+function ProductPreview({ step }: { step: number }) {
+  const panel = {
+    bgcolor: "background.paper",
+    border: 1,
+    borderColor: "divider",
+    borderRadius: 1.5,
+  };
+
+  return (
+    <Box
+      aria-hidden="true"
+      sx={{
+        width: "100%",
+        maxWidth: 500,
+        height: { xs: 190, sm: 220 },
+        mb: 3,
+        p: { xs: 1.5, sm: 2 },
+        overflow: "hidden",
+        borderRadius: 2.5,
+        border: 1,
+        borderColor: "divider",
+        bgcolor: "action.hover",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08)",
+        pointerEvents: "none",
+      }}
+    >
+      {step === 0 && (
+        <Stack direction="row" gap={1.5} height="100%">
+          <Stack sx={{ ...panel, width: 86, p: 1.25 }} gap={1}>
+            <Box sx={{ width: 24, height: 24, borderRadius: 1, bgcolor: "primary.main" }} />
+            {[50, 42, 46].map((width) => (
+              <Box key={width} sx={{ width, height: 6, borderRadius: 4, bgcolor: "text.disabled" }} />
+            ))}
+          </Stack>
+          <Stack flex={1} gap={1.25}>
+            <Box sx={{ width: 120, height: 12, borderRadius: 4, bgcolor: "text.primary" }} />
+            <Stack direction="row" gap={1}>
+              {["$84", "$1,008", "4"].map((value) => (
+                <Stack key={value} sx={{ ...panel, flex: 1, p: 1 }} gap={0.5}>
+                  <Typography fontSize={10} color="text.secondary">Overview</Typography>
+                  <Typography fontSize={{ xs: 13, sm: 17 }} fontWeight={800}>{value}</Typography>
+                </Stack>
+              ))}
+            </Stack>
+            <Box sx={{ ...panel, flex: 1, p: 1.25 }}>
+              <Stack direction="row" alignItems="flex-end" gap={1} height="100%">
+                {[34, 58, 45, 72, 52, 84].map((height, index) => (
+                  <Box
+                    key={index}
+                    sx={{ flex: 1, height: `${height}%`, borderRadius: "4px 4px 0 0", bgcolor: "primary.main" }}
+                  />
+                ))}
+              </Stack>
+            </Box>
+          </Stack>
+        </Stack>
+      )}
+
+      {step === 1 && (
+        <Stack sx={{ ...panel, maxWidth: 400, height: "100%", mx: "auto", p: { xs: 1.5, sm: 2 } }} gap={1.25}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Typography fontSize={{ xs: 13, sm: 16 }} fontWeight={700}>Add Subscription</Typography>
+            <Typography fontSize={10} color="primary.main">Basic information · Billing</Typography>
+          </Stack>
+          <Stack direction="row" gap={1}>
+            <Box sx={{ ...panel, flex: 2, height: 37, px: 1.25, display: "flex", alignItems: "center" }}>
+              <Typography fontSize={11} color="text.secondary">Streaming service</Typography>
+            </Box>
+            <Box sx={{ ...panel, flex: 1, height: 37, px: 1.25, display: "flex", alignItems: "center" }}>
+              <Typography fontSize={11} color="text.secondary">Monthly</Typography>
+            </Box>
+          </Stack>
+          <Stack direction="row" gap={1}>
+            <Box sx={{ ...panel, flex: 1, height: 37, px: 1.25, display: "flex", alignItems: "center" }}>
+              <Typography fontSize={11} color="text.secondary">USD 12.99</Typography>
+            </Box>
+            <Box sx={{ ...panel, flex: 1, height: 37, px: 1.25, display: "flex", alignItems: "center" }}>
+              <Typography fontSize={11} color="text.secondary">Entertainment</Typography>
+            </Box>
+          </Stack>
+          <Box sx={{ alignSelf: "flex-end", mt: "auto", width: 72, height: 28, borderRadius: 1, bgcolor: "primary.main" }} />
+        </Stack>
+      )}
+
+      {step === 2 && (
+        <Stack direction={{ xs: "column", sm: "row" }} gap={1.25} height="100%">
+          <Stack sx={{ ...panel, flex: 1.5, p: 1.5 }} gap={1}>
+            <Typography fontSize={12} fontWeight={700}>Monthly spending</Typography>
+            <Stack direction="row" alignItems="flex-end" gap={1} flex={1}>
+              {[40, 54, 48, 76, 64, 88].map((height, index) => (
+                <Stack key={index} flex={1} height="100%" justifyContent="flex-end" alignItems="center" gap={0.5}>
+                  <Box sx={{ width: "100%", height: `${height}%`, borderRadius: "4px 4px 0 0", bgcolor: "primary.main" }} />
+                  <Typography fontSize={8} color="text.secondary">{["Feb", "Mar", "Apr", "May", "Jun", "Jul"][index]}</Typography>
+                </Stack>
+              ))}
+            </Stack>
+          </Stack>
+          <Stack sx={{ ...panel, flex: 1, p: 1.5 }} gap={1.25}>
+            <Typography fontSize={12} fontWeight={700}>By category</Typography>
+            {[
+              ["Entertainment", 72],
+              ["Software", 52],
+              ["Music", 34],
+            ].map(([label, value]) => (
+              <Box key={label}>
+                <Typography fontSize={9} color="text.secondary">{label}</Typography>
+                <LinearProgress variant="determinate" value={Number(value)} sx={{ mt: 0.5, height: 7, borderRadius: 4 }} />
+              </Box>
+            ))}
+          </Stack>
+        </Stack>
+      )}
+
+      {step === 3 && (
+        <Stack sx={{ ...panel, maxWidth: 430, height: "100%", mx: "auto", p: { xs: 1.5, sm: 2 } }} gap={1.25}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center">
+            <Box>
+              <Typography fontSize={{ xs: 12, sm: 14 }} fontWeight={700}>Renewal reminder emails</Typography>
+              <Typography fontSize={9} color="text.secondary">Get notified before a subscription renews</Typography>
+            </Box>
+            <Switch size="small" defaultChecked />
+          </Stack>
+          {["3 days before", "1 day before", "On billing day"].map((label, index) => (
+            <Stack key={label} direction="row" alignItems="center" gap={1} sx={{ ...panel, px: 1.25, py: 0.75 }}>
+              <Box
+                sx={{
+                  width: 14,
+                  height: 14,
+                  borderRadius: "50%",
+                  border: 2,
+                  borderColor: "primary.main",
+                  bgcolor: index === 0 ? "primary.main" : "transparent",
+                }}
+              />
+              <Typography fontSize={11}>{label}</Typography>
+            </Stack>
+          ))}
+        </Stack>
+      )}
+    </Box>
+  );
+}
 
 export default function WelcomeGuide({ open, onComplete }: Props) {
   const { t } = useTranslation();
@@ -50,7 +195,7 @@ export default function WelcomeGuide({ open, onComplete }: Props) {
       open={open}
       onClose={() => complete("dismiss")}
       fullWidth
-      maxWidth="sm"
+      maxWidth="md"
       aria-labelledby="welcome-guide-title"
       slotProps={{
         paper: {
@@ -62,7 +207,7 @@ export default function WelcomeGuide({ open, onComplete }: Props) {
         },
       }}
     >
-      <DialogContent sx={{ position: "relative", px: { xs: 3, sm: 6 }, pt: { xs: 6, sm: 7 }, pb: 3 }}>
+      <DialogContent sx={{ position: "relative", px: { xs: 2.5, sm: 6 }, pt: { xs: 5, sm: 5 }, pb: 2 }}>
         <IconButton
           aria-label={t("onboarding.close")}
           onClick={() => complete("dismiss")}
@@ -72,28 +217,29 @@ export default function WelcomeGuide({ open, onComplete }: Props) {
           <CloseIcon />
         </IconButton>
 
-        <Stack alignItems="center" textAlign="center" minHeight={{ xs: 300, sm: 320 }}>
+        <Stack alignItems="center" textAlign="center">
           <Box
             aria-hidden="true"
             sx={{
-              width: 88,
-              height: 88,
+              width: 48,
+              height: 48,
               borderRadius: "50%",
               display: "grid",
               placeItems: "center",
               bgcolor: "primary.main",
               color: "primary.contrastText",
-              mb: 4,
+              mb: 1.5,
             }}
           >
-            <SlideIcon sx={{ fontSize: 44 }} />
+            <SlideIcon sx={{ fontSize: 25 }} />
           </Box>
           <Typography id="welcome-guide-title" variant="h4" fontWeight={800} gutterBottom>
             {t(`onboarding.slides.${activeStep}.title`)}
           </Typography>
-          <Typography color="text.secondary" sx={{ maxWidth: 430, lineHeight: 1.7 }}>
+          <Typography color="text.secondary" sx={{ maxWidth: 560, lineHeight: 1.6, mb: 2.5 }}>
             {t(`onboarding.slides.${activeStep}.body`)}
           </Typography>
+          <ProductPreview step={activeStep} />
         </Stack>
       </DialogContent>
 
@@ -118,11 +264,12 @@ export default function WelcomeGuide({ open, onComplete }: Props) {
         }}
       >
         {activeStep === 0 ? (
-          <Button color="inherit" onClick={() => complete("dismiss")} disabled={completing}>
+          <Button variant="outlined" color="inherit" onClick={() => complete("dismiss")} disabled={completing}>
             {t("onboarding.skip")}
           </Button>
         ) : (
           <Button
+            variant="outlined"
             color="inherit"
             startIcon={<KeyboardArrowLeftIcon />}
             onClick={() => setActiveStep((step) => step - 1)}
@@ -142,7 +289,7 @@ export default function WelcomeGuide({ open, onComplete }: Props) {
           </Button>
         ) : (
           <Stack direction={{ xs: "column-reverse", sm: "row" }} gap={1} width={{ xs: "100%", sm: "auto" }}>
-            <Button color="inherit" onClick={() => complete("dismiss")} disabled={completing}>
+            <Button variant="outlined" color="inherit" onClick={() => complete("dismiss")} disabled={completing}>
               {t("onboarding.maybe_later")}
             </Button>
             <Button variant="contained" onClick={() => complete("add-subscription")} disabled={completing}>
