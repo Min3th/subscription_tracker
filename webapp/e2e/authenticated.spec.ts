@@ -50,3 +50,20 @@ test("authenticated user can change reminder settings", async ({ page }) => {
   await confirmation.getByRole("button", { name: /confirm/i }).click();
   await expect(page.getByText(/saved successfully/i)).toBeVisible();
 });
+
+test("first-time user can finish onboarding and add a subscription", async ({ page }) => {
+  await page.unrouteAll();
+  await mockAuthenticatedApi(page, false);
+  await page.goto("/dashboard");
+
+  const guide = page.getByRole("dialog", { name: "Welcome to Subtrak" });
+  await expect(guide).toBeVisible();
+
+  await guide.getByRole("button", { name: "Next" }).click();
+  await expect(guide.getByRole("heading", { name: "Add what you pay for" })).toBeVisible();
+  await guide.getByRole("button", { name: "Next" }).click();
+  await guide.getByRole("button", { name: "Next" }).click();
+  await guide.getByRole("button", { name: "Add your first subscription" }).click();
+
+  await expect(page.getByRole("dialog", { name: "Add Subscription" })).toBeVisible();
+});

@@ -56,6 +56,16 @@
     "settings": "Ajustes",
     "logout": "Cerrar sesión"
   },
+  "onboarding": {
+    "close": "Cerrar la guía de bienvenida", "skip": "Omitir guía", "back": "Atrás", "next": "Siguiente",
+    "maybe_later": "Quizás más tarde", "add_first": "Añade tu primera suscripción",
+    "slides": [
+      { "title": "Te damos la bienvenida a Subtrak", "body": "Reúne suscripciones y compras únicas para saber siempre en qué gastas tu dinero." },
+      { "title": "Añade lo que pagas", "body": "Indica el importe, ciclo de facturación, categoría y fecha de inicio. Subtrak admite pagos recurrentes y únicos." },
+      { "title": "Comprende tus gastos", "body": "Consulta costes mensuales y anuales, próximos cobros, historial y desglose por categorías en el panel." },
+      { "title": "Anticípate a las renovaciones", "body": "Activa recordatorios por correo. Ajusta su antelación, moneda, idioma, zona horaria y apariencia en Ajustes." }
+    ]
+  },
   "navbar": {
     "profile": "Perfil",
     "my_account": "Mi cuenta",

@@ -55,8 +55,24 @@ class UserPreferencesCurrencyPolicyTest {
         UserPreferences saved = service.updatePreferences("google-id", update("USD"));
 
         assertEquals("USD", saved.getCurrency());
+        assertEquals(true, saved.isOnboardingCompleted());
         verify(subscriptions, never()).existsByUser_GoogleId(anyString());
         verify(preferences).save(existing);
+    }
+
+    @Test
+    void newUsersStartWithOnboardingIncomplete() {
+        User user = new User();
+        user.setGoogleId("new-google-id");
+        when(users.findByGoogleId("new-google-id")).thenReturn(Optional.of(user));
+        when(preferences.findByUser(user)).thenReturn(Optional.empty());
+        when(preferences.save(any(UserPreferences.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserPreferences created = service.getByGoogleId("new-google-id");
+
+        assertEquals(false, created.isOnboardingCompleted());
+        verify(preferences).save(created);
     }
 
     private UserPreferences existingPreferences(String currency) {

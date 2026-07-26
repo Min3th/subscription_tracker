@@ -14,6 +14,8 @@ const preferences = {
   theme: "light",
   emailNotificationsEnabled: true,
   reminderDaysBefore: 3,
+  reminderTime: "09:00:00",
+  onboardingCompleted: true,
 };
 
 const subscriptions = [
@@ -60,7 +62,7 @@ const fulfillJson = (route: Route, body: unknown, status = 200) =>
     body: JSON.stringify(body),
   });
 
-export async function mockAuthenticatedApi(page: Page) {
+export async function mockAuthenticatedApi(page: Page, onboardingCompleted = true) {
   await page.route(/\/api\/(?:auth|user|subscriptions)(?:\/|$)/, async (route) => {
     const request = route.request();
     const path = new URL(request.url()).pathname.replace(/^\/api/, "");
@@ -71,7 +73,11 @@ export async function mockAuthenticatedApi(page: Page) {
     }
 
     if (path === "/user/preferences" && method === "GET") {
-      return fulfillJson(route, preferences);
+      return fulfillJson(route, { ...preferences, onboardingCompleted });
+    }
+
+    if (path === "/user/preferences" && method === "PUT") {
+      return fulfillJson(route, request.postDataJSON());
     }
 
     if (path === "/subscriptions" && method === "GET") {

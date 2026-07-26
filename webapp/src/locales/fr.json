@@ -56,6 +56,16 @@
     "settings": "Paramètres",
     "logout": "Déconnexion"
   },
+  "onboarding": {
+    "close": "Fermer le guide de bienvenue", "skip": "Ignorer le guide", "back": "Retour", "next": "Suivant",
+    "maybe_later": "Peut-être plus tard", "add_first": "Ajouter votre premier abonnement",
+    "slides": [
+      { "title": "Bienvenue dans Subtrak", "body": "Regroupez abonnements et achats ponctuels pour toujours savoir où va votre argent." },
+      { "title": "Ajoutez ce que vous payez", "body": "Renseignez le montant, le cycle de facturation, la catégorie et la date de début. Subtrak gère les paiements récurrents et ponctuels." },
+      { "title": "Comprenez vos dépenses", "body": "Consultez les coûts mensuels et annuels, les prochains paiements, l’historique et la répartition par catégorie." },
+      { "title": "Anticipez les renouvellements", "body": "Activez les rappels par e-mail. Réglez le délai, la devise, la langue, le fuseau horaire et l’apparence dans Paramètres." }
+    ]
+  },
   "navbar": {
     "profile": "Profil",
     "my_account": "Mon compte",
