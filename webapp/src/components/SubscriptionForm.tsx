@@ -135,10 +135,10 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
             billingIntervalCount: Number(values.billingIntervalCount),
             emailNotificationsEnabled: Boolean(values.emailNotificationsEnabled),
           };
-          await dispatch(updateSubscriptionThunk(updatePayload));
+          await dispatch(updateSubscriptionThunk(updatePayload)).unwrap();
           snackbar.success("Subscription updated successfully!");
         } else {
-          await dispatch(createSubscriptionThunk(payload));
+          await dispatch(createSubscriptionThunk(payload)).unwrap();
           snackbar.success("Subscription created successfully!");
         }
 
