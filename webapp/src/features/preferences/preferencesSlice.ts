@@ -9,6 +9,7 @@ export interface PreferencesState {
   theme: string;
   emailNotificationsEnabled: boolean;
   reminderDaysBefore: number;
+  reminderTime: string;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
@@ -20,6 +21,7 @@ const initialState: PreferencesState = {
   theme: "auto",
   emailNotificationsEnabled: true,
   reminderDaysBefore: 3,
+  reminderTime: "09:00:00",
   status: "idle",
   error: null,
 };
@@ -31,8 +33,18 @@ export const fetchPreferences = createAsyncThunk("preferences/fetchPreferences",
 
 export const updatePreferences = createAsyncThunk(
   "preferences/updatePreferences",
-  async (data: Partial<PreferencesState>) => {
-    const response = await api.put("/user/preferences", data);
+  async (data: Partial<PreferencesState>, { getState }) => {
+    const current = (getState() as { preferences: PreferencesState }).preferences;
+    const response = await api.put("/user/preferences", {
+      currency: data.currency ?? current.currency,
+      language: data.language ?? current.language,
+      timezone: data.timezone ?? current.timezone,
+      theme: data.theme ?? current.theme,
+      emailNotificationsEnabled:
+        data.emailNotificationsEnabled ?? current.emailNotificationsEnabled,
+      reminderDaysBefore: data.reminderDaysBefore ?? current.reminderDaysBefore,
+      reminderTime: data.reminderTime ?? current.reminderTime,
+    });
     return response.data;
   },
 );
@@ -49,6 +61,7 @@ const preferencesSlice = createSlice({
       if (action.payload.emailNotificationsEnabled !== undefined)
         state.emailNotificationsEnabled = action.payload.emailNotificationsEnabled;
       if (action.payload.reminderDaysBefore !== undefined) state.reminderDaysBefore = action.payload.reminderDaysBefore;
+      if (action.payload.reminderTime) state.reminderTime = action.payload.reminderTime;
     },
   },
   extraReducers: (builder) => {
@@ -64,6 +77,7 @@ const preferencesSlice = createSlice({
         state.theme = action.payload.theme || state.theme;
         state.emailNotificationsEnabled = action.payload.emailNotificationsEnabled ?? state.emailNotificationsEnabled;
         state.reminderDaysBefore = action.payload.reminderDaysBefore ?? state.reminderDaysBefore;
+        state.reminderTime = action.payload.reminderTime || state.reminderTime;
       })
       .addCase(fetchPreferences.rejected, (state, action) => {
         state.status = "failed";
@@ -80,6 +94,7 @@ const preferencesSlice = createSlice({
         state.theme = action.payload.theme || state.theme;
         state.emailNotificationsEnabled = action.payload.emailNotificationsEnabled ?? state.emailNotificationsEnabled;
         state.reminderDaysBefore = action.payload.reminderDaysBefore ?? state.reminderDaysBefore;
+        state.reminderTime = action.payload.reminderTime || state.reminderTime;
       })
       .addCase(updatePreferences.rejected, (state, action) => {
         state.status = "failed";

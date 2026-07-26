@@ -62,6 +62,7 @@ export function Settings() {
     language: "en",
     emailNotificationsEnabled: true,
     reminderDaysBefore: 3,
+    reminderTime: "09:00:00",
   });
 
   useEffect(() => {
@@ -88,6 +89,7 @@ export function Settings() {
         theme: preferences.theme,
         emailNotificationsEnabled: preferences.emailNotificationsEnabled,
         reminderDaysBefore: preferences.reminderDaysBefore,
+        reminderTime: preferences.reminderTime,
       }));
       if (!initialPreferences) {
         setInitialPreferences({
