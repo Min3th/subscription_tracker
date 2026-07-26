@@ -56,6 +56,16 @@
     "settings": "Einstellungen",
     "logout": "Abmelden"
   },
+  "onboarding": {
+    "close": "Willkommensanleitung schließen", "skip": "Anleitung überspringen", "back": "Zurück", "next": "Weiter",
+    "maybe_later": "Vielleicht später", "add_first": "Erstes Abonnement hinzufügen",
+    "slides": [
+      { "title": "Willkommen bei Subtrak", "body": "Verwalte Abonnements und einmalige Käufe gemeinsam, damit du immer weißt, wohin dein Geld fließt." },
+      { "title": "Zahlungen hinzufügen", "body": "Trage Betrag, Abrechnungszyklus, Kategorie und Startdatum ein. Subtrak unterstützt wiederkehrende und einmalige Zahlungen." },
+      { "title": "Ausgaben verstehen", "body": "Sieh monatliche und jährliche Kosten, nächste Zahlungen, den Verlauf und die Aufteilung nach Kategorien im Dashboard." },
+      { "title": "Verlängerungen im Blick behalten", "body": "Aktiviere E-Mail-Erinnerungen. Vorlauf, Währung, Sprache, Zeitzone und Darstellung kannst du in den Einstellungen ändern." }
+    ]
+  },
   "navbar": {
     "profile": "Profil",
     "my_account": "Mein Konto",

@@ -65,6 +65,32 @@
   "common": {
     "cancel": "Cancel"
   },
+  "onboarding": {
+    "close": "Close welcome guide",
+    "skip": "Skip guide",
+    "back": "Back",
+    "next": "Next",
+    "maybe_later": "Maybe later",
+    "add_first": "Add your first subscription",
+    "slides": [
+      {
+        "title": "Welcome to Subtrak",
+        "body": "Keep recurring subscriptions and one-time purchases together, so you always know where your money goes."
+      },
+      {
+        "title": "Add what you pay for",
+        "body": "Enter the amount, billing cycle, category, and start date. Subtrak handles recurring and one-time payments."
+      },
+      {
+        "title": "Understand your spending",
+        "body": "See monthly and yearly costs, upcoming billing dates, spending history, and category breakdowns on your dashboard."
+      },
+      {
+        "title": "Stay ahead of renewals",
+        "body": "Turn on email reminders for recurring payments. You can adjust reminders, currency, language, timezone, and appearance in Settings."
+      }
+    ]
+  },
   "navbar": {
     "profile": "Profile",
     "my_account": "My account",

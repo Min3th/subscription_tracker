@@ -57,6 +57,7 @@ public class UserPreferencesService {
         existing.setEmailNotificationsEnabled(updated.emailNotificationsEnabled());
         existing.setReminderDaysBefore(updated.reminderDaysBefore());
         existing.setReminderTime(updated.reminderTime());
+        existing.setOnboardingCompleted(updated.onboardingCompleted());
 
         UserPreferences saved = repo.save(existing);
         subscriptionRepository.findByUser_GoogleId(googleId).forEach(reminderScheduleService::refresh);

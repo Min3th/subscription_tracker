@@ -92,7 +92,6 @@ export default function Navbar({
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       <MenuItem onClick={handleMenuClose}>My account</MenuItem>
       <MenuItem onClick={handleLogout} sx={{ color: "error.main", gap: 1 }}>
         <LogoutIcon fontSize="small" />
