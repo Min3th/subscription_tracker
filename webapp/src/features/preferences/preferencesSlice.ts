@@ -28,10 +28,19 @@ const initialState: PreferencesState = {
   error: null,
 };
 
-export const fetchPreferences = createAsyncThunk("preferences/fetchPreferences", async () => {
-  const response = await api.get("/user/preferences");
-  return response.data;
-});
+export const fetchPreferences = createAsyncThunk(
+  "preferences/fetchPreferences",
+  async () => {
+    const response = await api.get("/user/preferences");
+    return response.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const current = (getState() as { preferences: PreferencesState }).preferences;
+      return current.status !== "loading";
+    },
+  },
+);
 
 export const updatePreferences = createAsyncThunk(
   "preferences/updatePreferences",
@@ -49,6 +58,12 @@ export const updatePreferences = createAsyncThunk(
       onboardingCompleted: data.onboardingCompleted ?? current.onboardingCompleted,
     });
     return response.data;
+  },
+  {
+    condition: (_, { getState }) => {
+      const current = (getState() as { preferences: PreferencesState }).preferences;
+      return current.status !== "loading";
+    },
   },
 );
 
