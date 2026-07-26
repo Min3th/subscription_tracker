@@ -61,15 +61,24 @@ jobs:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Verify AWS identity
+      - name: Verify AWS configuration
         working-directory: .
-        run: aws sts get-caller-identity
+        run: |
+          echo "AWS region: $AWS_REGION"
+
+          if [ -z "$AWS_REGION" ]; then
+            echo "AWS_REGION is empty. Check the AWS_REGION GitHub secret."
+            exit 1
+          fi
+
+          aws sts get-caller-identity
 
       - name: Upload JAR to S3
         working-directory: .
         run: |
           aws s3 cp subscription-service.jar \
-            "s3://${{ secrets.S3_DEPLOY_BUCKET }}/subscription-service.jar"
+            "s3://${{ secrets.S3_DEPLOY_BUCKET }}/subscription-service.jar" \
+            --region "$AWS_REGION"
 
       - name: Deploy through Systems Manager
         id: deploy
@@ -77,12 +86,13 @@ jobs:
         working-directory: .
         run: |
           COMMAND_ID=$(aws ssm send-command \
+            --region "$AWS_REGION" \
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
             --comment "Deploy Subscription Tracker backend" \
             --parameters 'commands=[
               "set -e",
-              "aws s3 cp s3://${{ secrets.S3_DEPLOY_BUCKET }}/subscription-service.jar /home/ec2-user/subscription-service.jar.new",
+              "aws s3 cp s3://${{ secrets.S3_DEPLOY_BUCKET }}/subscription-service.jar /home/ec2-user/subscription-service.jar.new --region ${{ secrets.AWS_REGION }}",
               "sudo systemctl stop subscription-tracker",
               "sudo mv /home/ec2-user/subscription-service.jar.new /home/ec2-user/subscription-service.jar",
               "sudo systemctl start subscription-tracker",
@@ -91,20 +101,28 @@ jobs:
             --query "Command.CommandId" \
             --output text)
 
+          if [ -z "$COMMAND_ID" ] || [ "$COMMAND_ID" = "None" ]; then
+            echo "SSM did not return a command ID."
+            exit 1
+          fi
+
+          echo "SSM command ID: $COMMAND_ID"
           echo "command_id=$COMMAND_ID" >> "$GITHUB_OUTPUT"
 
       - name: Wait for deployment
         working-directory: .
         run: |
           aws ssm wait command-executed \
+            --region "$AWS_REGION" \
             --command-id "${{ steps.deploy.outputs.command_id }}" \
             --instance-id "${{ secrets.EC2_INSTANCE_ID }}"
 
       - name: Show deployment result
-        if: always()
+        if: ${{ always() && steps.deploy.outputs.command_id != '' }}
         working-directory: .
         run: |
           aws ssm get-command-invocation \
+            --region "$AWS_REGION" \
             --command-id "${{ steps.deploy.outputs.command_id }}" \
             --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
             --query '{Status:Status,StdOut:StandardOutputContent,StdErr:StandardErrorContent}' \
