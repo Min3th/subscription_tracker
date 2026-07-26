@@ -10,6 +10,7 @@ export interface PreferencesState {
   emailNotificationsEnabled: boolean;
   reminderDaysBefore: number;
   reminderTime: string;
+  onboardingCompleted: boolean;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 }
@@ -22,6 +23,7 @@ const initialState: PreferencesState = {
   emailNotificationsEnabled: true,
   reminderDaysBefore: 3,
   reminderTime: "09:00:00",
+  onboardingCompleted: true,
   status: "idle",
   error: null,
 };
@@ -44,6 +46,7 @@ export const updatePreferences = createAsyncThunk(
         data.emailNotificationsEnabled ?? current.emailNotificationsEnabled,
       reminderDaysBefore: data.reminderDaysBefore ?? current.reminderDaysBefore,
       reminderTime: data.reminderTime ?? current.reminderTime,
+      onboardingCompleted: data.onboardingCompleted ?? current.onboardingCompleted,
     });
     return response.data;
   },
@@ -62,6 +65,8 @@ const preferencesSlice = createSlice({
         state.emailNotificationsEnabled = action.payload.emailNotificationsEnabled;
       if (action.payload.reminderDaysBefore !== undefined) state.reminderDaysBefore = action.payload.reminderDaysBefore;
       if (action.payload.reminderTime) state.reminderTime = action.payload.reminderTime;
+      if (action.payload.onboardingCompleted !== undefined)
+        state.onboardingCompleted = action.payload.onboardingCompleted;
     },
   },
   extraReducers: (builder) => {
@@ -78,6 +83,7 @@ const preferencesSlice = createSlice({
         state.emailNotificationsEnabled = action.payload.emailNotificationsEnabled ?? state.emailNotificationsEnabled;
         state.reminderDaysBefore = action.payload.reminderDaysBefore ?? state.reminderDaysBefore;
         state.reminderTime = action.payload.reminderTime || state.reminderTime;
+        state.onboardingCompleted = action.payload.onboardingCompleted ?? state.onboardingCompleted;
       })
       .addCase(fetchPreferences.rejected, (state, action) => {
         state.status = "failed";
@@ -95,6 +101,7 @@ const preferencesSlice = createSlice({
         state.emailNotificationsEnabled = action.payload.emailNotificationsEnabled ?? state.emailNotificationsEnabled;
         state.reminderDaysBefore = action.payload.reminderDaysBefore ?? state.reminderDaysBefore;
         state.reminderTime = action.payload.reminderTime || state.reminderTime;
+        state.onboardingCompleted = action.payload.onboardingCompleted ?? state.onboardingCompleted;
       })
       .addCase(updatePreferences.rejected, (state, action) => {
         state.status = "failed";
