@@ -65,12 +65,19 @@ function ProductPreview({ step }: { step: number }) {
             ))}
           </Stack>
           <Stack flex={1} gap={1.25}>
-            <Box sx={{ width: 120, height: 12, borderRadius: 4, bgcolor: "text.primary" }} />
             <Stack direction="row" gap={1}>
-              {["$84", "$1,008", "4"].map((value) => (
-                <Stack key={value} sx={{ ...panel, flex: 1, p: 1 }} gap={0.5}>
-                  <Typography fontSize={10} color="text.secondary">Overview</Typography>
-                  <Typography fontSize={{ xs: 13, sm: 17 }} fontWeight={800}>{value}</Typography>
+              {[
+                ["Monthly Spent", "$84"],
+                ["Yearly Projected", "$1,008"],
+                ["Active Subscriptions", "4"],
+              ].map(([label, value]) => (
+                <Stack key={label} sx={{ ...panel, flex: 1, minWidth: 0, p: 1 }} gap={0.5}>
+                  <Typography fontSize={{ xs: 7, sm: 9 }} color="text.secondary" noWrap title={label}>
+                    {label}
+                  </Typography>
+                  <Typography fontSize={{ xs: 13, sm: 17 }} fontWeight={800}>
+                    {value}
+                  </Typography>
                 </Stack>
               ))}
             </Stack>
@@ -91,52 +98,95 @@ function ProductPreview({ step }: { step: number }) {
       {step === 1 && (
         <Stack sx={{ ...panel, maxWidth: 400, height: "100%", mx: "auto", p: { xs: 1.5, sm: 2 } }} gap={1.25}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography fontSize={{ xs: 13, sm: 16 }} fontWeight={700}>Add Subscription</Typography>
-            <Typography fontSize={10} color="primary.main">Basic information · Billing</Typography>
+            <Typography fontSize={{ xs: 13, sm: 16 }} fontWeight={700}>
+              Add Subscription
+            </Typography>
+            <Typography fontSize={10} color="primary.main">
+              Basic information · Billing
+            </Typography>
           </Stack>
           <Stack direction="row" gap={1}>
             <Box sx={{ ...panel, flex: 2, height: 37, px: 1.25, display: "flex", alignItems: "center" }}>
-              <Typography fontSize={11} color="text.secondary">Streaming service</Typography>
+              <Typography fontSize={11} color="text.secondary">
+                Streaming service
+              </Typography>
             </Box>
             <Box sx={{ ...panel, flex: 1, height: 37, px: 1.25, display: "flex", alignItems: "center" }}>
-              <Typography fontSize={11} color="text.secondary">Monthly</Typography>
+              <Typography fontSize={11} color="text.secondary">
+                Monthly
+              </Typography>
             </Box>
           </Stack>
           <Stack direction="row" gap={1}>
             <Box sx={{ ...panel, flex: 1, height: 37, px: 1.25, display: "flex", alignItems: "center" }}>
-              <Typography fontSize={11} color="text.secondary">USD 12.99</Typography>
+              <Typography fontSize={11} color="text.secondary">
+                USD 12.99
+              </Typography>
             </Box>
             <Box sx={{ ...panel, flex: 1, height: 37, px: 1.25, display: "flex", alignItems: "center" }}>
-              <Typography fontSize={11} color="text.secondary">Entertainment</Typography>
+              <Typography fontSize={11} color="text.secondary">
+                Entertainment
+              </Typography>
             </Box>
           </Stack>
-          <Box sx={{ alignSelf: "flex-end", mt: "auto", width: 72, height: 28, borderRadius: 1, bgcolor: "primary.main" }} />
+          <Box
+            sx={{
+              alignSelf: "flex-end",
+              mt: "auto",
+              width: 72,
+              height: 28,
+              borderRadius: 1,
+              bgcolor: "primary.main",
+              color: "primary.contrastText",
+              display: "grid",
+              placeItems: "center",
+              fontSize: 10,
+              fontWeight: 700,
+              letterSpacing: 0.4,
+            }}
+          >
+            NEXT
+          </Box>
         </Stack>
       )}
 
       {step === 2 && (
         <Stack direction={{ xs: "column", sm: "row" }} gap={1.25} height="100%">
           <Stack sx={{ ...panel, flex: 1.5, p: 1.5 }} gap={1}>
-            <Typography fontSize={12} fontWeight={700}>Monthly spending</Typography>
+            <Typography fontSize={12} fontWeight={700}>
+              Monthly spending
+            </Typography>
             <Stack direction="row" alignItems="flex-end" gap={1} flex={1}>
               {[40, 54, 48, 76, 64, 88].map((height, index) => (
                 <Stack key={index} flex={1} height="100%" justifyContent="flex-end" alignItems="center" gap={0.5}>
-                  <Box sx={{ width: "100%", height: `${height}%`, borderRadius: "4px 4px 0 0", bgcolor: "primary.main" }} />
-                  <Typography fontSize={8} color="text.secondary">{["Feb", "Mar", "Apr", "May", "Jun", "Jul"][index]}</Typography>
+                  <Box
+                    sx={{ width: "100%", height: `${height}%`, borderRadius: "4px 4px 0 0", bgcolor: "primary.main" }}
+                  />
+                  <Typography fontSize={8} color="text.secondary">
+                    {["Feb", "Mar", "Apr", "May", "Jun", "Jul"][index]}
+                  </Typography>
                 </Stack>
               ))}
             </Stack>
           </Stack>
           <Stack sx={{ ...panel, flex: 1, p: 1.5 }} gap={1.25}>
-            <Typography fontSize={12} fontWeight={700}>By category</Typography>
+            <Typography fontSize={12} fontWeight={700}>
+              By category
+            </Typography>
             {[
               ["Entertainment", 72],
               ["Software", 52],
               ["Music", 34],
             ].map(([label, value]) => (
               <Box key={label}>
-                <Typography fontSize={9} color="text.secondary">{label}</Typography>
-                <LinearProgress variant="determinate" value={Number(value)} sx={{ mt: 0.5, height: 7, borderRadius: 4 }} />
+                <Typography fontSize={9} color="text.secondary">
+                  {label}
+                </Typography>
+                <LinearProgress
+                  variant="determinate"
+                  value={Number(value)}
+                  sx={{ mt: 0.5, height: 7, borderRadius: 4 }}
+                />
               </Box>
             ))}
           </Stack>
@@ -147,8 +197,12 @@ function ProductPreview({ step }: { step: number }) {
         <Stack sx={{ ...panel, maxWidth: 430, height: "100%", mx: "auto", p: { xs: 1.5, sm: 2 } }} gap={1.25}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Box>
-              <Typography fontSize={{ xs: 12, sm: 14 }} fontWeight={700}>Renewal reminder emails</Typography>
-              <Typography fontSize={9} color="text.secondary">Get notified before a subscription renews</Typography>
+              <Typography fontSize={{ xs: 12, sm: 14 }} fontWeight={700}>
+                Renewal reminder emails
+              </Typography>
+              <Typography fontSize={9} color="text.secondary">
+                Get notified before a subscription renews
+              </Typography>
             </Box>
             <Switch size="small" defaultChecked />
           </Stack>
@@ -202,12 +256,25 @@ export default function WelcomeGuide({ open, onComplete }: Props) {
           sx: {
             m: { xs: 2, sm: 4 },
             width: { xs: "calc(100% - 32px)", sm: "calc(100% - 64px)" },
+            height: { xs: "min(680px, calc(100dvh - 32px))", sm: 650 },
+            maxHeight: { xs: "calc(100dvh - 32px)", sm: "calc(100dvh - 64px)" },
             borderRadius: 3,
+            overflow: "hidden",
           },
         },
       }}
     >
-      <DialogContent sx={{ position: "relative", px: { xs: 2.5, sm: 6 }, pt: { xs: 5, sm: 5 }, pb: 2 }}>
+      <DialogContent
+        sx={{
+          position: "relative",
+          flex: "1 1 auto",
+          minHeight: 0,
+          overflowY: "auto",
+          px: { xs: 2.5, sm: 6 },
+          pt: { xs: 5, sm: 5 },
+          pb: 2,
+        }}
+      >
         <IconButton
           aria-label={t("onboarding.close")}
           onClick={() => complete("dismiss")}
@@ -233,10 +300,27 @@ export default function WelcomeGuide({ open, onComplete }: Props) {
           >
             <SlideIcon sx={{ fontSize: 25 }} />
           </Box>
-          <Typography id="welcome-guide-title" variant="h4" fontWeight={800} gutterBottom>
+          <Typography
+            id="welcome-guide-title"
+            variant="h4"
+            fontWeight={800}
+            gutterBottom
+            sx={{ minHeight: { xs: 42, sm: 46 }, display: "flex", alignItems: "center" }}
+          >
             {t(`onboarding.slides.${activeStep}.title`)}
           </Typography>
-          <Typography color="text.secondary" sx={{ maxWidth: 560, lineHeight: 1.6, mb: 2.5 }}>
+          <Typography
+            color="text.secondary"
+            sx={{
+              maxWidth: 600,
+              minHeight: { xs: 77, sm: 52 },
+              lineHeight: 1.6,
+              mb: 2.5,
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "center",
+            }}
+          >
             {t(`onboarding.slides.${activeStep}.body`)}
           </Typography>
           <ProductPreview step={activeStep} />
@@ -250,7 +334,7 @@ export default function WelcomeGuide({ open, onComplete }: Props) {
         activeStep={activeStep}
         backButton={<Box />}
         nextButton={<Box />}
-        sx={{ justifyContent: "center", bgcolor: "transparent", py: 1 }}
+        sx={{ justifyContent: "center", flex: "0 0 auto", bgcolor: "transparent", py: 1 }}
       />
 
       <DialogActions
@@ -259,8 +343,16 @@ export default function WelcomeGuide({ open, onComplete }: Props) {
           pb: 3,
           pt: 1,
           justifyContent: "space-between",
-          flexWrap: "wrap",
+          flexWrap: "nowrap",
           gap: 1,
+          height: 76,
+          flex: "0 0 76px",
+          "& .MuiButton-root": {
+            whiteSpace: "nowrap",
+            minWidth: { xs: 40, sm: 64 },
+            px: { xs: 1, sm: 2 },
+            fontSize: { xs: "0.7rem", sm: "0.875rem" },
+          },
         }}
       >
         {activeStep === 0 ? (
@@ -288,11 +380,22 @@ export default function WelcomeGuide({ open, onComplete }: Props) {
             {t("onboarding.next")}
           </Button>
         ) : (
-          <Stack direction={{ xs: "column-reverse", sm: "row" }} gap={1} width={{ xs: "100%", sm: "auto" }}>
-            <Button variant="outlined" color="inherit" onClick={() => complete("dismiss")} disabled={completing}>
+          <Stack direction="row" gap={1} minWidth={0}>
+            <Button
+              variant="outlined"
+              color="inherit"
+              onClick={() => complete("dismiss")}
+              disabled={completing}
+              sx={{ flexShrink: 1 }}
+            >
               {t("onboarding.maybe_later")}
             </Button>
-            <Button variant="contained" onClick={() => complete("add-subscription")} disabled={completing}>
+            <Button
+              variant="contained"
+              onClick={() => complete("add-subscription")}
+              disabled={completing}
+              sx={{ flexShrink: 1 }}
+            >
               {t("onboarding.add_first")}
             </Button>
           </Stack>
