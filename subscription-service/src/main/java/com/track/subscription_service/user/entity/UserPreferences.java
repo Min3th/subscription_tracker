@@ -28,6 +28,9 @@ public class UserPreferences {
     @Column(nullable = false)
     private LocalTime reminderTime = LocalTime.of(9, 0);
 
+    @Column(nullable = false)
+    private boolean onboardingCompleted;
+
     public int getReminderDaysBefore() {
         return reminderDaysBefore;
     }
@@ -112,5 +115,13 @@ public class UserPreferences {
 
     public void setReminderTime(LocalTime reminderTime) {
         this.reminderTime = reminderTime;
+    }
+
+    public boolean isOnboardingCompleted() {
+        return onboardingCompleted;
+    }
+
+    public void setOnboardingCompleted(boolean onboardingCompleted) {
+        this.onboardingCompleted = onboardingCompleted;
     }
 }

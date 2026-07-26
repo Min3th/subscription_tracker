@@ -21,7 +21,8 @@ public record UpdateUserPreferencesRequest(
         @NotBlank @Pattern(regexp = "^(light|dark)$") String theme,
         @NotNull Boolean emailNotificationsEnabled,
         @Min(0) @Max(365) int reminderDaysBefore,
-        @NotNull LocalTime reminderTime
+        @NotNull LocalTime reminderTime,
+        @NotNull Boolean onboardingCompleted
 ) {
     public UpdateUserPreferencesRequest {
         currency = currency == null ? null : currency.trim().toUpperCase();

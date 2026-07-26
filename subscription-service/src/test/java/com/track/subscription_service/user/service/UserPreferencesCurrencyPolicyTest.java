@@ -71,7 +71,7 @@ class UserPreferencesCurrencyPolicyTest {
 
     private UpdateUserPreferencesRequest update(String currency) {
         return new UpdateUserPreferencesRequest(
-                currency, "en", "UTC", "light", true, 3, LocalTime.of(9, 0)
+                currency, "en", "UTC", "light", true, 3, LocalTime.of(9, 0), true
         );
     }
 }
