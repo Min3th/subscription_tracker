@@ -39,6 +39,7 @@ jobs:
           SENDGRID_API_KEY: SGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
           SENDGRID_FROM_EMAIL: test@example.com
           SENDGRID_FROM_NAME: Subscription Tracker Tests
+          FRONTEND_BASE_URL: http://localhost:5173
         run: mvn clean package
 
       - name: Prepare deployment JAR
