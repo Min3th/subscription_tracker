@@ -47,7 +47,7 @@ public class SubscriptionService {
         Subscription subscription = new Subscription();
         subscription.setName(request.name());
         subscription.setCost(request.cost());
-        subscription.setCurrency(normalizeCurrency(request.currency(), user));
+        subscription.setCurrency(preferredCurrency(user));
         subscription.setType(request.type());
         subscription.setDuration(request.duration());
         subscription.setCategory(request.category());
@@ -79,7 +79,7 @@ public class SubscriptionService {
 
         existing.setName(request.name());
         existing.setCost(request.cost());
-        existing.setCurrency(normalizeCurrency(request.currency(), existing.getUser()));
+        // Currency is immutable after creation so an amount is never silently relabelled.
         existing.setType(request.type());
         existing.setDuration(request.duration());
         existing.setCategory(request.category());
@@ -141,11 +141,10 @@ public class SubscriptionService {
         return res;
     }
 
-    private String normalizeCurrency(String requestedCurrency, User user) {
-        String fallback = user.getPreferences() == null || user.getPreferences().getCurrency() == null
+    private String preferredCurrency(User user) {
+        String currency = user.getPreferences() == null || user.getPreferences().getCurrency() == null
                 ? "USD" : user.getPreferences().getCurrency();
-        String code = requestedCurrency == null || requestedCurrency.isBlank() ? fallback : requestedCurrency;
-        code = code.trim().toUpperCase(Locale.ROOT);
+        String code = currency.trim().toUpperCase(Locale.ROOT);
         Currency.getInstance(code);
         return code;
     }

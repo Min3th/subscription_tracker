@@ -43,6 +43,12 @@ public class UserPreferencesService {
     public UserPreferences updatePreferences(String googleId, UpdateUserPreferencesRequest updated) {
 
         UserPreferences existing = getByGoogleId(googleId);
+        boolean currencyChanged = !existing.getCurrency().equals(updated.currency());
+        if (currencyChanged && subscriptionRepository.existsByUser_GoogleId(googleId)) {
+            throw new IllegalArgumentException(
+                    "Currency cannot be changed while subscriptions exist. Delete all subscriptions first."
+            );
+        }
 
         existing.setCurrency(updated.currency());
         existing.setLanguage(updated.language());

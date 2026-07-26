@@ -132,6 +132,18 @@ export default function Navbar({
         </MenuItem>
       ))}
       {user ? [
+        isLandingPage ? (
+          <MenuItem
+            key="dashboard"
+            onClick={() => {
+              handleMobileMenuClose();
+              navigate("/dashboard");
+            }}
+            sx={{ minHeight: 48, fontWeight: 700, color: "primary.main" }}
+          >
+            Dashboard
+          </MenuItem>
+        ) : null,
         !isLandingPage ? (
           <MenuItem
             key="add-subscription"
@@ -260,7 +272,30 @@ export default function Navbar({
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             {user ? (
-              !isLandingPage && (
+              isLandingPage ? (
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate("/dashboard")}
+                  sx={{
+                    mr: 2,
+                    px: 2.5,
+                    borderRadius: "999px",
+                    borderWidth: 2,
+                    borderColor: "rgba(255, 255, 255, 0.8)",
+                    color: "common.white",
+                    backgroundColor: "rgba(255, 255, 255, 0.12)",
+                    textTransform: "none",
+                    fontWeight: 700,
+                    "&:hover": {
+                      borderWidth: 2,
+                      borderColor: "common.white",
+                      backgroundColor: "rgba(255, 255, 255, 0.22)",
+                    },
+                  }}
+                >
+                  Dashboard
+                </Button>
+              ) : (
                 <>
                   <Button
                     variant="contained"
@@ -275,8 +310,11 @@ export default function Navbar({
                       textTransform: "none",
                       fontWeight: 600,
                       fontSize: "0.9rem",
+                      color: "primary.main",
+                      backgroundColor: "common.white",
                       boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.15)",
                       "&:hover": {
+                        backgroundColor: "grey.100",
                         boxShadow: "0px 6px 14px rgba(0, 0, 0, 0.25)",
                       },
                     }}

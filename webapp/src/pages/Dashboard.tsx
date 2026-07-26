@@ -16,7 +16,6 @@ import AddIcon from "@mui/icons-material/Add";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import StatCard from "../components/StatCard";
 import { useTranslation } from "react-i18next";
 import MiniSubscriptionGrid from "../components/MiniSubscriptionGrid";
@@ -26,6 +25,7 @@ import { fetchSubscriptions } from "../app/subscriptionSlice";
 import { formatDate } from "../utils/DateFunctions";
 import type { DetailedSubscription } from "../types/subscription";
 import { divideRounded, formatDecimal, parseDecimal, toChartNumber } from "../utils/money";
+import MoneyIcon from "@mui/icons-material/Money";
 
 const getMonthlyCost = (cost: string, unit: string, count: number): bigint => {
   if (!cost || !unit || !count) return 0n;
@@ -113,8 +113,9 @@ export default function Dashboard() {
     const recurringSubs = subscriptions.filter((sub) => sub.type !== "one-time");
     if (!recurringSubs.length) return null;
     return recurringSubs.sort(
-      (a, b) => (a.nextBillingDate ? new Date(a.nextBillingDate).getTime() : Number.POSITIVE_INFINITY)
-        - (b.nextBillingDate ? new Date(b.nextBillingDate).getTime() : Number.POSITIVE_INFINITY),
+      (a, b) =>
+        (a.nextBillingDate ? new Date(a.nextBillingDate).getTime() : Number.POSITIVE_INFINITY) -
+        (b.nextBillingDate ? new Date(b.nextBillingDate).getTime() : Number.POSITIVE_INFINITY),
     )[0];
   }, [subscriptions]);
 
@@ -183,7 +184,7 @@ export default function Dashboard() {
           <StatCard
             title={t("dashboard.monthly_spent")}
             value={`${displayCurrency} ${formatDecimal(totalMonthly)}`}
-            icon={<AttachMoneyIcon sx={{ color: theme.palette.purpink }} />}
+            icon={<MoneyIcon sx={{ color: theme.palette.purpink }} />}
           />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>

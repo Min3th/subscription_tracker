@@ -19,7 +19,6 @@ import {
 import { useState } from "react";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import LanguageIcon from "@mui/icons-material/Language";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -33,6 +32,7 @@ import { useSnackbar } from "../utils/Snackbar";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../app/store";
 import { deleteSubscriptionThunk } from "../app/subscriptionSlice";
+import MoneyIcon from "@mui/icons-material/Money";
 
 interface Props {
   subscription: DetailedSubscription;
@@ -150,7 +150,7 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
 
               <Box display="grid" minWidth={0} gridTemplateColumns={{ xs: "minmax(0, 1fr)", md: "1fr 1fr" }} gap={1}>
                 <Box display="flex" alignItems="center" gap={1}>
-                  <AttachMoneyIcon fontSize="small" />
+                  <MoneyIcon fontSize="small" />
                   <Typography fontWeight="bold">{formatMoney(subscription.cost, subscription.currency)}</Typography>
                   <Typography variant="body2">/ {subscription.billingIntervalUnit}</Typography>
                 </Box>
@@ -176,7 +176,9 @@ export default function SubscriptionCard({ subscription, onEdit, onCancel, onPau
 
                 <Box display="flex" alignItems="center" gap={1}>
                   <TrendingUpIcon fontSize="small" />
-                  <Typography variant="body2">Total Paid: {formatMoney(subscription.totalPaid, subscription.currency)}</Typography>
+                  <Typography variant="body2">
+                    Total Paid: {formatMoney(subscription.totalPaid, subscription.currency)}
+                  </Typography>
                 </Box>
 
                 <Box display="flex" alignItems="center" gap={1}>

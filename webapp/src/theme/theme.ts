@@ -39,6 +39,15 @@ export const getDesignTokens = (mode: PaletteMode) => ({
           },
         }),
   },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        ":root": {
+          colorScheme: mode,
+        },
+      },
+    },
+  },
 });
 
 export const getTheme = (mode: PaletteMode) => createTheme(getDesignTokens(mode));

@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription,Long> {
     List<Subscription> findByUser_GoogleId(String googleId);
+    boolean existsByUser_GoogleId(String googleId);
     Optional<Subscription> findByIdAndUser_GoogleId(Long id,String googleId);
 
     @EntityGraph(attributePaths = {"user", "user.preferences"})
