@@ -102,12 +102,13 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
     validationSchema,
     onSubmit: async (values) => {
       try {
+        const currency = editId ? values.currency : preferredCurrency;
         const payload = {
           id: editId,
           name: values.name,
           description: values.description,
           cost: values.cost,
-          currency: values.currency,
+          currency,
           type: values.type,
           category: values.category as SubscriptionCategory,
           startDate: values.startDate,
@@ -124,7 +125,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
             name: values.name,
             description: values.description,
             cost: values.cost,
-            currency: values.currency,
+            currency,
             type: values.type,
             category: values.category as SubscriptionCategory,
             startDate: values.startDate,
@@ -394,19 +395,18 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                   <TextField
                     fullWidth
                     margin="normal"
-                    select
                     label="Currency"
                     name="currency"
-                    value={formik.values.currency}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
+                    value={editId ? formik.values.currency : preferredCurrency}
+                    disabled
                     error={formik.touched.currency && Boolean(formik.errors.currency)}
-                    helperText={formik.touched.currency && formik.errors.currency}
-                  >
-                    {SUPPORTED_CURRENCIES.map((currency) => (
-                      <MenuItem key={currency} value={currency}>{currency}</MenuItem>
-                    ))}
-                  </TextField>
+                    helperText={
+                      (formik.touched.currency && formik.errors.currency)
+                      || (editId && formik.values.currency !== preferredCurrency
+                        ? "This existing subscription keeps its original currency. Currency is managed in Settings."
+                        : "Currency is managed in Settings.")
+                    }
+                  />
 
                   <TextField
                     fullWidth

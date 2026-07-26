@@ -33,6 +33,7 @@ import type { SelectChangeEvent } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../app/store";
 import { fetchPreferences, updatePreferences, setPreferences } from "../features/preferences/preferencesSlice";
+import { fetchSubscriptions } from "../app/subscriptionSlice";
 import { useTranslation } from "react-i18next";
 import { useBlocker } from "react-router-dom";
 import { useSnackbar } from "../utils/Snackbar";
@@ -41,6 +42,7 @@ export function Settings() {
   const { t } = useTranslation();
   const { user } = useSelector((state: RootState) => state.auth);
   const preferences = useSelector((state: RootState) => state.preferences);
+  const subscriptions = useSelector((state: RootState) => state.subscriptions.list);
   const dispatch = useDispatch<AppDispatch>();
   const snackbar = useSnackbar();
 
@@ -77,6 +79,7 @@ export function Settings() {
 
   useEffect(() => {
     dispatch(fetchPreferences());
+    dispatch(fetchSubscriptions());
   }, [dispatch]);
 
   useEffect(() => {
@@ -343,13 +346,24 @@ export function Settings() {
                 <Grid size={{ xs: 12, md: 4 }}>
                   <FormControl fullWidth>
                     <InputLabel>Currency</InputLabel>
-                    <Select name="currency" value={formData.currency} onChange={handleSelectChange} label="Currency">
+                    <Select
+                      name="currency"
+                      value={formData.currency}
+                      onChange={handleSelectChange}
+                      label="Currency"
+                      disabled={subscriptions.length > 0}
+                    >
                       {currencies.map((currency) => (
                         <MenuItem key={currency.code} value={currency.code}>
                           {currency.symbol} {currency.name} ({currency.code})
                         </MenuItem>
                       ))}
                     </Select>
+                    <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
+                      {subscriptions.length > 0
+                        ? "Currency cannot be changed while subscriptions exist. Delete all subscriptions first."
+                        : "This currency will be used for all new subscriptions."}
+                    </Typography>
                   </FormControl>
                 </Grid>
 
