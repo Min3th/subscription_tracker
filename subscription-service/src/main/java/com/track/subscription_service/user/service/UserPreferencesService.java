@@ -7,8 +7,12 @@ import com.track.subscription_service.user.repository.UserPreferencesRepository;
 import com.track.subscription_service.user.repository.UserRepository;
 import com.track.subscription_service.common.error.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.track.subscription_service.notification.service.ReminderScheduleService;
+import com.track.subscription_service.subscription.entity.Subscription;
 import com.track.subscription_service.subscription.repository.SubscriptionRepository;
+
+import java.util.List;
 
 @Service
 public class UserPreferencesService {
@@ -40,14 +44,15 @@ public class UserPreferencesService {
         return repo.save(userPreferences);
     }
 
+    @Transactional
     public UserPreferences updatePreferences(String googleId, UpdateUserPreferencesRequest updated) {
 
         UserPreferences existing = getByGoogleId(googleId);
         boolean currencyChanged = !existing.getCurrency().equals(updated.currency());
-        if (currencyChanged && subscriptionRepository.existsByUser_GoogleId(googleId)) {
-            throw new IllegalArgumentException(
-                    "Currency cannot be changed while subscriptions exist. Delete all subscriptions first."
-            );
+        List<Subscription> subscriptions = subscriptionRepository.findByUser_GoogleId(googleId);
+        if (currencyChanged) {
+            subscriptions.forEach(subscription -> subscription.setCurrency(updated.currency()));
+            subscriptionRepository.saveAll(subscriptions);
         }
 
         existing.setCurrency(updated.currency());
@@ -60,7 +65,7 @@ public class UserPreferencesService {
         existing.setOnboardingCompleted(updated.onboardingCompleted());
 
         UserPreferences saved = repo.save(existing);
-        subscriptionRepository.findByUser_GoogleId(googleId).forEach(reminderScheduleService::refresh);
+        subscriptions.forEach(reminderScheduleService::refresh);
         return saved;
     }
 
