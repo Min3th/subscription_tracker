@@ -1,19 +1,26 @@
 import "./App.css";
+import { lazy, Suspense } from "react";
 import { Provider } from "react-redux";
 import { store } from "./app/store.ts";
 import { SnackbarProvider } from "./utils/Snackbar.tsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import HomePage from "./pages/HomePage.tsx";
 import ThemeContextProvider from "./theme/ThemeContext.tsx";
 import { LoaderProvider } from "./utils/Loading.tsx";
-import DashboardLayout from "./layout/DashboardLayout.tsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import Dashboard from "./pages/Dashboard.tsx";
-import ProtectedRoute from "./routes/ProtectedRoutes.tsx";
-import PublicLayout from "./layout/PublicLayout.tsx";
 import AppContent from "./AppContent.tsx";
-import Subscriptions from "./pages/Subscriptions.tsx";
-import { Settings } from "./pages/Settings.tsx";
+import Loading from "./utils/Loading.tsx";
+
+const HomePage = lazy(() => import("./pages/HomePage.tsx"));
+const DashboardLayout = lazy(() => import("./layout/DashboardLayout.tsx"));
+const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
+const ProtectedRoute = lazy(() => import("./routes/ProtectedRoutes.tsx"));
+const PublicLayout = lazy(() => import("./layout/PublicLayout.tsx"));
+const Subscriptions = lazy(() => import("./pages/Subscriptions.tsx"));
+const Settings = lazy(() =>
+  import("./pages/Settings.tsx").then(({ Settings }) => ({
+    default: Settings,
+  })),
+);
 
 const router = createBrowserRouter([
   {
@@ -51,7 +58,9 @@ function App() {
           <Provider store={store}>
             <AppContent>
               <ThemeContextProvider>
-                <RouterProvider router={router} />
+                <Suspense fallback={<Loading />}>
+                  <RouterProvider router={router} />
+                </Suspense>
               </ThemeContextProvider>
             </AppContent>
           </Provider>
