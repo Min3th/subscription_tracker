@@ -47,6 +47,28 @@ export const getDesignTokens = (mode: PaletteMode) => ({
         },
       },
     },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          ...(mode === "dark" && {
+            "&.Mui-focused": {
+              color: "#d0b3ff",
+            },
+          }),
+        },
+      },
+    },
+    MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          ...(mode === "dark" && {
+            "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+              borderColor: "#b98cff",
+            },
+          }),
+        },
+      },
+    },
   },
 });
 
