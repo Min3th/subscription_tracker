@@ -33,7 +33,6 @@ import type { SelectChangeEvent } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState, AppDispatch } from "../app/store";
 import { fetchPreferences, updatePreferences, setPreferences } from "../features/preferences/preferencesSlice";
-import { fetchSubscriptions } from "../app/subscriptionSlice";
 import { useTranslation } from "react-i18next";
 import { useBlocker } from "react-router-dom";
 import { useSnackbar } from "../utils/Snackbar";
@@ -42,7 +41,6 @@ export function Settings() {
   const { t } = useTranslation();
   const { user } = useSelector((state: RootState) => state.auth);
   const preferences = useSelector((state: RootState) => state.preferences);
-  const subscriptions = useSelector((state: RootState) => state.subscriptions.list);
   const dispatch = useDispatch<AppDispatch>();
   const snackbar = useSnackbar();
 
@@ -79,7 +77,6 @@ export function Settings() {
 
   useEffect(() => {
     dispatch(fetchPreferences());
-    dispatch(fetchSubscriptions());
   }, [dispatch]);
 
   useEffect(() => {
@@ -108,6 +105,8 @@ export function Settings() {
   }, [preferences.status]);
 
   const [openDialog, setOpenDialog] = useState(false);
+  const currencyChanged =
+    Boolean(initialPreferences) && formData.currency !== initialPreferences?.currency;
 
   const isDirty =
     formData.name !== (user?.name || "") ||
@@ -351,7 +350,6 @@ export function Settings() {
                       value={formData.currency}
                       onChange={handleSelectChange}
                       label="Currency"
-                      disabled={subscriptions.length > 0}
                     >
                       {currencies.map((currency) => (
                         <MenuItem key={currency.code} value={currency.code}>
@@ -360,9 +358,7 @@ export function Settings() {
                       ))}
                     </Select>
                     <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-                      {subscriptions.length > 0
-                        ? "Currency cannot be changed while subscriptions exist. Delete all subscriptions first."
-                        : "This currency will be used for all new subscriptions."}
+                      This currency is used for all subscriptions.
                     </Typography>
                   </FormControl>
                 </Grid>
@@ -509,9 +505,18 @@ export function Settings() {
 
       {/* Confirmation Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog}>
-        <DialogTitle>{t("settings.confirm_title")}</DialogTitle>
+        <DialogTitle>
+          {currencyChanged ? "Confirm currency change" : t("settings.confirm_title")}
+        </DialogTitle>
         <DialogContent>
-          <DialogContentText>{t("settings.confirm_desc")}</DialogContentText>
+          <DialogContentText>
+            {currencyChanged
+              ? `Change currency from ${initialPreferences?.currency} to ${formData.currency}? ` +
+                `All existing subscription values will stay the same and only be relabelled. ` +
+                `For example, ${initialPreferences?.currency} 10 becomes ${formData.currency} 10. ` +
+                "No exchange-rate conversion will occur."
+              : t("settings.confirm_desc")}
+          </DialogContentText>
         </DialogContent>
         <DialogActions
           sx={{
@@ -541,6 +546,11 @@ export function Settings() {
           <DialogContentText>
             {t("settings.unsaved_changes_desc", "You have unsaved changes. Do you want to confirm the changes or not?")}
           </DialogContentText>
+          {currencyChanged && (
+            <DialogContentText sx={{ mt: 2 }}>
+              {`Changing currency from ${initialPreferences?.currency} to ${formData.currency} will relabel all existing subscriptions without changing their values. No exchange-rate conversion will occur.`}
+            </DialogContentText>
+          )}
         </DialogContent>
         <DialogActions
           sx={{

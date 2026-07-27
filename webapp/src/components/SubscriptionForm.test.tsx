@@ -68,4 +68,19 @@ describe("SubscriptionForm", () => {
 
     expect(handleClose).toHaveBeenCalledOnce();
   });
+
+  it("locks new subscriptions to the currency selected in Settings", async () => {
+    const user = userEvent.setup();
+    renderForm();
+
+    await user.type(screen.getByRole("textbox", { name: "Subscription Name" }), "Example");
+    await user.click(screen.getByRole("combobox", { name: "Category" }));
+    await user.click(screen.getByRole("option", { name: "Software" }));
+    await user.click(screen.getByRole("button", { name: "Next" }));
+
+    const currency = screen.getByRole("combobox", { name: "Currency" });
+    expect(currency).toHaveTextContent("USD");
+    expect(currency).toHaveAttribute("aria-disabled", "true");
+    expect(screen.getByRole("spinbutton", { name: "Amount (USD)" })).toBeInTheDocument();
+  });
 });

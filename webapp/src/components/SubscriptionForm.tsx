@@ -102,7 +102,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
     validationSchema,
     onSubmit: async (values) => {
       try {
-        const currency = editId ? values.currency : preferredCurrency;
+        const currency = preferredCurrency;
         const payload = {
           id: editId,
           name: values.name,
@@ -165,7 +165,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
             name: data.name || "",
             description: data.description || "",
             cost: data.cost || "",
-            currency: data.currency || preferredCurrency,
+            currency: preferredCurrency,
             type: data.type || "recurring",
             category: data.category || "",
             startDate: data.startDate || "",
@@ -372,7 +372,7 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                   <TextField
                     fullWidth
                     margin="normal"
-                    label={`Amount (${formik.values.currency})`}
+                    label={`Amount (${preferredCurrency})`}
                     name="cost"
                     type="number"
                     value={formik.values.cost}
@@ -395,18 +395,16 @@ export default function SubscriptionForm({ open, handleClose, onSuccess, editId 
                   <TextField
                     fullWidth
                     margin="normal"
+                    select
                     label="Currency"
                     name="currency"
-                    value={editId ? formik.values.currency : preferredCurrency}
+                    value={preferredCurrency}
                     disabled
                     error={formik.touched.currency && Boolean(formik.errors.currency)}
-                    helperText={
-                      (formik.touched.currency && formik.errors.currency)
-                      || (editId && formik.values.currency !== preferredCurrency
-                        ? "This existing subscription keeps its original currency. Currency is managed in Settings."
-                        : "Currency is managed in Settings.")
-                    }
-                  />
+                    helperText={(formik.touched.currency && formik.errors.currency) || "Currency is managed in Settings."}
+                  >
+                    <MenuItem value={preferredCurrency}>{preferredCurrency}</MenuItem>
+                  </TextField>
 
                   <TextField
                     fullWidth
