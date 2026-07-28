@@ -155,6 +155,8 @@ and reviewable.
 - Enforce at the database layer that an inbound email's user owns its recipient address.
 - Deduplicate provider retries with a stable fingerprint and a database unique constraint. Treat
   duplicate delivery as a successful no-op.
+- Return the same successful response for unknown, revoked, and duplicate recipient tokens so the
+  public webhook cannot be used to discover valid forwarding addresses.
 - Do not log forwarding tokens, sender or recipient addresses, subjects, headers, message bodies,
   verification links, or attachment contents.
 - Apply explicit size limits to multipart requests and every stored field. Do not store attachments

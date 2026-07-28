@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface InboundEmailAddressRepository extends JpaRepository<InboundEmailAddress, Long> {
     Optional<InboundEmailAddress> findByUserGoogleIdAndRevokedAtIsNull(String googleId);
+    Optional<InboundEmailAddress> findByTokenHashAndRevokedAtIsNull(String tokenHash);
 }
