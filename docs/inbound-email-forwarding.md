@@ -1,130 +1,151 @@
-# Inbound Email Forwarding Operations
+# SES Email Migration and Inbound Forwarding Runbook
 
-This runbook configures SendGrid Inbound Parse for Subtrak's generated forwarding addresses.
-Application changes alone do not make `inbound.subtrak.me` capable of receiving email.
+This runbook covers the staged move from SendGrid to Amazon SES. Infrastructure
+is defined in `infrastructure/ses-email.yaml`. DNS changes and the SES production
+access request remain controlled deployment actions.
 
-## 1. Production prerequisites
+## 1. Deploy infrastructure without changing DNS
 
-- A publicly reachable HTTPS backend.
-- Control of the `subtrak.me` DNS zone.
-- A SendGrid account with `subtrak.me` authenticated.
-- Database migrations through `V12` applied.
-- Proxy and application request limits configured consistently.
+Follow `infrastructure/README.md` to validate and deploy the stack in the chosen
+SES receiving region. For production, the current default is `ap-south-1`.
 
-Do not enable the user-facing feature in production until signature verification has been tested
-against a real SendGrid delivery.
+The stack needs the existing EC2 instance-role name and
+`CAPABILITY_NAMED_IAM`. It creates the SES identity, DKIM tokens, receipt rule,
+private raw-MIME bucket, SNS topics, SQS queues, DLQs, configuration set, and
+runtime role policy.
 
-## 2. DNS
+Do not publish the inbound MX record at this stage.
 
-Create an MX record for the inbound-only hostname. Do not replace the MX record for the root domain.
+## 2. Verify the SES identity and sending access
+
+Publish all three DKIM CNAME records from the CloudFormation outputs. Wait for
+the SES identity and DKIM status to become verified.
+
+Request production sending access in the same SES region. While the account is
+in the SES sandbox, both sender and recipient identities must be verified and
+production reminder delivery cannot be enabled for general users.
+
+Configure these values from stack outputs and deployment settings:
+
+```text
+SES_REGION=ap-south-1
+SES_CONFIGURATION_SET=subtrak-production
+SES_INBOUND_QUEUE_URL=<SesInboundQueueUrl output>
+SES_EVENT_QUEUE_URL=<SesEventQueueUrl output>
+SES_INBOUND_BUCKET=<SesInboundBucket output>
+SES_FROM_EMAIL=noreply@subtrak.xyz
+SES_FROM_NAME=SubTrak
+```
+
+The backend uses the EC2 instance role and AWS default credential chain. Never
+configure static AWS access keys for the service.
+
+## 3. Test SES outbound while SendGrid remains available
+
+Start with internal or verified test recipients:
+
+```text
+EMAIL_OUTBOUND_PROVIDER=ses
+SES_CONSUMERS_ENABLED=false
+SENDGRID_INBOUND_ENABLED=true
+```
+
+Restart the service and verify:
+
+1. A reminder is accepted by SES and delivered.
+2. `List-Unsubscribe` and `List-Unsubscribe-Post` headers are present.
+3. A temporary SES failure enters the existing retry schedule.
+4. A permanent request error marks the delivery dead.
+
+Return `EMAIL_OUTBOUND_PROVIDER` to `sendgrid` for immediate outbound rollback.
+
+## 4. Validate lifecycle event processing
+
+Set:
+
+```text
+SES_CONSUMERS_ENABLED=true
+```
+
+Both SQS consumers require all three queue/bucket values, even if inbound DNS
+still points to SendGrid. Restart the service and verify long polling in the
+selected region.
+
+Test a permanent bounce and complaint with SES mailbox simulator addresses.
+Confirm the recipient is suppressed and notifications are disabled. Confirm
+delivery and transient bounce events do not suppress recipients.
+
+Inspect both DLQs. They should remain empty during valid tests. Malformed or
+unknown events are intentionally retried and eventually redriven.
+
+## 5. Test inbound on a temporary subdomain
+
+Before changing the production MX record:
+
+1. Confirm in the SES console that the CloudFormation receipt rule set is active.
+   Only one receipt rule set can be active per region.
+2. Use a temporary SES-controlled inbound subdomain or non-production stack.
+3. Publish its MX value as `10 inbound-smtp.<ses-region>.amazonaws.com`.
+4. Generate a forwarding address in Subtrak Settings.
+5. Forward a plain-text and an HTML subscription email.
+6. Confirm one `inbound_email` row and one editable suggestion.
+7. Redeliver the same SNS/SQS notification and confirm no duplicate is created.
+8. Confirm a revoked or unknown forwarding address is acknowledged without a row.
+9. Confirm attachments, oversized MIME, failed virus verdicts, and unexpected
+   bucket metadata are retried and eventually reach the inbound DLQ.
+
+Visible MIME `To` headers must not affect ownership. The SES receipt envelope
+recipient selects the generated forwarding address.
+
+## 6. Production inbound MX cutover
+
+Record the existing MX TTL and SendGrid traffic baseline. Confirm:
+
+- the SES receipt rule set is active;
+- `SES_CONSUMERS_ENABLED=true`;
+- both SES queues are being polled;
+- the inbound bucket is private and lifecycle configuration is enabled;
+- DLQ alarms or an operational inspection process exists.
+
+Change only the inbound hostname MX record:
 
 | Host | Type | Priority | Value |
 | --- | --- | ---: | --- |
-| `inbound.subtrak.me` | MX | 10 | `mx.sendgrid.net` |
+| `inbound.subtrak.xyz` | MX | 10 | `inbound-smtp.ap-south-1.amazonaws.com` |
 
-DNS providers may expect only `inbound` in the host field and may append the zone automatically.
-Verify the final record with:
+Do not change the root-domain MX record.
 
-```powershell
-Resolve-DnsName -Type MX inbound.subtrak.me
-```
+Monitor SES, SendGrid, both queues, both DLQs, application ingestion, and
+suggestion creation throughout the previous DNS TTL and queue-drain window.
 
-SendGrid's current setup instructions specify priority `10` and `mx.sendgrid.net`.
+## 7. Disable SendGrid after the rollback window
 
-## 3. Inbound Parse setting
-
-In SendGrid, open **Settings → Inbound Parse → Add Host & URL** and configure:
-
-- Receiving domain: `inbound.subtrak.me`
-- Destination URL: `https://<api-host>/webhooks/inbound-email`
-- Spam checking: enabled
-- Post raw full MIME message: disabled
-
-Subtrak expects SendGrid's default parsed multipart fields (`envelope`, `headers`, `text`, `html`,
-and related metadata). Raw MIME mode changes that contract and must remain disabled.
-
-Official references:
-
-- [Configure Inbound Parse](https://www.twilio.com/docs/sendgrid/for-developers/parsing-email/setting-up-the-inbound-parse-webhook)
-- [Secure Inbound Parse](https://www.twilio.com/docs/sendgrid/for-developers/parsing-email/securing-your-parse-webhooks)
-
-## 4. Webhook signature policy
-
-Create a SendGrid webhook security policy with ECDSA signature verification enabled and attach it
-to the `inbound.subtrak.me` Parse setting. Copy the public key returned by that security policy into
-`SENDGRID_INBOUND_WEBHOOK_PUBLIC_KEY`.
-
-This is a distinct configuration value from `SENDGRID_EVENT_WEBHOOK_PUBLIC_KEY`, which protects
-SendGrid delivery-event JSON.
-
-Subtrak rejects:
-
-- missing signatures;
-- invalid signatures;
-- timestamps more than five minutes from the application clock;
-- payloads changed before or after signing.
-
-Keep production hosts synchronized to a reliable time source. Never fetch the public key during an
-incoming request.
-
-## 5. Application secrets and limits
-
-Generate the forwarding-token encryption key once and store it in the deployment secret manager.
-Changing it makes existing forwarding addresses impossible to redisplay.
-
-PowerShell:
-
-```powershell
-$bytes = New-Object byte[] 32
-[System.Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
-[Convert]::ToBase64String($bytes)
-```
-
-Required production values:
+After no SendGrid traffic is observed for at least twice the previous MX TTL:
 
 ```text
-INBOUND_EMAIL_DOMAIN=inbound.subtrak.me
-INBOUND_EMAIL_TOKEN_ENCRYPTION_KEY=<base64-encoded 32-byte key>
-SENDGRID_INBOUND_WEBHOOK_PUBLIC_KEY=<SendGrid security-policy public key>
+SENDGRID_INBOUND_ENABLED=false
 ```
 
-Recommended initial limits:
+Restart the service. Both legacy paths must return `404`:
 
-```text
-INBOUND_EMAIL_MAX_REQUEST_BYTES=10485760
-INBOUND_EMAIL_MAX_FIELD_BYTES=1048576
-INBOUND_EMAIL_MAX_PARTS=30
-INBOUND_EMAIL_CONTENT_RETENTION_DAYS=30
-INBOUND_EMAIL_RETENTION_BATCH_SIZE=100
-INBOUND_EMAIL_RETENTION_CRON=0 15 * * * *
-```
+- `/webhooks/inbound-email`
+- `/notifications/webhooks/sendgrid`
 
-The reverse proxy request-body limit must be at least the application request limit but should not
-substantially exceed it. The application does not persist attachments.
+The application unsubscribe endpoints remain enabled.
 
-## 6. Retention behavior
+Keep SendGrid outbound credentials only for the agreed short rollback window.
+A later cleanup commit removes SendGrid dependencies, verification code,
+endpoints, configuration, and secrets.
 
-Every hour, the retention worker claims one bounded batch using `FOR UPDATE SKIP LOCKED` and clears
-stored text, HTML, and raw headers older than the configured window. Metadata and fingerprints
-remain for audit and deduplication.
+## 8. Retention and recovery
 
-Trusted Gmail forwarding-verification URLs use the same retention window. They are cleared
-immediately when the user completes or ignores the verification item, and otherwise removed by
-the bounded retention worker when the source email expires.
+Database bodies, HTML, headers, and SES security verdicts follow
+`INBOUND_EMAIL_CONTENT_RETENTION_DAYS`, normally 30 days. S3 raw MIME follows
+`RawMimeRetentionDays`, normally 31 days, providing one safety day.
 
-If an expired event is still `RECEIVED`, `PROCESSING`, or `RETRY`, it moves to `DEAD` with
-`CONTENT_RETENTION_EXPIRED`. Terminal events retain their existing status.
+Successfully ingested S3 objects remain available until lifecycle expiry for
+recovery. The bucket is retained if the CloudFormation stack is deleted.
+Database cleanup and S3 lifecycle expiration operate independently.
 
-## 7. Deployment verification
-
-1. Deploy the backend and apply Flyway migrations.
-2. Confirm the public endpoint rejects an unsigned multipart request with `401`.
-3. Generate an address while authenticated in Settings.
-4. Send a plain-text test message to that address.
-5. Confirm SendGrid receives `204`.
-6. Confirm one `inbound_email` row exists with status `RECEIVED`.
-7. Send the same provider delivery again and confirm no duplicate row is created.
-8. Rotate the address and confirm mail sent to the old address receives `204` but creates no row.
-9. Confirm subjects, bodies, headers, tokens, and addresses are absent from application logs.
-
-Do not use a production user's real billing email for the initial smoke test.
+Never log MIME bodies, headers, generated forwarding addresses, verification
+links, tokens, or object content.

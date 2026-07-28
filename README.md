@@ -17,7 +17,7 @@ The application uses Google Sign-In for authentication, a responsive React inter
 - **Financial dashboard** — view estimated monthly spending, projected yearly spending, active subscription count, and the next billing date.
 - **Spending insights** — explore a six-month spending chart and a category-by-category cost breakdown.
 - **Renewal calculations** — automatically calculate the next billing date and total paid for recurring subscriptions.
-- **Email reminders** — schedule renewal notifications with a configurable lead time, delivered through SendGrid.
+- **Email reminders** — schedule renewal notifications with a configurable lead time, delivered through Amazon SES or SendGrid during migration.
 - **Personal preferences** — configure theme, language, currency, timezone, and email notification preferences.
 - **Internationalization** — includes English, Sinhala, Spanish, French, German, Japanese, and Chinese translations.
 - **Responsive design** — a Material UI interface with light and dark themes for desktop and mobile screens.
@@ -45,7 +45,7 @@ The application uses Google Sign-In for authentication, a responsive React inter
 - Spring Data JPA / Hibernate
 - PostgreSQL
 - Google OAuth token verification
-- SendGrid email delivery
+- Amazon SES email delivery with S3, SNS, and SQS inbound processing
 - Maven
 
 ## Project Structure
@@ -79,7 +79,7 @@ Install the following before running the project locally:
 - PostgreSQL
 - Docker Desktop or another Docker-compatible runtime for backend integration tests
 - A Google OAuth 2.0 web client
-- A SendGrid account and verified sender if you want email reminders
+- An Amazon SES verified identity, or SendGrid during the migration rollback window
 
 ### 1. Clone the repository
 
@@ -108,6 +108,16 @@ The backend reads the following environment variables:
 | `SENDGRID_API_KEY`    | SendGrid API key                                                            |
 | `SENDGRID_FROM_EMAIL` | Verified sender email address                                               |
 | `SENDGRID_FROM_NAME`  | Sender name shown in reminder emails                                        |
+| `EMAIL_OUTBOUND_PROVIDER` | Outbound adapter: `sendgrid` during rollback or `ses` after cutover |
+| `SENDGRID_INBOUND_ENABLED` | Enables the two legacy SendGrid webhook mappings; defaults to `true` |
+| `SES_CONSUMERS_ENABLED` | Enables both SES SQS consumers; defaults to `false` |
+| `SES_REGION` | Region containing the SES, S3, SNS, and SQS email resources |
+| `SES_FROM_EMAIL` | Sender address under the verified SES identity |
+| `SES_FROM_NAME` | Sender display name |
+| `SES_CONFIGURATION_SET` | Outbound configuration-set name from the CloudFormation outputs |
+| `SES_INBOUND_QUEUE_URL` | Inbound receipt queue URL from the CloudFormation outputs |
+| `SES_EVENT_QUEUE_URL` | Outbound lifecycle-event queue URL from the CloudFormation outputs |
+| `SES_INBOUND_BUCKET` | Private raw-MIME bucket name from the CloudFormation outputs |
 | `INBOUND_EMAIL_DOMAIN` | Receiving domain for generated forwarding addresses                        |
 | `INBOUND_EMAIL_TOKEN_ENCRYPTION_KEY` | Base64-encoded 32-byte key used to encrypt forwarding-address tokens |
 | `SENDGRID_INBOUND_WEBHOOK_PUBLIC_KEY` | ECDSA public key from the SendGrid Inbound Parse security policy |
@@ -120,7 +130,7 @@ The backend reads the following environment variables:
 
 You can export these variables in your shell or provide them through your IDE's run configuration.
 
-Production DNS, SendGrid security-policy, limits, retention, and smoke-test instructions are in
+Production SES deployment, DNS cutover, rollback, retention, and smoke-test instructions are in
 [`docs/inbound-email-forwarding.md`](docs/inbound-email-forwarding.md).
 
 Set `FRONTEND_ORIGINS` to the comma-separated frontend origins that may call the API, for example `https://app.example.com,https://admin.example.com`. Do not include paths or trailing slashes. The default includes the local Vite origin and the current hosted frontend.

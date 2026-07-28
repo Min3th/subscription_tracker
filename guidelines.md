@@ -156,6 +156,9 @@ and reviewable.
   CloudFormation stack. Keep queue publication source-account/source-ARN constrained,
   block public S3 access, require TLS, and grant the EC2 role only queue consumption,
   inbound object reads, and verified-identity sending.
+- Keep SendGrid webhook controllers behind the rollback-window feature flag. Disabling
+  SendGrid inbound acceptance must remove both public SendGrid webhook mappings without
+  disabling provider-neutral unsubscribe endpoints.
 
 - Generate forwarding-address tokens with at least 256 bits of cryptographic randomness.
 - Store a SHA-256 token hash for recipient lookup. Store a versioned AES-256-GCM ciphertext only

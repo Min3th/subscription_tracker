@@ -3,6 +3,7 @@ package com.track.subscription_service.inboundemail.controller;
 import com.track.subscription_service.inboundemail.config.InboundEmailProperties;
 import com.track.subscription_service.inboundemail.service.InboundEmailIngestionService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,10 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/webhooks/inbound-email")
+@ConditionalOnProperty(
+        name = "app.email.sendgrid-inbound-enabled",
+        havingValue = "true",
+        matchIfMissing = true)
 public class InboundEmailWebhookController {
     private static final String SIGNATURE_HEADER =
             "X-Twilio-Email-Event-Webhook-Signature";
