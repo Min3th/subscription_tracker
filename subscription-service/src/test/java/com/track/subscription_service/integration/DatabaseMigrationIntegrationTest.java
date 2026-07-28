@@ -28,7 +28,7 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
 
     @AfterEach
     void removeTestData() {
-        jdbc.update("DELETE FROM users WHERE google_id = ?", TEST_GOOGLE_ID);
+        jdbc.update("DELETE FROM users WHERE google_id LIKE ?", TEST_GOOGLE_ID + "%");
     }
 
     @Test
@@ -42,13 +42,14 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
                 String.class);
 
         assertEquals(0, failedMigrations);
-        assertEquals("10", currentVersion);
+        assertEquals("11", currentVersion);
         assertNotNull(regclass("users"));
         assertNotNull(regclass("subscription"));
         assertNotNull(regclass("notification_delivery"));
         assertNotNull(regclass("subscription_reminder_schedule"));
         assertNotNull(regclass("refresh_token_sessions"));
         assertNotNull(regclass("inbound_email_address"));
+        assertNotNull(regclass("inbound_email"));
     }
 
     @Test
@@ -71,6 +72,31 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
                 Integer.class,
                 userId);
         assertEquals(2, addressCount);
+    }
+
+    @Test
+    void inboundEmailRequiresTheRecipientAddressToBelongToTheSameUser() {
+        long firstUserId = createUser();
+        long secondUserId = createUser(TEST_GOOGLE_ID + "-second");
+        long addressId = insertInboundAddress(firstUserId, "c".repeat(64), "encrypted-token");
+
+        assertThrows(DataIntegrityViolationException.class, () -> jdbc.update("""
+                INSERT INTO inbound_email (
+                    id, user_id, recipient_address_id, message_fingerprint,
+                    status, received_at
+                ) VALUES (gen_random_uuid(), ?, ?, ?, 'RECEIVED', CURRENT_TIMESTAMP)
+                """, secondUserId, addressId, "d".repeat(64)));
+    }
+
+    @Test
+    void inboundEmailRejectsDuplicateDeliveryForTheSameAddress() {
+        long userId = createUser();
+        long addressId = insertInboundAddress(userId, "e".repeat(64), "encrypted-token");
+        String fingerprint = "f".repeat(64);
+        insertInboundEmail(userId, addressId, fingerprint);
+
+        assertThrows(DataIntegrityViolationException.class,
+                () -> insertInboundEmail(userId, addressId, fingerprint));
     }
 
     @Test
@@ -144,13 +170,17 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
     }
 
     private long createUser() {
+        return createUser(TEST_GOOGLE_ID);
+    }
+
+    private long createUser(String googleId) {
         jdbc.update(
                 "INSERT INTO users (google_id, email, name) VALUES (?, ?, ?)",
-                TEST_GOOGLE_ID, "migration-test@example.com", "Migration Test");
+                googleId, googleId + "@example.com", "Migration Test");
         return jdbc.queryForObject(
                 "SELECT id FROM users WHERE google_id = ?",
                 Long.class,
-                TEST_GOOGLE_ID);
+                googleId);
     }
 
     private void insertOneTime(long userId, String name, String cost, String currency) {
@@ -162,12 +192,22 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
                 """, name, cost, currency, userId);
     }
 
-    private void insertInboundAddress(long userId, String tokenHash, String encryptedToken) {
-        jdbc.update("""
+    private long insertInboundAddress(long userId, String tokenHash, String encryptedToken) {
+        return jdbc.queryForObject("""
                 INSERT INTO inbound_email_address (
                     user_id, token_hash, encrypted_token, created_at
                 ) VALUES (?, ?, ?, CURRENT_TIMESTAMP)
-                """, userId, tokenHash, encryptedToken);
+                RETURNING id
+                """, Long.class, userId, tokenHash, encryptedToken);
+    }
+
+    private void insertInboundEmail(long userId, long addressId, String fingerprint) {
+        jdbc.update("""
+                INSERT INTO inbound_email (
+                    id, user_id, recipient_address_id, message_fingerprint,
+                    status, received_at
+                ) VALUES (gen_random_uuid(), ?, ?, ?, 'RECEIVED', CURRENT_TIMESTAMP)
+                """, userId, addressId, fingerprint);
     }
 
     private String regclass(String tableName) {

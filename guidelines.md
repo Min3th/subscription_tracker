@@ -137,6 +137,35 @@ Reminder delivery is durable and idempotent. Do not replace it with a full-table
 
 Email delivery is inherently at-least-once around a crash after provider acceptance but before the local `SENT` update. Changes should minimize and explicitly account for this window.
 
+### 8.1 Inbound Email Ingestion
+
+Inbound subscription-email processing is security-sensitive and must remain durable, tenant-scoped,
+and reviewable.
+
+- Generate forwarding-address tokens with at least 256 bits of cryptographic randomness.
+- Store a SHA-256 token hash for recipient lookup. Store a versioned AES-256-GCM ciphertext only
+  when the token must be shown to the authenticated owner again; never store the raw token.
+- Allow at most one active forwarding address per user, while retaining revoked-address history.
+- Derive address ownership from the authenticated JWT subject. Never accept a user ID from the
+  forwarding-address API.
+- Verify SendGrid Inbound Parse authentication against the untouched multipart request before any
+  framework or application parsing modifies its bytes.
+- Persist a minimal, idempotent inbound-email record before returning a successful webhook response.
+  Perform normalization and subscription extraction in a durable background worker.
+- Enforce at the database layer that an inbound email's user owns its recipient address.
+- Deduplicate provider retries with a stable fingerprint and a database unique constraint. Treat
+  duplicate delivery as a successful no-op.
+- Do not log forwarding tokens, sender or recipient addresses, subjects, headers, message bodies,
+  verification links, or attachment contents.
+- Apply explicit size limits to multipart requests and every stored field. Do not store attachments
+  until attachment validation, malware handling, storage, and retention are deliberately designed.
+- Render inbound content as plain text only. Never render untrusted email HTML or automatically
+  visit links found in an inbound message.
+- Keep extracted results in a pending suggestion. Never create or modify an active subscription
+  until the authenticated user confirms the proposed fields.
+- Define and enforce retention for stored bodies and headers. Account deletion must cascade through
+  forwarding addresses, inbound events, and suggestions.
+
 ## 9. Frontend Conventions
 
 - Keep TypeScript types aligned with backend response DTOs.
