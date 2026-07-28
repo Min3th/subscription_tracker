@@ -108,6 +108,8 @@ The backend reads the following environment variables:
 | `SENDGRID_API_KEY`    | SendGrid API key                                                            |
 | `SENDGRID_FROM_EMAIL` | Verified sender email address                                               |
 | `SENDGRID_FROM_NAME`  | Sender name shown in reminder emails                                        |
+| `INBOUND_EMAIL_DOMAIN` | Receiving domain for generated forwarding addresses                        |
+| `INBOUND_EMAIL_TOKEN_ENCRYPTION_KEY` | Base64-encoded 32-byte key used to encrypt forwarding-address tokens |
 
 You can export these variables in your shell or provide them through your IDE's run configuration.
 
