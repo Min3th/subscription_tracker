@@ -36,6 +36,7 @@ import { fetchPreferences, updatePreferences, setPreferences } from "../features
 import { useTranslation } from "react-i18next";
 import { useBlocker } from "react-router-dom";
 import { useSnackbar } from "../utils/Snackbar";
+import EmailForwardingSettings from "../components/EmailForwardingSettings";
 
 export function Settings() {
   const { t } = useTranslation();
@@ -432,6 +433,10 @@ export function Settings() {
               </Typography>
             </CardContent>
           </Card>
+        </Grid>
+
+        <Grid size={{ xs: 12 }}>
+          <EmailForwardingSettings />
         </Grid>
 
         <Grid size={{ xs: 12 }}>
