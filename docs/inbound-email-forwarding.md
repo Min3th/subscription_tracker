@@ -108,6 +108,10 @@ Every hour, the retention worker claims one bounded batch using `FOR UPDATE SKIP
 stored text, HTML, and raw headers older than the configured window. Metadata and fingerprints
 remain for audit and deduplication.
 
+Trusted Gmail forwarding-verification URLs use the same retention window. They are cleared
+immediately when the user completes or ignores the verification item, and otherwise removed by
+the bounded retention worker when the source email expires.
+
 If an expired event is still `RECEIVED`, `PROCESSING`, or `RETRY`, it moves to `DEAD` with
 `CONTENT_RETENTION_EXPIRED`. Terminal events retain their existing status.
 

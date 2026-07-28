@@ -72,6 +72,7 @@ public class SubscriptionSuggestionService {
         requirePending(suggestion);
         var now = clock.instant();
         suggestion.setStatus(SuggestionStatus.IGNORED);
+        suggestion.setActionUrl(null);
         suggestion.setDecidedAt(now);
         suggestion.setUpdatedAt(now);
         suggestionRepository.save(suggestion);
@@ -88,6 +89,7 @@ public class SubscriptionSuggestionService {
         }
         var now = clock.instant();
         suggestion.setStatus(SuggestionStatus.CONFIRMED);
+        suggestion.setActionUrl(null);
         suggestion.setDecidedAt(now);
         suggestion.setUpdatedAt(now);
         suggestionRepository.save(suggestion);

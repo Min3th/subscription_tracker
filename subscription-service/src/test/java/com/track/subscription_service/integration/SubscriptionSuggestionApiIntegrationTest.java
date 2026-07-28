@@ -2,6 +2,7 @@ package com.track.subscription_service.integration;
 
 import com.track.subscription_service.auth.service.JwtService;
 import com.track.subscription_service.user.entity.User;
+import com.track.subscription_service.inboundemail.service.InboundEmailRetentionWorker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,9 @@ class SubscriptionSuggestionApiIntegrationTest extends PostgresIntegrationTest {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private InboundEmailRetentionWorker retentionWorker;
 
     private long firstUserId;
     private long secondUserId;
@@ -163,6 +167,10 @@ class SubscriptionSuggestionApiIntegrationTest extends PostgresIntegrationTest {
                 .andExpect(status().isNoContent());
 
         assertEquals("CONFIRMED", suggestionStatus(suggestionId));
+        assertEquals(0, jdbc.queryForObject("""
+                SELECT COUNT(*) FROM subscription_suggestion
+                WHERE id = ? AND action_url IS NOT NULL
+                """, Integer.class, suggestionId));
         assertEquals(before, subscriptionCount(firstUserId));
 
         mockMvc.perform(post("/inbound-email/suggestions/{id}/confirm", suggestionId)
@@ -170,6 +178,56 @@ class SubscriptionSuggestionApiIntegrationTest extends PostgresIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(confirmRequest()))
                 .andExpect(status().isConflict());
+    }
+
+    @Test
+    void retentionPurgesExpiredContentAndGmailActionButKeepsRecentData() {
+        UUID expiredSuggestion = createRetentionGmailVerification(firstUserId, 31);
+        UUID recentSuggestion = createRetentionGmailVerification(secondUserId, 1);
+
+        retentionWorker.purgeExpiredContent();
+
+        assertEquals(0, jdbc.queryForObject("""
+                SELECT COUNT(*)
+                FROM subscription_suggestion
+                WHERE id = ? AND action_url IS NOT NULL
+                """, Integer.class, expiredSuggestion));
+        assertEquals(1, jdbc.queryForObject("""
+                SELECT COUNT(*)
+                FROM subscription_suggestion
+                WHERE id = ? AND action_url IS NOT NULL
+                """, Integer.class, recentSuggestion));
+        assertEquals("DEAD", jdbc.queryForObject("""
+                SELECT email.status
+                FROM inbound_email email
+                JOIN subscription_suggestion suggestion
+                  ON suggestion.inbound_email_id = email.id
+                WHERE suggestion.id = ?
+                """, String.class, expiredSuggestion));
+        assertEquals("CONTENT_RETENTION_EXPIRED", jdbc.queryForObject("""
+                SELECT email.failure_code
+                FROM inbound_email email
+                JOIN subscription_suggestion suggestion
+                  ON suggestion.inbound_email_id = email.id
+                WHERE suggestion.id = ?
+                """, String.class, expiredSuggestion));
+        assertEquals(0, jdbc.queryForObject("""
+                SELECT COUNT(*)
+                FROM inbound_email email
+                JOIN subscription_suggestion suggestion
+                  ON suggestion.inbound_email_id = email.id
+                WHERE suggestion.id = ?
+                  AND (email.text_body IS NOT NULL
+                       OR email.html_body IS NOT NULL
+                       OR email.raw_headers IS NOT NULL)
+                """, Integer.class, expiredSuggestion));
+        assertEquals(1, jdbc.queryForObject("""
+                SELECT COUNT(*)
+                FROM inbound_email email
+                JOIN subscription_suggestion suggestion
+                  ON suggestion.inbound_email_id = email.id
+                WHERE suggestion.id = ? AND email.text_body IS NOT NULL
+                """, Integer.class, recentSuggestion));
     }
 
     private UUID createSuggestion(
@@ -240,6 +298,41 @@ class SubscriptionSuggestionApiIntegrationTest extends PostgresIntegrationTest {
                 ) VALUES (?, ?, ?, 'Gmail', 'GMAIL_VERIFICATION',
                     0.5500, 'provider-explicit,event-phrase',
                     'https://mail-settings.google.com/mail/vf-test-token',
+                    'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                """, suggestionId, userId, emailId);
+        return suggestionId;
+    }
+
+    private UUID createRetentionGmailVerification(long userId, int ageDays) {
+        long addressId = jdbc.queryForObject("""
+                INSERT INTO inbound_email_address (
+                    user_id, token_hash, encrypted_token, created_at
+                ) VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+                RETURNING id
+                """, Long.class, userId, UUID.randomUUID().toString().replace("-", "")
+                + UUID.randomUUID().toString().replace("-", ""),
+                "encrypted-" + UUID.randomUUID());
+        UUID emailId = UUID.randomUUID();
+        jdbc.update("""
+                INSERT INTO inbound_email (
+                    id, user_id, recipient_address_id, message_fingerprint,
+                    text_body, html_body, raw_headers, status, received_at
+                ) VALUES (?, ?, ?, ?, 'verification text', '<p>verification</p>',
+                    'header: value', 'RECEIVED',
+                    CURRENT_TIMESTAMP - (? * INTERVAL '1 day'))
+                """, emailId, userId, addressId,
+                UUID.randomUUID().toString().replace("-", "")
+                        + UUID.randomUUID().toString().replace("-", ""),
+                ageDays);
+        UUID suggestionId = UUID.randomUUID();
+        jdbc.update("""
+                INSERT INTO subscription_suggestion (
+                    id, user_id, inbound_email_id, provider, event_type,
+                    confidence, evidence_summary, action_url, status,
+                    created_at, updated_at
+                ) VALUES (?, ?, ?, 'Gmail', 'GMAIL_VERIFICATION',
+                    0.5500, 'provider-explicit,event-phrase',
+                    'https://mail-settings.google.com/mail/vf-retention-token',
                     'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
                 """, suggestionId, userId, emailId);
         return suggestionId;

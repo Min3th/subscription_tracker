@@ -2,6 +2,7 @@ package com.track.subscription_service.inboundemail.service;
 
 import com.track.subscription_service.inboundemail.config.InboundEmailProperties;
 import com.track.subscription_service.inboundemail.repository.InboundEmailRepository;
+import com.track.subscription_service.inboundemail.repository.SubscriptionSuggestionRepository;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;
@@ -16,20 +17,28 @@ class InboundEmailRetentionWorkerTest {
     void purgesOneBoundedBatchUsingTheConfiguredRetentionWindow() {
         Instant now = Instant.parse("2026-07-28T04:00:00Z");
         InboundEmailRepository repository = mock(InboundEmailRepository.class);
+        SubscriptionSuggestionRepository suggestions =
+                mock(SubscriptionSuggestionRepository.class);
         InboundEmailProperties properties = new InboundEmailProperties();
         properties.setContentRetentionDays(30);
         properties.setRetentionBatchSize(75);
         when(repository.purgeExpiredContent(
                 Instant.parse("2026-06-28T04:00:00Z"), now, 75))
                 .thenReturn(12);
+        when(suggestions.purgeExpiredActionUrls(
+                Instant.parse("2026-06-28T04:00:00Z"), now, 75))
+                .thenReturn(3);
         InboundEmailRetentionWorker worker = new InboundEmailRetentionWorker(
-                repository, properties, Clock.fixed(now, ZoneOffset.UTC));
+                repository, suggestions, properties, Clock.fixed(now, ZoneOffset.UTC));
 
         int purged = worker.purgeExpiredContent();
 
-        assertEquals(12, purged);
+        assertEquals(15, purged);
         verify(repository).purgeExpiredContent(
                 Instant.parse("2026-06-28T04:00:00Z"), now, 75);
+        verify(suggestions).purgeExpiredActionUrls(
+                Instant.parse("2026-06-28T04:00:00Z"), now, 75);
         verifyNoMoreInteractions(repository);
+        verifyNoMoreInteractions(suggestions);
     }
 }
