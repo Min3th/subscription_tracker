@@ -1,0 +1,435 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Subtrak SES outbound events and inbound email forwarding infrastructure
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: production
+    AllowedPattern: "^[a-z0-9-]{1,20}$"
+  DomainName:
+    Type: String
+    AllowedPattern: "^(?=.{1,253}$)(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,63}$"
+  InboundSubdomain:
+    Type: String
+    Default: inbound
+    AllowedPattern: "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$"
+  AwsAccountId:
+    Type: String
+    AllowedPattern: "^\\d{12}$"
+  SesRegion:
+    Type: String
+    Default: ap-southeast-1
+    AllowedPattern: "^[a-z]{2}(?:-gov)?-[a-z]+-\\d$"
+  Ec2InstanceRoleName:
+    Type: String
+    AllowedPattern: "^[A-Za-z0-9+=,.@_-]{1,64}$"
+  RawMimeRetentionDays:
+    Type: Number
+    Default: 31
+    Description: Database content retention period plus one safety day.
+    MinValue: 2
+    MaxValue: 366
+
+Rules:
+  StackAccountMustMatchParameter:
+    Assertions:
+      - Assert: !Equals [!Ref AwsAccountId, !Ref "AWS::AccountId"]
+        AssertDescription: AwsAccountId must match the account deploying this stack.
+  StackRegionMustMatchParameter:
+    Assertions:
+      - Assert: !Equals [!Ref SesRegion, !Ref "AWS::Region"]
+        AssertDescription: SesRegion must match the region deploying this stack.
+
+Resources:
+  SesDomainIdentity:
+    Type: AWS::SES::EmailIdentity
+    Properties:
+      EmailIdentity: !Ref DomainName
+      DkimSigningAttributes:
+        NextSigningKeyLength: RSA_2048_BIT
+      FeedbackAttributes:
+        EmailForwardingEnabled: false
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Application
+          Value: subtrak
+
+  InboundBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+            BucketKeyEnabled: false
+      LifecycleConfiguration:
+        Rules:
+          - Id: ExpireRawMime
+            Status: Enabled
+            ExpirationInDays: !Ref RawMimeRetentionDays
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 1
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      VersioningConfiguration:
+        Status: Enabled
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Application
+          Value: subtrak
+
+  InboundBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref InboundBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: "*"
+            Action: s3:*
+            Resource:
+              - !GetAtt InboundBucket.Arn
+              - !Sub "${InboundBucket.Arn}/*"
+            Condition:
+              Bool:
+                aws:SecureTransport: false
+
+  InboundTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub "subtrak-${EnvironmentName}-ses-inbound"
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Application
+          Value: subtrak
+
+  InboundDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      SqsManagedSseEnabled: true
+      MessageRetentionPeriod: 1209600
+      QueueName: !Sub "subtrak-${EnvironmentName}-ses-inbound-dlq"
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Application
+          Value: subtrak
+
+  InboundQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      SqsManagedSseEnabled: true
+      MessageRetentionPeriod: 1209600
+      QueueName: !Sub "subtrak-${EnvironmentName}-ses-inbound"
+      ReceiveMessageWaitTimeSeconds: 20
+      VisibilityTimeout: 120
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt InboundDeadLetterQueue.Arn
+        maxReceiveCount: 5
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Application
+          Value: subtrak
+
+  InboundQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref InboundQueue
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowOnlyInboundTopic
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt InboundQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref InboundTopic
+              StringEquals:
+                aws:SourceAccount: !Ref AwsAccountId
+
+  InboundQueueSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      Endpoint: !GetAtt InboundQueue.Arn
+      TopicArn: !Ref InboundTopic
+      RawMessageDelivery: false
+
+  SesReceiptRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "subtrak-${EnvironmentName}-ses-receipt"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ses.amazonaws.com
+            Action: sts:AssumeRole
+            Condition:
+              StringEquals:
+                AWS:SourceAccount: !Ref AwsAccountId
+      Policies:
+        - PolicyName: StoreAndNotifyInboundEmail
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub "${InboundBucket.Arn}/incoming/*"
+              - Effect: Allow
+                Action: sns:Publish
+                Resource: !Ref InboundTopic
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Application
+          Value: subtrak
+
+  InboundTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref InboundTopic
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowSesReceiptRoleOnly
+            Effect: Allow
+            Principal:
+              AWS: !GetAtt SesReceiptRole.Arn
+            Action: sns:Publish
+            Resource: !Ref InboundTopic
+
+  ReceiptRuleSet:
+    Type: AWS::SES::ReceiptRuleSet
+    Properties:
+      RuleSetName: !Sub "subtrak-${EnvironmentName}-inbound"
+
+  InboundReceiptRule:
+    Type: AWS::SES::ReceiptRule
+    DependsOn:
+      - InboundBucketPolicy
+      - InboundTopicPolicy
+    Properties:
+      RuleSetName: !Ref ReceiptRuleSet
+      Rule:
+        Name: !Sub "subtrak-${EnvironmentName}-store-inbound"
+        Enabled: true
+        ScanEnabled: true
+        TlsPolicy: Require
+        Recipients:
+          - !Sub "${InboundSubdomain}.${DomainName}"
+        Actions:
+          - S3Action:
+              BucketName: !Ref InboundBucket
+              ObjectKeyPrefix: incoming/
+              TopicArn: !Ref InboundTopic
+              IamRoleArn: !GetAtt SesReceiptRole.Arn
+
+  OutboundEventTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub "subtrak-${EnvironmentName}-ses-events"
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Application
+          Value: subtrak
+
+  OutboundEventDeadLetterQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      SqsManagedSseEnabled: true
+      MessageRetentionPeriod: 1209600
+      QueueName: !Sub "subtrak-${EnvironmentName}-ses-events-dlq"
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Application
+          Value: subtrak
+
+  OutboundEventQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      SqsManagedSseEnabled: true
+      MessageRetentionPeriod: 1209600
+      QueueName: !Sub "subtrak-${EnvironmentName}-ses-events"
+      ReceiveMessageWaitTimeSeconds: 20
+      VisibilityTimeout: 120
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt OutboundEventDeadLetterQueue.Arn
+        maxReceiveCount: 5
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Application
+          Value: subtrak
+
+  OutboundEventQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref OutboundEventQueue
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowOnlyOutboundEventTopic
+            Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt OutboundEventQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref OutboundEventTopic
+              StringEquals:
+                aws:SourceAccount: !Ref AwsAccountId
+
+  OutboundEventQueueSubscription:
+    Type: AWS::SNS::Subscription
+    Properties:
+      Protocol: sqs
+      Endpoint: !GetAtt OutboundEventQueue.Arn
+      TopicArn: !Ref OutboundEventTopic
+      RawMessageDelivery: false
+
+  SesConfigurationSet:
+    Type: AWS::SES::ConfigurationSet
+    Properties:
+      Name: !Sub "subtrak-${EnvironmentName}"
+      ReputationOptions:
+        ReputationMetricsEnabled: true
+      SendingOptions:
+        SendingEnabled: true
+
+  OutboundEventTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics:
+        - !Ref OutboundEventTopic
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowSesConfigurationSet
+            Effect: Allow
+            Principal:
+              Service: ses.amazonaws.com
+            Action: sns:Publish
+            Resource: !Ref OutboundEventTopic
+            Condition:
+              StringEquals:
+                AWS:SourceAccount: !Ref AwsAccountId
+              ArnEquals:
+                AWS:SourceArn: !Sub "arn:${AWS::Partition}:ses:${SesRegion}:${AwsAccountId}:configuration-set/${SesConfigurationSet}"
+
+  SesConfigurationSetEventDestination:
+    Type: AWS::SES::ConfigurationSetEventDestination
+    DependsOn: OutboundEventTopicPolicy
+    Properties:
+      ConfigurationSetName: !Ref SesConfigurationSet
+      EventDestination:
+        Name: lifecycle-events
+        Enabled: true
+        MatchingEventTypes:
+          - BOUNCE
+          - COMPLAINT
+          - DELIVERY
+        SnsDestination:
+          TopicARN: !Ref OutboundEventTopic
+
+  Ec2EmailRuntimePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: !Sub "subtrak-${EnvironmentName}-ses-runtime"
+      Roles:
+        - !Ref Ec2InstanceRoleName
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: SendFromVerifiedIdentity
+            Effect: Allow
+            Action:
+              - ses:SendEmail
+            Resource: !Sub "arn:${AWS::Partition}:ses:${SesRegion}:${AwsAccountId}:identity/${DomainName}"
+          - Sid: ConsumeInboundQueue
+            Effect: Allow
+            Action:
+              - sqs:ReceiveMessage
+              - sqs:DeleteMessage
+              - sqs:ChangeMessageVisibility
+              - sqs:GetQueueAttributes
+            Resource: !GetAtt InboundQueue.Arn
+          - Sid: ConsumeOutboundEventQueue
+            Effect: Allow
+            Action:
+              - sqs:ReceiveMessage
+              - sqs:DeleteMessage
+              - sqs:ChangeMessageVisibility
+              - sqs:GetQueueAttributes
+            Resource: !GetAtt OutboundEventQueue.Arn
+          - Sid: ReadInboundMime
+            Effect: Allow
+            Action: s3:GetObject
+            Resource: !Sub "${InboundBucket.Arn}/incoming/*"
+
+Outputs:
+  SesRegion:
+    Description: Set SES_REGION and deploy the application in this SES region.
+    Value: !Ref SesRegion
+  SesDomainIdentity:
+    Description: Verified sending identity.
+    Value: !Ref SesDomainIdentity
+  DkimRecordName1:
+    Value: !GetAtt SesDomainIdentity.DkimDNSTokenName1
+  DkimRecordValue1:
+    Value: !GetAtt SesDomainIdentity.DkimDNSTokenValue1
+  DkimRecordName2:
+    Value: !GetAtt SesDomainIdentity.DkimDNSTokenName2
+  DkimRecordValue2:
+    Value: !GetAtt SesDomainIdentity.DkimDNSTokenValue2
+  DkimRecordName3:
+    Value: !GetAtt SesDomainIdentity.DkimDNSTokenName3
+  DkimRecordValue3:
+    Value: !GetAtt SesDomainIdentity.DkimDNSTokenValue3
+  InboundMxRecordName:
+    Value: !Sub "${InboundSubdomain}.${DomainName}"
+  InboundMxRecordValue:
+    Value: !Sub "10 inbound-smtp.${SesRegion}.amazonaws.com"
+  SesConfigurationSet:
+    Description: Set SES_CONFIGURATION_SET to this value.
+    Value: !Ref SesConfigurationSet
+  SesInboundQueueUrl:
+    Description: Set SES_INBOUND_QUEUE_URL to this value.
+    Value: !Ref InboundQueue
+  SesEventQueueUrl:
+    Description: Set SES_EVENT_QUEUE_URL to this value.
+    Value: !Ref OutboundEventQueue
+  SesInboundBucket:
+    Description: Set SES_INBOUND_BUCKET to this value.
+    Value: !Ref InboundBucket
+  RawMimeRetentionDays:
+    Description: S3 raw MIME retention, including the one-day safety margin.
+    Value: !Ref RawMimeRetentionDays
+  InboundDeadLetterQueueUrl:
+    Value: !Ref InboundDeadLetterQueue
+  OutboundEventDeadLetterQueueUrl:
+    Value: !Ref OutboundEventDeadLetterQueue

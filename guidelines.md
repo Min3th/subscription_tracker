@@ -152,6 +152,10 @@ and reviewable.
   persistence, extraction, and review behavior must not depend on a provider SDK.
 - Authenticate AWS access with the default credential chain and an EC2 instance role in production.
   Never add static AWS access keys to application properties, source control, or deployment secrets.
+- Provision SES, S3, SNS, SQS, DLQs, and runtime IAM grants through the repository
+  CloudFormation stack. Keep queue publication source-account/source-ARN constrained,
+  block public S3 access, require TLS, and grant the EC2 role only queue consumption,
+  inbound object reads, and verified-identity sending.
 
 - Generate forwarding-address tokens with at least 256 bits of cryptographic randomness.
 - Store a SHA-256 token hash for recipient lookup. Store a versioned AES-256-GCM ciphertext only
