@@ -177,6 +177,9 @@ and reviewable.
   must never select a user or forwarding address.
 - Parse SES objects as bounded RFC 822/MIME messages, cap MIME part counts, and reject
   attachments and failed virus verdicts before durable ingestion.
+- SES inbound workers must validate SNS receipt metadata, require the configured private
+  S3 bucket, bound both declared and streamed object sizes, and delete SQS messages only
+  after durable insertion, deduplication, or intentional unknown/revoked-address discard.
 - Render inbound content as plain text only. Never render untrusted email HTML or automatically
   visit links found in an inbound message.
 - Keep extracted results in a pending suggestion. Never create or modify an active subscription
