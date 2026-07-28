@@ -83,6 +83,7 @@
   "sidebar": {
     "dashboard": "Dashboard",
     "subscriptions": "Abonnements",
+    "suggestions": "Vorschläge prüfen",
     "settings": "Einstellungen",
     "logout": "Abmelden"
   },

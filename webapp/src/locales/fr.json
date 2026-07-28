@@ -83,6 +83,7 @@
   "sidebar": {
     "dashboard": "Tableau de bord",
     "subscriptions": "Abonnements",
+    "suggestions": "Examiner les suggestions",
     "settings": "Paramètres",
     "logout": "Déconnexion"
   },

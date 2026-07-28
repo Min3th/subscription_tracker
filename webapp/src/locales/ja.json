@@ -83,6 +83,7 @@
   "sidebar": {
     "dashboard": "ダッシュボード",
     "subscriptions": "サブスクリプション",
+    "suggestions": "候補を確認",
     "settings": "設定",
     "logout": "ログアウト"
   },

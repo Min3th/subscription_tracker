@@ -16,6 +16,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
 const ProtectedRoute = lazy(() => import("./routes/ProtectedRoutes.tsx"));
 const PublicLayout = lazy(() => import("./layout/PublicLayout.tsx"));
 const Subscriptions = lazy(() => import("./pages/Subscriptions.tsx"));
+const Suggestions = lazy(() => import("./pages/Suggestions.tsx"));
 const Settings = lazy(() =>
   import("./pages/Settings.tsx").then(({ Settings }) => ({
     default: Settings,
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
       {
         path: "/subscriptions",
         element: <Subscriptions />,
+      },
+      {
+        path: "/suggestions",
+        element: <Suggestions />,
       },
       {
         path: "/settings",

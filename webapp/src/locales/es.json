@@ -83,6 +83,7 @@
   "sidebar": {
     "dashboard": "Panel principal",
     "subscriptions": "Suscripciones",
+    "suggestions": "Revisar sugerencias",
     "settings": "Ajustes",
     "logout": "Cerrar sesión"
   },

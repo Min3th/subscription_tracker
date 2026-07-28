@@ -83,6 +83,7 @@
   "sidebar": {
     "dashboard": "仪表板",
     "subscriptions": "订阅",
+    "suggestions": "审核建议",
     "settings": "设置",
     "logout": "注销"
   },
