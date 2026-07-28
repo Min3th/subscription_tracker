@@ -133,6 +133,11 @@ Reminder delivery is durable and idempotent. Do not replace it with a full-table
 - Move exhausted deliveries to the `DEAD` state.
 - Claim retry work atomically so multiple application instances cannot process the same row concurrently.
 - Preserve unsubscribe, suppression, bounce, and webhook-signature verification behavior.
+- Consume SES lifecycle events through a durable SQS queue with a DLQ. Delete an
+  SQS message only after recognized event handling succeeds; malformed and unknown
+  events must remain available for retry and redrive.
+- Treat only permanent SES bounces and complaints as suppression events. Transient
+  bounces and delivery confirmations are operational events and must not suppress users.
 - Never send to a suppressed recipient.
 
 Email delivery is inherently at-least-once around a crash after provider acceptance but before the local `SENT` update. Changes should minimize and explicitly account for this window.
