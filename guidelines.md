@@ -198,6 +198,9 @@ and reviewable.
 - Keep TypeScript types aligned with backend response DTOs.
 - Use the shared Axios client rather than creating isolated clients.
 - Keep global server-backed state in the established Redux slices.
+- Model review decisions as server-confirmed state transitions: keep a pending suggestion visible
+  while confirm or ignore is in flight, and remove it only after the API succeeds. Prevent duplicate
+  list requests while a fetch is active and surface decision failures without discarding the item.
 - Validate forms on the frontend for usability, while retaining backend validation as authoritative.
 - Do not expose switches, payment details, alerts, reports, or other capabilities that are not implemented.
 - If an unfinished capability must be visible, label it clearly as “Coming soon” and ensure it cannot imply that data is being processed.
