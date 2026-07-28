@@ -78,6 +78,9 @@ public class InboundEmail {
     @Column(name = "completed_at")
     private Instant completedAt;
 
+    @Column(name = "content_purged_at")
+    private Instant contentPurgedAt;
+
     public UUID getId() { return id; }
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
@@ -121,4 +124,8 @@ public class InboundEmail {
     }
     public Instant getCompletedAt() { return completedAt; }
     public void setCompletedAt(Instant completedAt) { this.completedAt = completedAt; }
+    public Instant getContentPurgedAt() { return contentPurgedAt; }
+    public void setContentPurgedAt(Instant contentPurgedAt) {
+        this.contentPurgedAt = contentPurgedAt;
+    }
 }

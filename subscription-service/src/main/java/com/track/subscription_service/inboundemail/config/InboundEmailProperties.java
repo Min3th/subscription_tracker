@@ -32,6 +32,14 @@ public class InboundEmailProperties {
     @Max(100)
     private int maxParts = 30;
 
+    @Min(1)
+    @Max(365)
+    private int contentRetentionDays = 30;
+
+    @Min(1)
+    @Max(1000)
+    private int retentionBatchSize = 100;
+
     public String getDomain() {
         return domain;
     }
@@ -78,5 +86,21 @@ public class InboundEmailProperties {
 
     public void setMaxParts(int maxParts) {
         this.maxParts = maxParts;
+    }
+
+    public int getContentRetentionDays() {
+        return contentRetentionDays;
+    }
+
+    public void setContentRetentionDays(int contentRetentionDays) {
+        this.contentRetentionDays = contentRetentionDays;
+    }
+
+    public int getRetentionBatchSize() {
+        return retentionBatchSize;
+    }
+
+    public void setRetentionBatchSize(int retentionBatchSize) {
+        this.retentionBatchSize = retentionBatchSize;
     }
 }

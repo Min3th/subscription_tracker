@@ -39,4 +39,40 @@ public interface InboundEmailRepository extends JpaRepository<InboundEmail, UUID
             @Param("spamScore") BigDecimal spamScore,
             @Param("receivedAt") Instant receivedAt
     );
+
+    @Modifying
+    @Query(value = """
+            WITH expired AS (
+                SELECT id
+                FROM inbound_email
+                WHERE received_at < :cutoff
+                  AND content_purged_at IS NULL
+                ORDER BY received_at
+                LIMIT :batchSize
+                FOR UPDATE SKIP LOCKED
+            )
+            UPDATE inbound_email email
+            SET text_body = NULL,
+                html_body = NULL,
+                raw_headers = NULL,
+                content_purged_at = :purgedAt,
+                status = CASE
+                    WHEN email.status IN ('RECEIVED', 'PROCESSING', 'RETRY') THEN 'DEAD'
+                    ELSE email.status
+                END,
+                failure_code = CASE
+                    WHEN email.status IN ('RECEIVED', 'PROCESSING', 'RETRY')
+                        THEN 'CONTENT_RETENTION_EXPIRED'
+                    ELSE email.failure_code
+                END,
+                next_attempt_at = NULL,
+                completed_at = COALESCE(email.completed_at, :purgedAt)
+            FROM expired
+            WHERE email.id = expired.id
+            """, nativeQuery = true)
+    int purgeExpiredContent(
+            @Param("cutoff") Instant cutoff,
+            @Param("purgedAt") Instant purgedAt,
+            @Param("batchSize") int batchSize
+    );
 }

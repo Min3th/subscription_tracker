@@ -110,8 +110,18 @@ The backend reads the following environment variables:
 | `SENDGRID_FROM_NAME`  | Sender name shown in reminder emails                                        |
 | `INBOUND_EMAIL_DOMAIN` | Receiving domain for generated forwarding addresses                        |
 | `INBOUND_EMAIL_TOKEN_ENCRYPTION_KEY` | Base64-encoded 32-byte key used to encrypt forwarding-address tokens |
+| `SENDGRID_INBOUND_WEBHOOK_PUBLIC_KEY` | ECDSA public key from the SendGrid Inbound Parse security policy |
+| `INBOUND_EMAIL_MAX_REQUEST_BYTES` | Maximum accepted raw multipart request size; defaults to 10 MiB |
+| `INBOUND_EMAIL_MAX_FIELD_BYTES` | Maximum accepted size of one parsed text field; defaults to 1 MiB |
+| `INBOUND_EMAIL_MAX_PARTS` | Maximum multipart part count; defaults to 30 |
+| `INBOUND_EMAIL_CONTENT_RETENTION_DAYS` | Days to retain inbound bodies and headers; defaults to 30 |
+| `INBOUND_EMAIL_RETENTION_BATCH_SIZE` | Maximum content records purged per retention run; defaults to 100 |
+| `INBOUND_EMAIL_RETENTION_CRON` | Spring cron expression for content retention; defaults to hourly at minute 15 |
 
 You can export these variables in your shell or provide them through your IDE's run configuration.
+
+Production DNS, SendGrid security-policy, limits, retention, and smoke-test instructions are in
+[`docs/inbound-email-forwarding.md`](docs/inbound-email-forwarding.md).
 
 Set `FRONTEND_ORIGINS` to the comma-separated frontend origins that may call the API, for example `https://app.example.com,https://admin.example.com`. Do not include paths or trailing slashes. The default includes the local Vite origin and the current hosted frontend.
 

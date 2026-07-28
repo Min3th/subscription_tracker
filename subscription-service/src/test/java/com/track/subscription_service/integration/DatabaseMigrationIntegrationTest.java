@@ -42,7 +42,7 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
                 String.class);
 
         assertEquals(0, failedMigrations);
-        assertEquals("11", currentVersion);
+        assertEquals("12", currentVersion);
         assertNotNull(regclass("users"));
         assertNotNull(regclass("subscription"));
         assertNotNull(regclass("notification_delivery"));

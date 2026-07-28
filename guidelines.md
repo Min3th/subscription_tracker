@@ -165,8 +165,10 @@ and reviewable.
   visit links found in an inbound message.
 - Keep extracted results in a pending suggestion. Never create or modify an active subscription
   until the authenticated user confirms the proposed fields.
-- Define and enforce retention for stored bodies and headers. Account deletion must cascade through
-  forwarding addresses, inbound events, and suggestions.
+- Purge stored text, HTML, and headers in bounded, concurrency-safe batches after the configured
+  retention window. Expired unprocessed events must move to `DEAD`, because missing content cannot
+  be processed safely. Account deletion must cascade through forwarding addresses, inbound events,
+  and suggestions.
 
 ## 9. Frontend Conventions
 
