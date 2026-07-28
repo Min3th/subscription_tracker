@@ -70,6 +70,36 @@ class InboundEmailIngestionServiceTest {
     }
 
     @Test
+    void fallbackFingerprintIgnoresLineEndingsWhitespaceAndVolatileHeaders() {
+        ParsedInboundEmail first = new ParsedInboundEmail(
+                """
+                {"from":"BILLING@example.com","to":["sub-%s@inbound.subtrak.me"]}
+                """.formatted(TOKEN),
+                null, null, "  Monthly   receipt ",
+                "Paid  USD 12.99\r\nNext month", null,
+                "Received: first-hop\r\n", null, 0);
+        ParsedInboundEmail second = new ParsedInboundEmail(
+                """
+                {"from":"billing@EXAMPLE.com","to":["sub-%s@inbound.subtrak.me"]}
+                """.formatted(TOKEN),
+                null, null, "Monthly receipt",
+                "Paid USD 12.99\nNext month", null,
+                "Received: retry-hop\r\n", null, 0);
+        Fixture fixture = fixture(first);
+        when(fixture.parser.parse(RAW_BODY, CONTENT_TYPE))
+                .thenReturn(first, second);
+
+        fixture.service.receive(RAW_BODY, CONTENT_TYPE, "signature", "timestamp");
+        fixture.service.receive(RAW_BODY, CONTENT_TYPE, "signature", "timestamp");
+
+        ArgumentCaptor<String> fingerprints = ArgumentCaptor.forClass(String.class);
+        verify(fixture.emailRepository, times(2)).insertReceived(
+                any(), anyLong(), anyLong(), isNull(), fingerprints.capture(),
+                any(), any(), any(), any(), any(), any(), any(), any(), any());
+        assertEquals(fingerprints.getAllValues().get(0), fingerprints.getAllValues().get(1));
+    }
+
+    @Test
     void silentlyAcknowledgesUnknownRevokedAndAmbiguousRecipients() {
         Fixture unknown = fixture(parsed(
                 """
@@ -163,8 +193,9 @@ class InboundEmailIngestionServiceTest {
         properties.setDomain("inbound.subtrak.me");
         when(parser.parse(RAW_BODY, CONTENT_TYPE)).thenReturn(parsed);
         when(tokenCodec.hash(TOKEN)).thenReturn("token-hash");
+        InboundEmailTokenCodec hashingCodec = new InboundEmailTokenCodec(properties);
         when(tokenCodec.hash(argThat(value -> value != null && value.startsWith("7\0"))))
-                .thenReturn("f".repeat(64));
+                .thenAnswer(invocation -> hashingCodec.hash(invocation.getArgument(0)));
 
         User user = mock(User.class);
         when(user.getId()).thenReturn(11L);

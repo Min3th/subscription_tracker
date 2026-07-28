@@ -35,6 +35,7 @@ SES_EVENT_QUEUE_URL=<SesEventQueueUrl output>
 SES_INBOUND_BUCKET=<SesInboundBucket output>
 SES_FROM_EMAIL=noreply@subtrak.xyz
 SES_FROM_NAME=SubTrak
+INBOUND_EMAIL_DOMAIN=inbound.subtrak.xyz
 ```
 
 The backend uses the EC2 instance role and AWS default credential chain. Never

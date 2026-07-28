@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
 import java.time.Clock;
+import java.text.Normalizer;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -119,11 +120,10 @@ public class InboundEmailIngestionService {
                 ? "provider-id\0" + providerMessageId
                 : String.join("\0",
                         "content",
-                        nullToEmpty(envelopeFrom),
-                        nullToEmpty(subject),
-                        nullToEmpty(parsed.text()),
-                        nullToEmpty(parsed.html()),
-                        nullToEmpty(parsed.headers()));
+                        canonicalize(envelopeFrom).toLowerCase(Locale.ROOT),
+                        canonicalize(subject),
+                        canonicalize(parsed.text()),
+                        canonicalize(parsed.html()));
         String fingerprint = tokenCodec.hash(address.getId() + "\0" + fingerprintSource);
 
         int inserted = emailRepository.insertReceived(
@@ -234,8 +234,16 @@ public class InboundEmailIngestionService {
         return first != null && !first.isBlank() ? first : second;
     }
 
-    private String nullToEmpty(String value) {
-        return value == null ? "" : value;
+    private String canonicalize(String value) {
+        if (value == null) {
+            return "";
+        }
+        return Normalizer.normalize(value, Normalizer.Form.NFKC)
+                .replace("\r\n", "\n")
+                .replace('\r', '\n')
+                .replaceAll("[\\t\\x0B\\f ]+", " ")
+                .replaceAll(" *\\n *", "\n")
+                .strip();
     }
 
     private record Envelope(String from, List<String> to) {
