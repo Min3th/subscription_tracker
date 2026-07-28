@@ -69,6 +69,9 @@ public class InboundEmail {
     @Column(name = "next_attempt_at")
     private Instant nextAttemptAt;
 
+    @Column(name = "claim_token", length = 36)
+    private String claimToken;
+
     @Column(name = "received_at", nullable = false)
     private Instant receivedAt;
 
@@ -116,6 +119,8 @@ public class InboundEmail {
     public void setAttemptCount(int attemptCount) { this.attemptCount = attemptCount; }
     public Instant getNextAttemptAt() { return nextAttemptAt; }
     public void setNextAttemptAt(Instant nextAttemptAt) { this.nextAttemptAt = nextAttemptAt; }
+    public String getClaimToken() { return claimToken; }
+    public void setClaimToken(String claimToken) { this.claimToken = claimToken; }
     public Instant getReceivedAt() { return receivedAt; }
     public void setReceivedAt(Instant receivedAt) { this.receivedAt = receivedAt; }
     public Instant getProcessingStartedAt() { return processingStartedAt; }

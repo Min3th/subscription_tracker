@@ -1,5 +1,6 @@
 package com.track.subscription_service.integration;
 
+import com.track.subscription_service.inboundemail.repository.InboundEmailRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.time.Instant;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -28,6 +30,9 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
     @Autowired
     private JdbcTemplate jdbc;
 
+    @Autowired
+    private InboundEmailRepository inboundEmails;
+
     @AfterEach
     void removeTestData() {
         jdbc.update("DELETE FROM users WHERE google_id LIKE ?", TEST_GOOGLE_ID + "%");
@@ -44,7 +49,7 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
                 String.class);
 
         assertEquals(0, failedMigrations);
-        assertEquals("13", currentVersion);
+        assertEquals("14", currentVersion);
         assertNotNull(regclass("users"));
         assertNotNull(regclass("subscription"));
         assertNotNull(regclass("notification_delivery"));
@@ -53,6 +58,24 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
         assertNotNull(regclass("inbound_email_address"));
         assertNotNull(regclass("inbound_email"));
         assertNotNull(regclass("subscription_suggestion"));
+    }
+
+    @Test
+    void inboundWorkerClaimsReceivedEmailWithAnOpaqueToken() {
+        long userId = createUser();
+        long addressId = insertInboundAddress(
+                userId, "c".repeat(64), "encrypted-worker-token");
+        UUID inboundEmailId = insertInboundEmail(
+                userId, addressId, "d".repeat(64));
+        Instant claimedAt = Instant.now().plusSeconds(1);
+
+        assertEquals(1, inboundEmails.claimProcessingBatch(
+                "worker-claim-token", claimedAt, claimedAt.minusSeconds(600), 10));
+
+        var claimed = inboundEmails.findClaimedBatch("worker-claim-token");
+        assertEquals(1, claimed.size());
+        assertEquals(inboundEmailId, claimed.get(0).getId());
+        assertEquals(1, claimed.get(0).getAttemptCount());
     }
 
     @Test

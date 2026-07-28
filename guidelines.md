@@ -178,6 +178,10 @@ and reviewable.
 - Keep deterministic provider, event, money, cadence, plan, and date rules separately testable.
   Accept dates only when the year is explicit. Treat ambiguous currency symbols and unlabeled
   numbers as unknown rather than applying locale or user-preference guesses.
+- Claim inbound work in bounded `FOR UPDATE SKIP LOCKED` batches with an opaque claim token.
+  Increment attempts when claiming, recover stale `PROCESSING` claims, retry transient failures
+  with bounded exponential backoff, and move exhausted events to `DEAD`. Complete each claimed
+  email in its own transaction so one malformed message cannot roll back the rest of the batch.
 - Treat possible subscription matches as review hints. A deduplication match must never update,
   merge, or suppress an active subscription without an authenticated user decision.
 - Purge stored text, HTML, and headers in bounded, concurrency-safe batches after the configured

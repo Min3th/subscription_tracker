@@ -40,6 +40,14 @@ public class InboundEmailProperties {
     @Max(1000)
     private int retentionBatchSize = 100;
 
+    @Min(1)
+    @Max(500)
+    private int processingBatchSize = 50;
+
+    @Min(1)
+    @Max(20)
+    private int processingMaxAttempts = 5;
+
     public String getDomain() {
         return domain;
     }
@@ -102,5 +110,21 @@ public class InboundEmailProperties {
 
     public void setRetentionBatchSize(int retentionBatchSize) {
         this.retentionBatchSize = retentionBatchSize;
+    }
+
+    public int getProcessingBatchSize() {
+        return processingBatchSize;
+    }
+
+    public void setProcessingBatchSize(int processingBatchSize) {
+        this.processingBatchSize = processingBatchSize;
+    }
+
+    public int getProcessingMaxAttempts() {
+        return processingMaxAttempts;
+    }
+
+    public void setProcessingMaxAttempts(int processingMaxAttempts) {
+        this.processingMaxAttempts = processingMaxAttempts;
     }
 }
