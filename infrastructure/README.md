@@ -26,7 +26,7 @@ an existing role, deployment requires `CAPABILITY_NAMED_IAM`.
 
 ```bash
 aws cloudformation validate-template \
-  --region ap-southeast-1 \
+  --region ap-south-1 \
   --template-body file://infrastructure/ses-email.yaml
 ```
 
@@ -34,7 +34,7 @@ aws cloudformation validate-template \
 
 ```bash
 aws cloudformation deploy \
-  --region ap-southeast-1 \
+  --region ap-south-1 \
   --stack-name subtrak-production-email \
   --template-file infrastructure/ses-email.yaml \
   --capabilities CAPABILITY_NAMED_IAM \
@@ -43,13 +43,18 @@ aws cloudformation deploy \
     DomainName=subtrak.me \
     InboundSubdomain=inbound \
     AwsAccountId=123456789012 \
-    SesRegion=ap-southeast-1 \
+    SesRegion=ap-south-1 \
     Ec2InstanceRoleName=replace-with-existing-role-name \
     RawMimeRetentionDays=31
 ```
 
 Do not publish the MX record during this initial deployment. Existing SendGrid
 inbound delivery remains active.
+
+Before the inbound cutover, confirm in the Amazon SES console that
+`subtrak-production-inbound` is the active receipt rule set. If it is not active,
+select it under **Email receiving → Rule sets** and choose **Set as active**.
+Only one receipt rule set can be active in an AWS Region.
 
 ## Stack outputs
 

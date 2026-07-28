@@ -18,7 +18,7 @@ Parameters:
     AllowedPattern: "^\\d{12}$"
   SesRegion:
     Type: String
-    Default: ap-southeast-1
+    Default: ap-south-1
     AllowedPattern: "^[a-z]{2}(?:-gov)?-[a-z]+-\\d$"
   Ec2InstanceRoleName:
     Type: String
@@ -393,7 +393,7 @@ Resources:
 
 Outputs:
   SesRegion:
-    Description: Set SES_REGION and deploy the application in this SES region.
+    Description: Set SES_REGION to the region containing the SES resources.
     Value: !Ref SesRegion
   SesDomainIdentity:
     Description: Verified sending identity.
