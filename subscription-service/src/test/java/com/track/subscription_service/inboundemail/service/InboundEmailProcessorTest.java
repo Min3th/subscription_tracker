@@ -76,6 +76,7 @@ class InboundEmailProcessorTest {
         SubscriptionSuggestion saved = captor.getValue();
         assertEquals(SuggestionStatus.PENDING, saved.getStatus());
         assertEquals(SuggestionEventType.RENEWAL_PAYMENT, saved.getEventType());
+        assertEquals(extraction.actionUrl(), saved.getActionUrl());
         assertEquals(duplicate, saved.getPossibleDuplicateSubscription());
         verify(emails).markCompleted(emailId, "claim",
                 InboundEmailStatus.SUGGESTION_CREATED, NOW);

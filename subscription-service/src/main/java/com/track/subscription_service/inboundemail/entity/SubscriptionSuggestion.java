@@ -82,6 +82,9 @@ public class SubscriptionSuggestion {
     @Column(name = "evidence_summary", nullable = false, length = 1000)
     private String evidenceSummary;
 
+    @Column(name = "action_url", length = 2000)
+    private String actionUrl;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private SuggestionStatus status;
@@ -134,6 +137,8 @@ public class SubscriptionSuggestion {
     public void setEvidenceSummary(String evidenceSummary) {
         this.evidenceSummary = evidenceSummary;
     }
+    public String getActionUrl() { return actionUrl; }
+    public void setActionUrl(String actionUrl) { this.actionUrl = actionUrl; }
     public SuggestionStatus getStatus() { return status; }
     public void setStatus(SuggestionStatus status) { this.status = status; }
     public Instant getCreatedAt() { return createdAt; }

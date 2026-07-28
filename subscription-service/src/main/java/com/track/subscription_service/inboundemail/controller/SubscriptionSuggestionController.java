@@ -52,4 +52,12 @@ public class SubscriptionSuggestionController {
         suggestionService.ignore(id, authentication.getName());
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{id}/gmail-verification/complete")
+    public ResponseEntity<Void> completeGmailVerification(
+            @PathVariable UUID id,
+            Authentication authentication) {
+        suggestionService.completeGmailVerification(id, authentication.getName());
+        return ResponseEntity.noContent().build();
+    }
 }

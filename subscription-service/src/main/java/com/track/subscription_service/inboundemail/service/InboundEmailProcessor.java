@@ -69,6 +69,7 @@ public class InboundEmailProcessor {
                 extraction.classification().name()));
         suggestion.setConfidence(extraction.confidence());
         suggestion.setEvidenceSummary(extraction.evidenceSummary());
+        suggestion.setActionUrl(extraction.actionUrl());
         suggestion.setStatus(SuggestionStatus.PENDING);
         suggestion.setCreatedAt(completedAt);
         suggestion.setUpdatedAt(completedAt);

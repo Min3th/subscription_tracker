@@ -86,6 +86,49 @@ class DeterministicSubscriptionExtractorTest {
         assertFalse(result.evidenceSummary().contains("explicit-renewal-date"));
     }
 
+    @Test
+    void extractsOnlyTheAllowlistedGmailForwardingVerificationUrl() {
+        SubscriptionExtraction result = extractor.extract(new NormalizedInboundEmail(
+                "Gmail Forwarding Confirmation",
+                "google.com",
+                """
+                Gmail received a forwarding confirmation request.
+                Ignore https://evil.example/steal
+                Confirm at https://mail-settings.google.com/mail/vf-abc123?token=safe
+                """
+        ));
+
+        assertEquals(InboundEmailClassification.GMAIL_VERIFICATION, result.classification());
+        assertEquals("https://mail-settings.google.com/mail/vf-abc123?token=safe",
+                result.actionUrl());
+        assertTrue(result.isSuggestionCandidate());
+    }
+
+    @Test
+    void doesNotTrustGmailVerificationWordingFromAnotherSender() {
+        SubscriptionExtraction result = extractor.extract(new NormalizedInboundEmail(
+                "Gmail Forwarding Confirmation",
+                "attacker.example",
+                "Gmail forwarding confirmation https://mail-settings.google.com/mail/vf-fake"
+        ));
+
+        assertEquals(InboundEmailClassification.NOT_SUBSCRIPTION, result.classification());
+        assertNull(result.actionUrl());
+        assertFalse(result.isSuggestionCandidate());
+    }
+
+    @Test
+    void discardsLookalikeGoogleVerificationLinks() {
+        SubscriptionExtraction result = extractor.extract(new NormalizedInboundEmail(
+                "Gmail Forwarding Confirmation",
+                "google.com",
+                "Gmail forwarding confirmation https://mail-settings.google.com.evil.example/mail/vf-token"
+        ));
+
+        assertEquals(InboundEmailClassification.GMAIL_VERIFICATION, result.classification());
+        assertNull(result.actionUrl());
+    }
+
     private String fixture(String name) throws IOException {
         try (var input = getClass().getResourceAsStream("/inbound-email/" + name)) {
             if (input == null) {

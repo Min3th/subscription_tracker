@@ -4,6 +4,7 @@ import com.track.subscription_service.common.error.ResourceNotFoundException;
 import com.track.subscription_service.inboundemail.dto.SubscriptionSuggestionResponse;
 import com.track.subscription_service.inboundemail.entity.SubscriptionSuggestion;
 import com.track.subscription_service.inboundemail.model.SuggestionStatus;
+import com.track.subscription_service.inboundemail.model.SuggestionEventType;
 import com.track.subscription_service.inboundemail.repository.SubscriptionSuggestionRepository;
 import com.track.subscription_service.subscription.dto.CreateSubscriptionRequest;
 import com.track.subscription_service.subscription.entity.Subscription;
@@ -49,6 +50,11 @@ public class SubscriptionSuggestionService {
             String googleId) {
         SubscriptionSuggestion suggestion = findOwnedForUpdate(suggestionId, googleId);
         requirePending(suggestion);
+        if (suggestion.getEventType() == SuggestionEventType.GMAIL_VERIFICATION) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNPROCESSABLE_ENTITY,
+                    "Gmail verification cannot create a subscription");
+        }
         Subscription subscription =
                 subscriptionService.createFromSuggestion(request, suggestion.getUser());
         var now = clock.instant();
@@ -66,6 +72,22 @@ public class SubscriptionSuggestionService {
         requirePending(suggestion);
         var now = clock.instant();
         suggestion.setStatus(SuggestionStatus.IGNORED);
+        suggestion.setDecidedAt(now);
+        suggestion.setUpdatedAt(now);
+        suggestionRepository.save(suggestion);
+    }
+
+    @Transactional
+    public void completeGmailVerification(UUID suggestionId, String googleId) {
+        SubscriptionSuggestion suggestion = findOwnedForUpdate(suggestionId, googleId);
+        requirePending(suggestion);
+        if (suggestion.getEventType() != SuggestionEventType.GMAIL_VERIFICATION) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNPROCESSABLE_ENTITY,
+                    "Suggestion is not a Gmail verification");
+        }
+        var now = clock.instant();
+        suggestion.setStatus(SuggestionStatus.CONFIRMED);
         suggestion.setDecidedAt(now);
         suggestion.setUpdatedAt(now);
         suggestionRepository.save(suggestion);
@@ -105,6 +127,7 @@ public class SubscriptionSuggestionService {
                 suggestion.getEventType(),
                 suggestion.getConfidence(),
                 suggestion.getEvidenceSummary(),
+                suggestion.getActionUrl(),
                 suggestion.getStatus(),
                 duplicate,
                 suggestion.getInboundEmail().getReceivedAt(),

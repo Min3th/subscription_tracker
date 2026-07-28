@@ -131,6 +131,47 @@ class SubscriptionSuggestionApiIntegrationTest extends PostgresIntegrationTest {
                 .andExpect(status().isUnauthorized());
     }
 
+    @Test
+    void completesGmailVerificationWithoutCreatingASubscription() throws Exception {
+        UUID suggestionId = createGmailVerification(firstUserId);
+        Integer before = subscriptionCount(firstUserId);
+
+        mockMvc.perform(get("/inbound-email/suggestions")
+                        .header("Authorization", bearer(firstToken)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].eventType").value("GMAIL_VERIFICATION"))
+                .andExpect(jsonPath("$[0].actionUrl").value(
+                        "https://mail-settings.google.com/mail/vf-test-token"));
+
+        mockMvc.perform(post(
+                        "/inbound-email/suggestions/{id}/gmail-verification/complete",
+                        suggestionId)
+                        .header("Authorization", bearer(secondToken)))
+                .andExpect(status().isNotFound());
+
+        mockMvc.perform(post("/inbound-email/suggestions/{id}/confirm", suggestionId)
+                        .header("Authorization", bearer(firstToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(confirmRequest()))
+                .andExpect(status().isUnprocessableEntity());
+        assertEquals(before, subscriptionCount(firstUserId));
+
+        mockMvc.perform(post(
+                        "/inbound-email/suggestions/{id}/gmail-verification/complete",
+                        suggestionId)
+                        .header("Authorization", bearer(firstToken)))
+                .andExpect(status().isNoContent());
+
+        assertEquals("CONFIRMED", suggestionStatus(suggestionId));
+        assertEquals(before, subscriptionCount(firstUserId));
+
+        mockMvc.perform(post("/inbound-email/suggestions/{id}/confirm", suggestionId)
+                        .header("Authorization", bearer(firstToken))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(confirmRequest()))
+                .andExpect(status().isConflict());
+    }
+
     private UUID createSuggestion(
             long userId, String provider, String currency, String amount) {
         long addressId = jdbc.queryForObject("""
@@ -170,6 +211,38 @@ class SubscriptionSuggestionApiIntegrationTest extends PostgresIntegrationTest {
                 RETURNING id
                 """, Long.class, USER_PREFIX + suffix,
                 suffix + "@example.com", "Suggestion " + suffix);
+    }
+
+    private UUID createGmailVerification(long userId) {
+        long addressId = jdbc.queryForObject("""
+                INSERT INTO inbound_email_address (
+                    user_id, token_hash, encrypted_token, created_at
+                ) VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+                RETURNING id
+                """, Long.class, userId, UUID.randomUUID().toString().replace("-", "")
+                + UUID.randomUUID().toString().replace("-", ""),
+                "encrypted-" + UUID.randomUUID());
+        UUID emailId = UUID.randomUUID();
+        jdbc.update("""
+                INSERT INTO inbound_email (
+                    id, user_id, recipient_address_id, message_fingerprint,
+                    status, received_at
+                ) VALUES (?, ?, ?, ?, 'SUGGESTION_CREATED', CURRENT_TIMESTAMP)
+                """, emailId, userId, addressId,
+                UUID.randomUUID().toString().replace("-", "")
+                        + UUID.randomUUID().toString().replace("-", ""));
+        UUID suggestionId = UUID.randomUUID();
+        jdbc.update("""
+                INSERT INTO subscription_suggestion (
+                    id, user_id, inbound_email_id, provider, event_type,
+                    confidence, evidence_summary, action_url, status,
+                    created_at, updated_at
+                ) VALUES (?, ?, ?, 'Gmail', 'GMAIL_VERIFICATION',
+                    0.5500, 'provider-explicit,event-phrase',
+                    'https://mail-settings.google.com/mail/vf-test-token',
+                    'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                """, suggestionId, userId, emailId);
+        return suggestionId;
     }
 
     private String accessToken(String googleId) {

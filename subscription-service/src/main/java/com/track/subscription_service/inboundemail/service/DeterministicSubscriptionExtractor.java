@@ -7,6 +7,8 @@ import com.track.subscription_service.subscription.model.BillingUnit;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -21,6 +23,11 @@ public class DeterministicSubscriptionExtractor {
             "gmail.com", "googlemail.com", "outlook.com", "hotmail.com",
             "live.com", "yahoo.com", "icloud.com"
     );
+    private static final Set<String> GMAIL_VERIFICATION_SENDERS = Set.of(
+            "google.com", "googlemail.com"
+    );
+    private static final Pattern HTTPS_URL = Pattern.compile(
+            "https://[^\\s<>\"']+", Pattern.CASE_INSENSITIVE);
     private static final Pattern CODE_MONEY = Pattern.compile(
             "(?i)\\b(USD|EUR|GBP|LKR|JPY|CAD|AUD|INR)\\s*"
                     + "([0-9][0-9,]*(?:\\.[0-9]{1,4})?)\\b");
@@ -59,7 +66,10 @@ public class DeterministicSubscriptionExtractor {
     public SubscriptionExtraction extract(NormalizedInboundEmail email) {
         String text = email.searchableText();
         String lower = text.toLowerCase(Locale.ROOT);
-        InboundEmailClassification classification = classify(lower);
+        InboundEmailClassification classification = classify(lower, email.senderDomain());
+        String actionUrl = classification == InboundEmailClassification.GMAIL_VERIFICATION
+                ? gmailVerificationUrl(text)
+                : null;
         String provider = provider(lower, email.senderDomain(), classification);
         Money money = money(text);
         Billing billing = billing(lower);
@@ -103,12 +113,14 @@ public class DeterministicSubscriptionExtractor {
                 billing == null ? null : billing.count(),
                 renewalDate,
                 confidence.min(BigDecimal.ONE).setScale(4),
-                String.join(",", evidence)
+                String.join(",", evidence),
+                actionUrl
         );
     }
 
-    private InboundEmailClassification classify(String text) {
-        if (containsAll(text, "gmail", "forwarding", "confirmation")) {
+    private InboundEmailClassification classify(String text, String senderDomain) {
+        if (GMAIL_VERIFICATION_SENDERS.contains(senderDomain)
+                && containsAll(text, "gmail", "forwarding", "confirmation")) {
             return InboundEmailClassification.GMAIL_VERIFICATION;
         }
         if (containsAny(text, "subscription cancelled", "subscription canceled",
@@ -131,6 +143,31 @@ public class DeterministicSubscriptionExtractor {
             return InboundEmailClassification.NEW_SUBSCRIPTION;
         }
         return InboundEmailClassification.NOT_SUBSCRIPTION;
+    }
+
+    private String gmailVerificationUrl(String text) {
+        Matcher matcher = HTTPS_URL.matcher(text);
+        while (matcher.find()) {
+            String candidate = matcher.group()
+                    .replaceAll("[).,;]+$", "");
+            if (candidate.length() > 2000) {
+                continue;
+            }
+            try {
+                URI uri = new URI(candidate);
+                if ("https".equalsIgnoreCase(uri.getScheme())
+                        && "mail-settings.google.com".equalsIgnoreCase(uri.getHost())
+                        && uri.getRawPath() != null
+                        && uri.getRawPath().startsWith("/mail/vf-")
+                        && uri.getUserInfo() == null
+                        && uri.getPort() == -1) {
+                    return uri.toASCIIString();
+                }
+            } catch (URISyntaxException ignored) {
+                // Ignore malformed and untrusted links.
+            }
+        }
+        return null;
     }
 
     private String provider(String text, String senderDomain,

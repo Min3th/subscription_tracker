@@ -204,6 +204,10 @@ and reviewable.
 - Use the suggestion confirmation endpoint for review edits; do not route a reviewed suggestion
   through the ordinary create-subscription form. Pre-fill only extracted facts, keep all fields
   editable, warn on possible duplicates, and require an explicit confirmation before ignore.
+- Recognize Gmail forwarding verification only from an allowlisted Google sender domain. Persist
+  only an HTTPS `mail-settings.google.com/mail/vf-…` action URL after parsing and validating its
+  scheme, exact host, port, user info, and path. Never return arbitrary links, follow a link on the
+  server, auto-open it in the browser, or allow a verification item to create a subscription.
 - Validate forms on the frontend for usability, while retaining backend validation as authoritative.
 - Do not expose switches, payment details, alerts, reports, or other capabilities that are not implemented.
 - If an unfinished capability must be visible, label it clearly as “Coming soon” and ensure it cannot imply that data is being processed.

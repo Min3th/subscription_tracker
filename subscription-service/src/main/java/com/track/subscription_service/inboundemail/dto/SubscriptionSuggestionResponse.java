@@ -21,6 +21,7 @@ public record SubscriptionSuggestionResponse(
         SuggestionEventType eventType,
         BigDecimal confidence,
         String evidenceSummary,
+        String actionUrl,
         SuggestionStatus status,
         PossibleDuplicate possibleDuplicate,
         Instant receivedAt,
