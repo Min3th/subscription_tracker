@@ -2,7 +2,9 @@ package com.track.subscription_service.inboundemail.service;
 
 import com.track.subscription_service.inboundemail.config.InboundEmailProperties;
 import com.track.subscription_service.inboundemail.dto.ParsedInboundEmail;
+import com.track.subscription_service.inboundemail.dto.ProviderInboundEmail;
 import com.track.subscription_service.inboundemail.entity.InboundEmailAddress;
+import com.track.subscription_service.inboundemail.model.InboundIngestionResult;
 import com.track.subscription_service.inboundemail.repository.InboundEmailAddressRepository;
 import com.track.subscription_service.inboundemail.repository.InboundEmailRepository;
 import com.track.subscription_service.user.entity.User;
@@ -15,6 +17,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.util.Optional;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -46,7 +49,7 @@ class InboundEmailIngestionServiceTest {
                 matches("[0-9a-f]{64}"), eq("billing@example.com"),
                 eq("Receipt"), eq("Paid USD 12.99"), isNull(),
                 eq("Message-ID: <message-123@example.com>\r\n"),
-                eq(new BigDecimal("0.1")), eq(NOW));
+                eq(new BigDecimal("0.1")), isNull(), isNull(), eq(NOW));
     }
 
     @Test
@@ -62,7 +65,7 @@ class InboundEmailIngestionServiceTest {
         ArgumentCaptor<String> fingerprints = ArgumentCaptor.forClass(String.class);
         verify(fixture.emailRepository, times(2)).insertReceived(
                 any(), anyLong(), anyLong(), any(), fingerprints.capture(),
-                any(), any(), any(), any(), any(), any(), any());
+                any(), any(), any(), any(), any(), any(), any(), any(), any());
         assertEquals(fingerprints.getAllValues().get(0), fingerprints.getAllValues().get(1));
     }
 
@@ -104,9 +107,54 @@ class InboundEmailIngestionServiceTest {
         verifyNoInteractions(oversizedFixture.emailRepository);
     }
 
+    @Test
+    void providerNeutralIngestionUsesEnvelopeRecipientsAndRetainsVerdicts() {
+        ParsedInboundEmail parsed = parsed(null);
+        Fixture fixture = fixture(parsed);
+        when(fixture.mimeParser.parse(RAW_BODY)).thenReturn(parsed);
+        when(fixture.emailRepository.insertReceived(
+                any(), anyLong(), anyLong(), any(), any(), any(), any(), any(),
+                any(), any(), any(), any(), any(), any())).thenReturn(1);
+
+        InboundIngestionResult result = fixture.service.ingest(new ProviderInboundEmail(
+                "ses-message-1",
+                "smtp-sender@example.com",
+                List.of("sub-" + TOKEN + "@inbound.subtrak.me"),
+                RAW_BODY,
+                "fail",
+                "pass",
+                NOW));
+
+        assertEquals(InboundIngestionResult.INSERTED, result);
+        verify(fixture.emailRepository).insertReceived(
+                any(), eq(11L), eq(7L), eq("ses-message-1"),
+                matches("[0-9a-f]{64}"), eq("smtp-sender@example.com"),
+                eq("Receipt"), eq("Paid USD 12.99"), isNull(),
+                eq("Message-ID: <message-123@example.com>\r\n"),
+                eq(new BigDecimal("0.1")), eq("FAIL"), eq("PASS"), eq(NOW));
+    }
+
+    @Test
+    void providerNeutralIngestionRejectsUnsafeVirusVerdictsBeforeMimeParsing() {
+        Fixture fixture = fixture(parsed(null));
+
+        assertThrows(IllegalArgumentException.class, () -> fixture.service.ingest(
+                new ProviderInboundEmail(
+                        "ses-message-2",
+                        "sender@example.com",
+                        List.of("sub-" + TOKEN + "@inbound.subtrak.me"),
+                        RAW_BODY,
+                        "PASS",
+                        "FAIL",
+                        NOW)));
+
+        verifyNoInteractions(fixture.mimeParser, fixture.emailRepository);
+    }
+
     private Fixture fixture(ParsedInboundEmail parsed) {
         InboundEmailWebhookVerifier verifier = mock(InboundEmailWebhookVerifier.class);
         SendGridInboundMultipartParser parser = mock(SendGridInboundMultipartParser.class);
+        Rfc822MimeParser mimeParser = mock(Rfc822MimeParser.class);
         InboundEmailAddressRepository addressRepository =
                 mock(InboundEmailAddressRepository.class);
         InboundEmailRepository emailRepository = mock(InboundEmailRepository.class);
@@ -127,9 +175,10 @@ class InboundEmailIngestionServiceTest {
                 .thenReturn(Optional.of(address));
 
         InboundEmailIngestionService service = new InboundEmailIngestionService(
-                verifier, parser, addressRepository, emailRepository, tokenCodec,
+                verifier, parser, mimeParser, addressRepository, emailRepository, tokenCodec,
                 properties, new ObjectMapper(), Clock.fixed(NOW, ZoneOffset.UTC));
-        return new Fixture(service, verifier, parser, addressRepository, emailRepository);
+        return new Fixture(
+                service, verifier, parser, mimeParser, addressRepository, emailRepository);
     }
 
     private ParsedInboundEmail parsed(String envelope) {
@@ -150,6 +199,7 @@ class InboundEmailIngestionServiceTest {
             InboundEmailIngestionService service,
             InboundEmailWebhookVerifier verifier,
             SendGridInboundMultipartParser parser,
+            Rfc822MimeParser mimeParser,
             InboundEmailAddressRepository addressRepository,
             InboundEmailRepository emailRepository
     ) {

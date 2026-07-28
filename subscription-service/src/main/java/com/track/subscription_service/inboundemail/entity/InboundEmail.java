@@ -56,6 +56,12 @@ public class InboundEmail {
     @Column(name = "spam_score", precision = 8, scale = 3)
     private BigDecimal spamScore;
 
+    @Column(name = "spam_verdict", length = 30)
+    private String spamVerdict;
+
+    @Column(name = "virus_verdict", length = 30)
+    private String virusVerdict;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private InboundEmailStatus status;
@@ -111,6 +117,10 @@ public class InboundEmail {
     public void setRawHeaders(String rawHeaders) { this.rawHeaders = rawHeaders; }
     public BigDecimal getSpamScore() { return spamScore; }
     public void setSpamScore(BigDecimal spamScore) { this.spamScore = spamScore; }
+    public String getSpamVerdict() { return spamVerdict; }
+    public void setSpamVerdict(String spamVerdict) { this.spamVerdict = spamVerdict; }
+    public String getVirusVerdict() { return virusVerdict; }
+    public void setVirusVerdict(String virusVerdict) { this.virusVerdict = virusVerdict; }
     public InboundEmailStatus getStatus() { return status; }
     public void setStatus(InboundEmailStatus status) { this.status = status; }
     public String getFailureCode() { return failureCode; }

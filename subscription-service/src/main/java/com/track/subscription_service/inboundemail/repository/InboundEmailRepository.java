@@ -20,11 +20,13 @@ public interface InboundEmailRepository extends JpaRepository<InboundEmail, UUID
             INSERT INTO inbound_email (
                 id, user_id, recipient_address_id, provider_message_id,
                 message_fingerprint, envelope_from, subject, text_body,
-                html_body, raw_headers, spam_score, status, attempt_count, received_at
+                html_body, raw_headers, spam_score, spam_verdict, virus_verdict,
+                status, attempt_count, received_at
             ) VALUES (
                 :id, :userId, :addressId, :providerMessageId,
                 :fingerprint, :envelopeFrom, :subject, :textBody,
-                :htmlBody, :rawHeaders, :spamScore, 'RECEIVED', 0, :receivedAt
+                :htmlBody, :rawHeaders, :spamScore, :spamVerdict, :virusVerdict,
+                'RECEIVED', 0, :receivedAt
             )
             ON CONFLICT (recipient_address_id, message_fingerprint) DO NOTHING
             """, nativeQuery = true)
@@ -40,6 +42,8 @@ public interface InboundEmailRepository extends JpaRepository<InboundEmail, UUID
             @Param("htmlBody") String htmlBody,
             @Param("rawHeaders") String rawHeaders,
             @Param("spamScore") BigDecimal spamScore,
+            @Param("spamVerdict") String spamVerdict,
+            @Param("virusVerdict") String virusVerdict,
             @Param("receivedAt") Instant receivedAt
     );
 
@@ -58,6 +62,8 @@ public interface InboundEmailRepository extends JpaRepository<InboundEmail, UUID
             SET text_body = NULL,
                 html_body = NULL,
                 raw_headers = NULL,
+                spam_verdict = NULL,
+                virus_verdict = NULL,
                 content_purged_at = :purgedAt,
                 status = CASE
                     WHEN email.status IN ('RECEIVED', 'PROCESSING', 'RETRY') THEN 'DEAD'

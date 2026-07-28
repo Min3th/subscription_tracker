@@ -2,7 +2,9 @@ package com.track.subscription_service.inboundemail.service;
 
 import com.track.subscription_service.inboundemail.config.InboundEmailProperties;
 import com.track.subscription_service.inboundemail.dto.ParsedInboundEmail;
+import com.track.subscription_service.inboundemail.dto.ProviderInboundEmail;
 import com.track.subscription_service.inboundemail.entity.InboundEmailAddress;
+import com.track.subscription_service.inboundemail.model.InboundIngestionResult;
 import com.track.subscription_service.inboundemail.repository.InboundEmailAddressRepository;
 import com.track.subscription_service.inboundemail.repository.InboundEmailRepository;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,7 @@ public class InboundEmailIngestionService {
 
     private final InboundEmailWebhookVerifier verifier;
     private final SendGridInboundMultipartParser parser;
+    private final Rfc822MimeParser mimeParser;
     private final InboundEmailAddressRepository addressRepository;
     private final InboundEmailRepository emailRepository;
     private final InboundEmailTokenCodec tokenCodec;
@@ -32,6 +35,7 @@ public class InboundEmailIngestionService {
 
     public InboundEmailIngestionService(InboundEmailWebhookVerifier verifier,
                                         SendGridInboundMultipartParser parser,
+                                        Rfc822MimeParser mimeParser,
                                         InboundEmailAddressRepository addressRepository,
                                         InboundEmailRepository emailRepository,
                                         InboundEmailTokenCodec tokenCodec,
@@ -40,6 +44,7 @@ public class InboundEmailIngestionService {
                                         Clock clock) {
         this.verifier = verifier;
         this.parser = parser;
+        this.mimeParser = mimeParser;
         this.addressRepository = addressRepository;
         this.emailRepository = emailRepository;
         this.tokenCodec = tokenCodec;
@@ -53,27 +58,65 @@ public class InboundEmailIngestionService {
         verifier.verify(rawBody, signature, timestamp);
         ParsedInboundEmail parsed = parser.parse(rawBody, contentType);
         Envelope envelope = parseEnvelope(parsed.envelope());
-        String recipientToken = singleSubtrakRecipientToken(envelope.to());
+        persist(
+                messageId(parsed.headers()),
+                envelope.from(),
+                envelope.to(),
+                parsed,
+                null,
+                null,
+                clock.instant());
+    }
+
+    @Transactional
+    public InboundIngestionResult ingest(ProviderInboundEmail inboundEmail) {
+        if (inboundEmail == null) {
+            throw new IllegalArgumentException("Inbound email is required");
+        }
+        requireSafeVirusVerdict(inboundEmail.virusVerdict());
+        validateSpamVerdict(inboundEmail.spamVerdict());
+        ParsedInboundEmail parsed = mimeParser.parse(inboundEmail.rawMime());
+        return persist(
+                bounded(inboundEmail.providerMessageId(), 998, "provider message ID"),
+                inboundEmail.envelopeSender(),
+                inboundEmail.envelopeRecipients(),
+                parsed,
+                normalizeVerdict(inboundEmail.spamVerdict()),
+                normalizeVerdict(inboundEmail.virusVerdict()),
+                inboundEmail.receivedAt() == null ? clock.instant() : inboundEmail.receivedAt());
+    }
+
+    private InboundIngestionResult persist(
+            String providerMessageId,
+            String envelopeSender,
+            List<String> envelopeRecipients,
+            ParsedInboundEmail parsed,
+            String spamVerdict,
+            String virusVerdict,
+            java.time.Instant receivedAt) {
+        String recipientToken = singleSubtrakRecipientToken(envelopeRecipients);
         if (recipientToken == null) {
-            return;
+            return InboundIngestionResult.DISCARDED;
         }
 
         InboundEmailAddress address = addressRepository
                 .findByTokenHashAndRevokedAtIsNull(tokenCodec.hash(recipientToken))
                 .orElse(null);
         if (address == null) {
-            return;
+            return InboundIngestionResult.DISCARDED;
         }
 
-        String providerMessageId = messageId(parsed.headers());
         String envelopeFrom = bounded(
-                firstNonBlank(envelope.from(), parsed.from()), 320, "sender");
+                firstNonBlank(envelopeSender, parsed.from()), 320, "sender");
         String subject = bounded(parsed.subject(), 998, "subject");
         if (parsed.spamScore() != null && parsed.spamScore().signum() < 0) {
             throw new IllegalArgumentException("Inbound email spam score is invalid");
         }
-        String fingerprintSource = providerMessageId != null
-                ? "message-id\0" + providerMessageId
+        String mimeMessageId = messageId(parsed.headers());
+        String fingerprintSource = mimeMessageId != null
+                ? "message-id\0" + mimeMessageId
+                : providerMessageId != null && !providerMessageId.isBlank()
+                ? "provider-id\0" + providerMessageId
                 : String.join("\0",
                         "content",
                         nullToEmpty(envelopeFrom),
@@ -83,7 +126,7 @@ public class InboundEmailIngestionService {
                         nullToEmpty(parsed.headers()));
         String fingerprint = tokenCodec.hash(address.getId() + "\0" + fingerprintSource);
 
-        emailRepository.insertReceived(
+        int inserted = emailRepository.insertReceived(
                 UUID.randomUUID(),
                 address.getUser().getId(),
                 address.getId(),
@@ -95,8 +138,34 @@ public class InboundEmailIngestionService {
                 parsed.html(),
                 parsed.headers(),
                 parsed.spamScore(),
-                clock.instant()
+                spamVerdict,
+                virusVerdict,
+                receivedAt
         );
+        return inserted == 1
+                ? InboundIngestionResult.INSERTED
+                : InboundIngestionResult.DUPLICATE;
+    }
+
+    private void requireSafeVirusVerdict(String verdict) {
+        if (verdict == null || !"PASS".equalsIgnoreCase(verdict.strip())) {
+            throw new IllegalArgumentException("Inbound email failed virus validation");
+        }
+    }
+
+    private void validateSpamVerdict(String verdict) {
+        if (verdict == null || verdict.isBlank()) {
+            throw new IllegalArgumentException("Inbound email spam verdict is required");
+        }
+        String normalized = verdict.strip().toUpperCase(Locale.ROOT);
+        if (!java.util.Set.of("PASS", "FAIL", "GRAY", "PROCESSING_FAILED")
+                .contains(normalized)) {
+            throw new IllegalArgumentException("Inbound email spam verdict is invalid");
+        }
+    }
+
+    private String normalizeVerdict(String verdict) {
+        return verdict == null ? null : verdict.strip().toUpperCase(Locale.ROOT);
     }
 
     private Envelope parseEnvelope(String rawEnvelope) {

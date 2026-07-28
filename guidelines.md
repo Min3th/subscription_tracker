@@ -172,6 +172,11 @@ and reviewable.
   verification links, or attachment contents.
 - Apply explicit size limits to multipart requests and every stored field. Do not store attachments
   until attachment validation, malware handling, storage, and retention are deliberately designed.
+- Resolve inbound ownership exclusively from the authenticated provider's SMTP envelope
+  recipients. Visible `To`, `Cc`, and forwarded-message headers are untrusted content and
+  must never select a user or forwarding address.
+- Parse SES objects as bounded RFC 822/MIME messages, cap MIME part counts, and reject
+  attachments and failed virus verdicts before durable ingestion.
 - Render inbound content as plain text only. Never render untrusted email HTML or automatically
   visit links found in an inbound message.
 - Keep extracted results in a pending suggestion. Never create or modify an active subscription
