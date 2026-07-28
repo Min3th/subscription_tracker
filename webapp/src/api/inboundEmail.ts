@@ -49,3 +49,7 @@ export const confirmSuggestion = async (
 export const ignoreSuggestion = async (id: string): Promise<void> => {
   await api.post(`/inbound-email/suggestions/${id}/ignore`);
 };
+
+export const completeGmailVerification = async (id: string): Promise<void> => {
+  await api.post(`/inbound-email/suggestions/${id}/gmail-verification/complete`);
+};

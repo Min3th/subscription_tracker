@@ -2,11 +2,13 @@ import { configureStore } from "@reduxjs/toolkit";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   confirmSuggestion as confirmSuggestionRequest,
+  completeGmailVerification as completeGmailVerificationRequest,
   getPendingSuggestions,
   ignoreSuggestion as ignoreSuggestionRequest,
 } from "../../api/inboundEmail";
 import suggestionsReducer, {
   confirmSuggestion,
+  completeGmailVerification,
   fetchSuggestions,
   ignoreSuggestion,
 } from "./suggestionsSlice";
@@ -15,6 +17,7 @@ import type { SubscriptionSuggestion } from "../../types/suggestion";
 vi.mock("../../api/inboundEmail", () => ({
   getPendingSuggestions: vi.fn(),
   confirmSuggestion: vi.fn(),
+  completeGmailVerification: vi.fn(),
   ignoreSuggestion: vi.fn(),
 }));
 
@@ -30,6 +33,7 @@ const suggestion: SubscriptionSuggestion = {
   eventType: "NEW_SUBSCRIPTION",
   confidence: 0.93,
   evidenceSummary: "Example Plus renews monthly.",
+  actionUrl: null,
   status: "PENDING",
   possibleDuplicate: null,
   receivedAt: "2026-07-28T10:00:00Z",
@@ -93,5 +97,24 @@ describe("suggestion request coordination", () => {
 
     expect(store.getState().suggestions.items).toEqual([suggestion]);
     expect(store.getState().suggestions.error).toBe("Try again");
+  });
+
+  it("removes a Gmail item after verification completion succeeds", async () => {
+    const gmailSuggestion: SubscriptionSuggestion = {
+      ...suggestion,
+      id: "1ad756f0-f584-4b85-9e96-32716d7a5d6e",
+      provider: "Gmail",
+      eventType: "GMAIL_VERIFICATION",
+      actionUrl: "https://mail-settings.google.com/mail/vf-test",
+    };
+    vi.mocked(getPendingSuggestions).mockResolvedValue([gmailSuggestion]);
+    vi.mocked(completeGmailVerificationRequest).mockResolvedValue();
+    const store = createStore();
+    await store.dispatch(fetchSuggestions());
+
+    await store.dispatch(completeGmailVerification(gmailSuggestion.id));
+
+    expect(completeGmailVerificationRequest).toHaveBeenCalledWith(gmailSuggestion.id);
+    expect(store.getState().suggestions.items).toEqual([]);
   });
 });

@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   confirmSuggestion as confirmSuggestionRequest,
+  completeGmailVerification as completeGmailVerificationRequest,
   getPendingSuggestions,
   ignoreSuggestion as ignoreSuggestionRequest,
 } from "../../api/inboundEmail";
@@ -46,6 +47,14 @@ export const ignoreSuggestion = createAsyncThunk(
   "suggestions/ignore",
   async (id: string) => {
     await ignoreSuggestionRequest(id);
+    return id;
+  },
+);
+
+export const completeGmailVerification = createAsyncThunk(
+  "suggestions/completeGmailVerification",
+  async (id: string) => {
+    await completeGmailVerificationRequest(id);
     return id;
   },
 );
@@ -96,6 +105,18 @@ const suggestionsSlice = createSlice({
       .addCase(ignoreSuggestion.rejected, (state, action) => {
         state.decidingId = null;
         state.error = action.error.message ?? "Failed to ignore suggestion";
+      })
+      .addCase(completeGmailVerification.pending, (state, action) => {
+        state.decidingId = action.meta.arg;
+        state.error = null;
+      })
+      .addCase(completeGmailVerification.fulfilled, (state, action) => {
+        state.decidingId = null;
+        state.items = state.items.filter((item) => item.id !== action.payload);
+      })
+      .addCase(completeGmailVerification.rejected, (state, action) => {
+        state.decidingId = null;
+        state.error = action.error.message ?? "Failed to complete Gmail verification";
       });
   },
 });

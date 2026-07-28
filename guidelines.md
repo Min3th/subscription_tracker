@@ -208,6 +208,9 @@ and reviewable.
   only an HTTPS `mail-settings.google.com/mail/vf-…` action URL after parsing and validating its
   scheme, exact host, port, user info, and path. Never return arbitrary links, follow a link on the
   server, auto-open it in the browser, or allow a verification item to create a subscription.
+- Render Gmail verification separately from subscription suggestions. Require the user to explicitly
+  open the allowlisted URL in a new, isolated tab and separately mark the step complete; disable the
+  completion action when no trusted URL is available.
 - Validate forms on the frontend for usability, while retaining backend validation as authoritative.
 - Do not expose switches, payment details, alerts, reports, or other capabilities that are not implemented.
 - If an unfinished capability must be visible, label it clearly as “Coming soon” and ensure it cannot imply that data is being processed.

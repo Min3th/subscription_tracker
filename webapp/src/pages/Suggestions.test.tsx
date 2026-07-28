@@ -6,6 +6,7 @@ import { axe } from "jest-axe";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   confirmSuggestion,
+  completeGmailVerification,
   getPendingSuggestions,
   ignoreSuggestion,
 } from "../api/inboundEmail";
@@ -17,6 +18,7 @@ import Suggestions from "./Suggestions";
 vi.mock("../api/inboundEmail", () => ({
   getPendingSuggestions: vi.fn(),
   confirmSuggestion: vi.fn(),
+  completeGmailVerification: vi.fn(),
   ignoreSuggestion: vi.fn(),
 }));
 
@@ -32,6 +34,7 @@ const suggestion: SubscriptionSuggestion = {
   eventType: "NEW_SUBSCRIPTION",
   confidence: 0.91,
   evidenceSummary: "Acme Pro renews monthly.",
+  actionUrl: null,
   status: "PENDING",
   possibleDuplicate: null,
   receivedAt: "2026-07-28T08:00:00Z",
@@ -97,5 +100,53 @@ describe("Suggestions", () => {
     await screen.findByText("Acme — Pro");
 
     expect(await axe(container)).toHaveNoViolations();
+  });
+
+  it("shows Gmail verification without exposing subscription confirmation", async () => {
+    const gmailSuggestion: SubscriptionSuggestion = {
+      ...suggestion,
+      id: "2b54e69d-e1c5-43d6-b8e8-5f450c400ca9",
+      provider: "Gmail",
+      planName: null,
+      amount: null,
+      currency: null,
+      eventType: "GMAIL_VERIFICATION",
+      actionUrl: "https://mail-settings.google.com/mail/vf-safe-token",
+    };
+    vi.mocked(getPendingSuggestions).mockResolvedValue([gmailSuggestion]);
+    vi.mocked(completeGmailVerification).mockResolvedValue();
+    const user = userEvent.setup();
+    renderPage();
+
+    const link = await screen.findByRole("link", { name: "Open Google verification" });
+    expect(link).toHaveAttribute(
+      "href",
+      "https://mail-settings.google.com/mail/vf-safe-token",
+    );
+    expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    expect(screen.queryByRole("button", { name: "Review and confirm" })).not.toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "I've completed verification" }));
+    await waitFor(() =>
+      expect(completeGmailVerification).toHaveBeenCalledWith(gmailSuggestion.id),
+    );
+  });
+
+  it("does not render an untrusted Gmail action URL", async () => {
+    vi.mocked(getPendingSuggestions).mockResolvedValue([{
+      ...suggestion,
+      provider: "Gmail",
+      planName: null,
+      eventType: "GMAIL_VERIFICATION",
+      actionUrl: "https://mail-settings.google.com.evil.example/mail/vf-token",
+    }]);
+    renderPage();
+
+    expect(await screen.findByText(/did not contain a trusted Google verification link/i))
+      .toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Open Google verification" }))
+      .not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "I've completed verification" }))
+      .toBeDisabled();
   });
 });

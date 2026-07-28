@@ -6,7 +6,8 @@ import type {
 
 export type SuggestionEventType =
   | "NEW_SUBSCRIPTION"
-  | "RENEWAL"
+  | "RENEWAL_PAYMENT"
+  | "UPCOMING_RENEWAL"
   | "PRICE_CHANGE"
   | "CANCELLATION"
   | "GMAIL_VERIFICATION";
@@ -28,6 +29,7 @@ export interface SubscriptionSuggestion {
   eventType: SuggestionEventType;
   confidence: number;
   evidenceSummary: string;
+  actionUrl: string | null;
   status: "PENDING";
   possibleDuplicate: PossibleDuplicate | null;
   receivedAt: string;

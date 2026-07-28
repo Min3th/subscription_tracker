@@ -20,7 +20,9 @@ import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../app/store";
 import SuggestionReviewDialog from "../components/SuggestionReviewDialog";
+import GmailVerificationCard from "../components/GmailVerificationCard";
 import {
+  completeGmailVerification,
   fetchSuggestions,
   ignoreSuggestion,
 } from "../features/suggestions/suggestionsSlice";
@@ -49,6 +51,15 @@ export default function Suggestions() {
       setIgnoring(null);
     } catch {
       snackbar.error(t("suggestions.ignore_error", "We couldn't ignore this suggestion. Please try again."));
+    }
+  };
+
+  const completeVerification = async (suggestion: SubscriptionSuggestion) => {
+    try {
+      await dispatch(completeGmailVerification(suggestion.id)).unwrap();
+      snackbar.success(t("suggestions.gmail_completed", "Gmail forwarding verified"));
+    } catch {
+      snackbar.error(t("suggestions.gmail_complete_error", "We couldn't save the verification step. Please try again."));
     }
   };
 
@@ -82,6 +93,17 @@ export default function Suggestions() {
       <Stack spacing={2}>
         {items.map((suggestion) => {
           const busy = decidingId === suggestion.id;
+          if (suggestion.eventType === "GMAIL_VERIFICATION") {
+            return (
+              <GmailVerificationCard
+                key={suggestion.id}
+                suggestion={suggestion}
+                busy={busy}
+                onComplete={() => completeVerification(suggestion)}
+                onIgnore={() => setIgnoring(suggestion)}
+              />
+            );
+          }
           return (
             <Card key={suggestion.id} variant="outlined">
               <CardContent>

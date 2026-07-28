@@ -63,7 +63,17 @@
     "ignore_body": "It won't create or change a subscription.",
     "ignored": "Suggestion ignored",
     "ignore_error": "We couldn't ignore this suggestion. Please try again.",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "gmail_title": "Complete Gmail forwarding verification",
+    "gmail_body": "Gmail sent a verification request for your Subtrak forwarding address.",
+    "gmail_setup": "Gmail setup",
+    "gmail_security": "Check that the next page is a Google page, complete verification there, then return here.",
+    "gmail_link_missing": "The verification message arrived, but it did not contain a trusted Google verification link. Try sending a new request from Gmail.",
+    "gmail_open": "Open Google verification",
+    "gmail_complete": "I've completed verification",
+    "gmail_completing": "Saving…",
+    "gmail_completed": "Gmail forwarding verified",
+    "gmail_complete_error": "We couldn't save the verification step. Please try again."
   },
   "settings": {
     "title": "Settings",
