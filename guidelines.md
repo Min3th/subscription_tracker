@@ -152,6 +152,8 @@ and reviewable.
   persistence, extraction, and review behavior must not depend on a provider SDK.
 - Authenticate AWS access with the default credential chain and an EC2 instance role in production.
   Never add static AWS access keys to application properties, source control, or deployment secrets.
+- Keep the application's default SES region aligned with the CloudFormation default,
+  while allowing `SES_REGION` to override a different general deployment region.
 - Provision SES, S3, SNS, SQS, DLQs, and runtime IAM grants through the repository
   CloudFormation stack. Keep queue publication source-account/source-ARN constrained,
   block public S3 access, require TLS, and grant the EC2 role only queue consumption,
