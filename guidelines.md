@@ -184,6 +184,10 @@ and reviewable.
   email in its own transaction so one malformed message cannot roll back the rest of the batch.
 - Treat possible subscription matches as review hints. A deduplication match must never update,
   merge, or suppress an active subscription without an authenticated user decision.
+- Scope suggestion reads and decisions by the authenticated user's stable identity, returning the
+  same not-found response for missing and foreign IDs. Lock a pending suggestion while deciding it;
+  confirmation must atomically create exactly one subscription and record that link, while ignore
+  must create nothing. A second decision attempt must return a conflict.
 - Purge stored text, HTML, and headers in bounded, concurrency-safe batches after the configured
   retention window. Expired unprocessed events must move to `DEAD`, because missing content cannot
   be processed safely. Account deletion must cascade through forwarding addresses, inbound events,

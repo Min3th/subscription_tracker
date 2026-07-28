@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Currency;
 import java.util.Locale;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class SubscriptionService {
@@ -44,10 +45,21 @@ public class SubscriptionService {
     public Subscription create(CreateSubscriptionRequest request, String googleId){
         User user = userRepository.findByGoogleId(googleId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+        return createInternal(request, user, preferredCurrency(user));
+    }
+
+    @Transactional
+    public Subscription createFromSuggestion(
+            CreateSubscriptionRequest request, User user) {
+        return createInternal(request, user, request.currency());
+    }
+
+    private Subscription createInternal(
+            CreateSubscriptionRequest request, User user, String currency) {
         Subscription subscription = new Subscription();
         subscription.setName(request.name());
         subscription.setCost(request.cost());
-        subscription.setCurrency(preferredCurrency(user));
+        subscription.setCurrency(currency);
         subscription.setType(request.type());
         subscription.setDuration(request.duration());
         subscription.setCategory(request.category());
