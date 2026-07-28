@@ -7,6 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -42,7 +44,7 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
                 String.class);
 
         assertEquals(0, failedMigrations);
-        assertEquals("12", currentVersion);
+        assertEquals("13", currentVersion);
         assertNotNull(regclass("users"));
         assertNotNull(regclass("subscription"));
         assertNotNull(regclass("notification_delivery"));
@@ -50,6 +52,7 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
         assertNotNull(regclass("refresh_token_sessions"));
         assertNotNull(regclass("inbound_email_address"));
         assertNotNull(regclass("inbound_email"));
+        assertNotNull(regclass("subscription_suggestion"));
     }
 
     @Test
@@ -97,6 +100,21 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
 
         assertThrows(DataIntegrityViolationException.class,
                 () -> insertInboundEmail(userId, addressId, fingerprint));
+    }
+
+    @Test
+    void subscriptionSuggestionEnforcesInboundOwnershipAndExtractedMoneyRules() {
+        long firstUserId = createUser();
+        long secondUserId = createUser(TEST_GOOGLE_ID + "-second");
+        long addressId = insertInboundAddress(
+                firstUserId, "1".repeat(64), "encrypted-token");
+        UUID inboundEmailId = insertInboundEmail(
+                firstUserId, addressId, "2".repeat(64));
+
+        assertThrows(DataIntegrityViolationException.class,
+                () -> insertSuggestion(secondUserId, inboundEmailId, null, null));
+        assertThrows(DataIntegrityViolationException.class,
+                () -> insertSuggestion(firstUserId, inboundEmailId, "12.9900", null));
     }
 
     @Test
@@ -201,13 +219,30 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
                 """, Long.class, userId, tokenHash, encryptedToken);
     }
 
-    private void insertInboundEmail(long userId, long addressId, String fingerprint) {
+    private UUID insertInboundEmail(long userId, long addressId, String fingerprint) {
+        UUID id = UUID.randomUUID();
         jdbc.update("""
                 INSERT INTO inbound_email (
                     id, user_id, recipient_address_id, message_fingerprint,
                     status, received_at
-                ) VALUES (gen_random_uuid(), ?, ?, ?, 'RECEIVED', CURRENT_TIMESTAMP)
-                """, userId, addressId, fingerprint);
+                ) VALUES (?, ?, ?, ?, 'RECEIVED', CURRENT_TIMESTAMP)
+                """, id, userId, addressId, fingerprint);
+        return id;
+    }
+
+    private void insertSuggestion(long userId, UUID inboundEmailId,
+                                  String amount, String currency) {
+        jdbc.update("""
+                INSERT INTO subscription_suggestion (
+                    id, user_id, inbound_email_id, provider, amount, currency,
+                    event_type, confidence, evidence_summary, status,
+                    created_at, updated_at
+                ) VALUES (
+                    gen_random_uuid(), ?, ?, 'Example', ?::numeric, ?,
+                    'NEW_SUBSCRIPTION', 0.9000, 'provider-domain',
+                    'PENDING', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+                )
+                """, userId, inboundEmailId, amount, currency);
     }
 
     private String regclass(String tableName) {

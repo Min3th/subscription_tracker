@@ -165,6 +165,15 @@ and reviewable.
   visit links found in an inbound message.
 - Keep extracted results in a pending suggestion. Never create or modify an active subscription
   until the authenticated user confirms the proposed fields.
+- Deterministic extraction may leave uncertain fields null. Never invent a price, currency, billing
+  interval, renewal date, plan, or provider to make a suggestion look complete.
+- Persist exact extracted money as `NUMERIC`/`BigDecimal` and require amount and currency to appear
+  together. Confidence must be bounded from zero through one and based only on explicit,
+  test-covered evidence.
+- Store an evidence summary as non-sensitive rule identifiers or field-presence descriptions, not
+  copied email content. Keep at most one suggestion per inbound email.
+- Treat possible subscription matches as review hints. A deduplication match must never update,
+  merge, or suppress an active subscription without an authenticated user decision.
 - Purge stored text, HTML, and headers in bounded, concurrency-safe batches after the configured
   retention window. Expired unprocessed events must move to `DEAD`, because missing content cannot
   be processed safely. Account deletion must cascade through forwarding addresses, inbound events,
