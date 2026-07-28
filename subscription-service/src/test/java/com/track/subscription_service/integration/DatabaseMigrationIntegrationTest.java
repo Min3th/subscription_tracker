@@ -42,12 +42,35 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
                 String.class);
 
         assertEquals(0, failedMigrations);
-        assertEquals("8", currentVersion);
+        assertEquals("10", currentVersion);
         assertNotNull(regclass("users"));
         assertNotNull(regclass("subscription"));
         assertNotNull(regclass("notification_delivery"));
         assertNotNull(regclass("subscription_reminder_schedule"));
         assertNotNull(regclass("refresh_token_sessions"));
+        assertNotNull(regclass("inbound_email_address"));
+    }
+
+    @Test
+    void inboundEmailAddressAllowsOnlyOneActiveAddressPerUser() {
+        long userId = createUser();
+        insertInboundAddress(userId, "a".repeat(64), "encrypted-token-one");
+
+        assertThrows(DataIntegrityViolationException.class,
+                () -> insertInboundAddress(userId, "b".repeat(64), "encrypted-token-two"));
+
+        jdbc.update("""
+                UPDATE inbound_email_address
+                SET revoked_at = created_at
+                WHERE token_hash = ?
+                """, "a".repeat(64));
+        insertInboundAddress(userId, "b".repeat(64), "encrypted-token-two");
+
+        Integer addressCount = jdbc.queryForObject(
+                "SELECT COUNT(*) FROM inbound_email_address WHERE user_id = ?",
+                Integer.class,
+                userId);
+        assertEquals(2, addressCount);
     }
 
     @Test
@@ -137,6 +160,14 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
                     email_notifications_enabled, user_id
                 ) VALUES (?, ?::numeric, ?, 'ONE_TIME', 'SOFTWARE', CURRENT_DATE, FALSE, ?)
                 """, name, cost, currency, userId);
+    }
+
+    private void insertInboundAddress(long userId, String tokenHash, String encryptedToken) {
+        jdbc.update("""
+                INSERT INTO inbound_email_address (
+                    user_id, token_hash, encrypted_token, created_at
+                ) VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+                """, userId, tokenHash, encryptedToken);
     }
 
     private String regclass(String tableName) {
