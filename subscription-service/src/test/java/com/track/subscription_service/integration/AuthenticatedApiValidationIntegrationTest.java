@@ -170,7 +170,8 @@ class AuthenticatedApiValidationIntegrationTest extends PostgresIntegrationTest 
                   "theme": " DARK ",
                   "emailNotificationsEnabled": false,
                   "reminderDaysBefore": 5,
-                  "reminderTime": "08:30:00"
+                  "reminderTime": "08:30:00",
+                  "onboardingCompleted": false
                 }
                 """;
 

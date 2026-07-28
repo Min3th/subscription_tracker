@@ -85,7 +85,8 @@ class AccountTenantIsolationApiIntegrationTest extends PostgresIntegrationTest {
                   "theme": "dark",
                   "emailNotificationsEnabled": false,
                   "reminderDaysBefore": 5,
-                  "reminderTime": "08:30:00"
+                  "reminderTime": "08:30:00",
+                  "onboardingCompleted": false
                 }
                 """.formatted(secondUserId);
 

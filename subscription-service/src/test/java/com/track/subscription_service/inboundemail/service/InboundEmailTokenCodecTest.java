@@ -54,8 +54,11 @@ class InboundEmailTokenCodecTest {
     void rejectsTamperedCiphertext() {
         InboundEmailTokenCodec codec = codec(VALID_KEY);
         String encrypted = codec.encrypt("private-forwarding-token");
-        String tampered = encrypted.substring(0, encrypted.length() - 1)
-                + (encrypted.endsWith("A") ? "B" : "A");
+        String[] parts = encrypted.split("\\.");
+        byte[] ciphertext = Base64.getUrlDecoder().decode(parts[2]);
+        ciphertext[0] ^= 1;
+        String tampered = parts[0] + "." + parts[1] + "."
+                + Base64.getUrlEncoder().withoutPadding().encodeToString(ciphertext);
 
         assertThrows(IllegalArgumentException.class, () -> codec.decrypt(tampered));
     }
