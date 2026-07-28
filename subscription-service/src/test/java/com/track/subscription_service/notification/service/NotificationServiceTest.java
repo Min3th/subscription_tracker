@@ -91,6 +91,26 @@ class NotificationServiceTest {
     }
 
     @Test
+    void permanentInitialProviderFailureIsImmediatelyMarkedDead() {
+        when(deliveryRepository.createIfAbsent(anyLong(), any(), anyString(), any()))
+                .thenReturn(1);
+        when(templateService.loadTemplate(anyString(), anyString(), anyString()))
+                .thenReturn("template");
+        doThrow(EmailDeliveryException.providerRejected(400, false))
+                .when(emailService)
+                .sendEmail(anyString(), anyString(), anyString(), anyString());
+
+        assertFalse(service.sendSubscriptionReminder(user, subscription, billingDate));
+
+        verify(deliveryRepository).markInitialDead(
+                42L, billingDate, "RENEWAL_REMINDER",
+                Instant.parse("2026-07-22T03:30:00Z"),
+                "Email provider rejected delivery with HTTP status 400");
+        verify(deliveryRepository, never()).scheduleInitialRetry(
+                anyLong(), any(), anyString(), any(), anyString());
+    }
+
+    @Test
     void retryFailureUsesExponentialBackoff() {
         NotificationDelivery delivery = mock(NotificationDelivery.class);
         when(delivery.getId()).thenReturn(9L);
@@ -123,6 +143,29 @@ class NotificationServiceTest {
         assertFalse(service.retry(delivery));
 
         verify(deliveryRepository).markDead(9L, Instant.parse("2026-07-22T03:30:00Z"), "permanent failure");
+        verify(deliveryRepository, never()).scheduleRetry(anyLong(), any(), anyString());
+    }
+
+    @Test
+    void permanentProviderFailureDoesNotConsumeRemainingRetries() {
+        NotificationDelivery delivery = mock(NotificationDelivery.class);
+        when(delivery.getId()).thenReturn(9L);
+        when(delivery.getSubscription()).thenReturn(subscription);
+        when(delivery.getBillingDate()).thenReturn(billingDate);
+        when(delivery.getAttempts()).thenReturn(2);
+        subscription.setUser(user);
+        when(templateService.loadTemplate(anyString(), anyString(), anyString()))
+                .thenReturn("template");
+        doThrow(EmailDeliveryException.providerRejected(400, false))
+                .when(emailService)
+                .sendEmail(anyString(), anyString(), anyString(), anyString());
+
+        assertFalse(service.retry(delivery));
+
+        verify(deliveryRepository).markDead(
+                9L,
+                Instant.parse("2026-07-22T03:30:00Z"),
+                "Email provider rejected delivery with HTTP status 400");
         verify(deliveryRepository, never()).scheduleRetry(anyLong(), any(), anyString());
     }
 

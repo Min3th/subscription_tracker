@@ -18,7 +18,7 @@ import static org.mockito.Mockito.*;
 class EmailServiceTest {
 
     private SendGrid sendGrid;
-    private EmailService emailService;
+    private SendGridOutboundEmailSender sender;
 
     @BeforeEach
     void setUp() {
@@ -26,16 +26,14 @@ class EmailServiceTest {
         SendGridProperties properties = new SendGridProperties();
         properties.setFromEmail("reminders@example.com");
         properties.setFromName("Subscription Tracker");
-        emailService = new EmailService(sendGrid, properties);
+        sender = new SendGridOutboundEmailSender(sendGrid, properties);
     }
 
     @Test
     void acceptsEveryTwoHundredStatus() throws IOException {
         when(sendGrid.api(any(Request.class))).thenReturn(response(202, ""));
 
-        assertDoesNotThrow(() -> emailService.sendEmail(
-                "user@example.com", "Reminder", "<p>Payment due</p>", "https://api.example.com/unsubscribe"
-        ));
+        assertDoesNotThrow(() -> sender.send(message()));
 
         ArgumentCaptor<Request> request = ArgumentCaptor.forClass(Request.class);
         verify(sendGrid).api(request.capture());
@@ -49,7 +47,7 @@ class EmailServiceTest {
         when(sendGrid.api(any(Request.class))).thenReturn(response(400, "recipient details"));
 
         EmailDeliveryException exception = assertThrows(EmailDeliveryException.class,
-                () -> emailService.sendEmail("user@example.com", "Reminder", "html", "https://api.example.com/unsubscribe"));
+                () -> sender.send(message()));
 
         assertEquals(400, exception.getStatusCode());
         assertFalse(exception.getMessage().contains("recipient details"));
@@ -60,7 +58,7 @@ class EmailServiceTest {
         when(sendGrid.api(any(Request.class))).thenReturn(response(503, "unavailable"));
 
         EmailDeliveryException exception = assertThrows(EmailDeliveryException.class,
-                () -> emailService.sendEmail("user@example.com", "Reminder", "html", "https://api.example.com/unsubscribe"));
+                () -> sender.send(message()));
 
         assertEquals(503, exception.getStatusCode());
     }
@@ -71,7 +69,7 @@ class EmailServiceTest {
         when(sendGrid.api(any(Request.class))).thenThrow(cause);
 
         EmailDeliveryException exception = assertThrows(EmailDeliveryException.class,
-                () -> emailService.sendEmail("user@example.com", "Reminder", "html", "https://api.example.com/unsubscribe"));
+                () -> sender.send(message()));
 
         assertNull(exception.getStatusCode());
         assertSame(cause, exception.getCause());
@@ -80,5 +78,13 @@ class EmailServiceTest {
 
     private static Response response(int status, String body) {
         return new Response(status, body, Map.of());
+    }
+
+    private static OutboundEmailMessage message() {
+        return new OutboundEmailMessage(
+                "user@example.com",
+                "Reminder",
+                "<p>Payment due</p>",
+                "https://api.example.com/unsubscribe");
     }
 }

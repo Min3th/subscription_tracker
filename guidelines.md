@@ -142,6 +142,12 @@ Email delivery is inherently at-least-once around a crash after provider accepta
 Inbound subscription-email processing is security-sensitive and must remain durable, tenant-scoped,
 and reviewable.
 
+- Keep outbound sending and inbound transport behind provider-neutral application boundaries.
+  Provider adapters may translate SES or SendGrid payloads, but notification retries, inbound
+  persistence, extraction, and review behavior must not depend on a provider SDK.
+- Authenticate AWS access with the default credential chain and an EC2 instance role in production.
+  Never add static AWS access keys to application properties, source control, or deployment secrets.
+
 - Generate forwarding-address tokens with at least 256 bits of cryptographic randomness.
 - Store a SHA-256 token hash for recipient lookup. Store a versioned AES-256-GCM ciphertext only
   when the token must be shown to the authenticated owner again; never store the raw token.

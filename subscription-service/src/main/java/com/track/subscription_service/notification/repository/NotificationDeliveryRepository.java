@@ -73,6 +73,24 @@ public interface NotificationDeliveryRepository extends JpaRepository<Notificati
     @Transactional
     @Query("""
             UPDATE NotificationDelivery delivery
+            SET delivery.status = 'DEAD', delivery.deadAt = :deadAt,
+                delivery.lastError = :error, delivery.nextAttemptAt = null,
+                delivery.claimToken = null
+            WHERE delivery.subscription.id = :subscriptionId
+              AND delivery.billingDate = :billingDate
+              AND delivery.notificationType = :notificationType
+            """)
+    int markInitialDead(
+            @Param("subscriptionId") Long subscriptionId,
+            @Param("billingDate") LocalDate billingDate,
+            @Param("notificationType") String notificationType,
+            @Param("deadAt") Instant deadAt,
+            @Param("error") String error);
+
+    @Modifying
+    @Transactional
+    @Query("""
+            UPDATE NotificationDelivery delivery
             SET delivery.status = 'SENT', delivery.sentAt = :sentAt, delivery.lastError = null,
                 delivery.nextAttemptAt = null, delivery.claimToken = null
             WHERE delivery.id = :id

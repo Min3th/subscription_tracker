@@ -54,10 +54,16 @@ public class NotificationService {
             deliveryRepository.markSent(sub.getId(), nextDate, RENEWAL_REMINDER, clock.instant());
             return true;
         } catch (RuntimeException exception) {
-            deliveryRepository.scheduleInitialRetry(
-                    sub.getId(), nextDate, RENEWAL_REMINDER,
-                    clock.instant().plus(INITIAL_RETRY_DELAY), errorMessage(exception)
-            );
+            if (isRetryable(exception)) {
+                deliveryRepository.scheduleInitialRetry(
+                        sub.getId(), nextDate, RENEWAL_REMINDER,
+                        clock.instant().plus(INITIAL_RETRY_DELAY), errorMessage(exception)
+                );
+            } else {
+                deliveryRepository.markInitialDead(
+                        sub.getId(), nextDate, RENEWAL_REMINDER,
+                        clock.instant(), errorMessage(exception));
+            }
             return false;
         }
     }
@@ -74,7 +80,7 @@ public class NotificationService {
             return true;
         } catch (RuntimeException exception) {
             Instant now = clock.instant();
-            if (delivery.getAttempts() >= MAX_ATTEMPTS) {
+            if (!isRetryable(exception) || delivery.getAttempts() >= MAX_ATTEMPTS) {
                 deliveryRepository.markDead(delivery.getId(), now, errorMessage(exception));
             } else {
                 deliveryRepository.scheduleRetry(
@@ -102,5 +108,10 @@ public class NotificationService {
     private String errorMessage(RuntimeException exception) {
         String message = exception.getMessage() == null ? "Unknown delivery failure" : exception.getMessage();
         return message.substring(0, Math.min(message.length(), 1000));
+    }
+
+    private boolean isRetryable(RuntimeException exception) {
+        return !(exception instanceof EmailDeliveryException deliveryException)
+                || deliveryException.isRetryable();
     }
 }
