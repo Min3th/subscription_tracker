@@ -16,8 +16,7 @@ CREATE TABLE user_preferences (
     theme VARCHAR(255),
     email_notifications_enabled BOOLEAN,
     reminder_days_before INTEGER NOT NULL DEFAULT 3,
-    reminder_time TIME NOT NULL DEFAULT '09:00:00',
-    onboarding_completed BOOLEAN NOT NULL DEFAULT FALSE
+    reminder_time TIME NOT NULL DEFAULT '09:00:00'
 );
 
 CREATE TABLE subscription (

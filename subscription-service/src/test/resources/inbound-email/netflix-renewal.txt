@@ -1,0 +1,11 @@
+---------- Forwarded message ---------
+From: Netflix <info@mailer.netflix.com>
+Date: July 27, 2026
+Subject: Your Netflix renewal receipt
+To: customer@example.com
+
+Netflix renewal receipt
+Plan: Premium
+Payment received: USD 22.99
+Billing: monthly
+Next billing date: August 27, 2026

@@ -172,6 +172,12 @@ and reviewable.
   test-covered evidence.
 - Store an evidence summary as non-sensitive rule identifiers or field-presence descriptions, not
   copied email content. Keep at most one suggestion per inbound email.
+- Prefer the plain-text part and use a maintained HTML parser only when text is absent. Normalize
+  Unicode and whitespace, discard quoted reply lines and forwarding metadata, and never use regex
+  as an HTML parser.
+- Keep deterministic provider, event, money, cadence, plan, and date rules separately testable.
+  Accept dates only when the year is explicit. Treat ambiguous currency symbols and unlabeled
+  numbers as unknown rather than applying locale or user-preference guesses.
 - Treat possible subscription matches as review hints. A deduplication match must never update,
   merge, or suppress an active subscription without an authenticated user decision.
 - Purge stored text, HTML, and headers in bounded, concurrency-safe batches after the configured

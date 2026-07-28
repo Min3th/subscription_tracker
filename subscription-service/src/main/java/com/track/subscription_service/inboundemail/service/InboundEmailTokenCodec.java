@@ -1,6 +1,7 @@
 package com.track.subscription_service.inboundemail.service;
 
 import com.track.subscription_service.inboundemail.config.InboundEmailProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.AEADBadTagException;
@@ -25,6 +26,7 @@ public class InboundEmailTokenCodec {
     private final InboundEmailProperties properties;
     private final SecureRandom secureRandom;
 
+    @Autowired
     public InboundEmailTokenCodec(InboundEmailProperties properties) {
         this(properties, new SecureRandom());
     }

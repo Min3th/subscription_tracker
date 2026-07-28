@@ -2,6 +2,7 @@ package com.track.subscription_service.inboundemail.service;
 
 import com.sendgrid.helpers.eventwebhook.EventWebhook;
 import com.track.subscription_service.inboundemail.config.InboundEmailProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
@@ -16,6 +17,7 @@ public class InboundEmailWebhookVerifier {
     private final Clock clock;
     private final EventWebhook eventWebhook;
 
+    @Autowired
     public InboundEmailWebhookVerifier(InboundEmailProperties properties, Clock clock) {
         this(properties, clock, new EventWebhook());
     }
