@@ -7,9 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.Instant;
 import java.util.List;
@@ -21,6 +23,22 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException exception,
                                                    HttpServletRequest request) {
         return error(HttpStatus.NOT_FOUND, "RESOURCE_NOT_FOUND", exception.getMessage(), request, List.of());
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiError> handleNoRoute(
+            NoResourceFoundException exception,
+            HttpServletRequest request) {
+        return error(HttpStatus.NOT_FOUND, "RESOURCE_NOT_FOUND",
+                "The requested resource was not found", request, List.of());
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiError> handleMissingParameter(
+            MissingServletRequestParameterException exception,
+            HttpServletRequest request) {
+        return error(HttpStatus.BAD_REQUEST, "INVALID_ARGUMENT",
+                "Required request parameter is missing", request, List.of());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -40,6 +40,8 @@ controller -> service -> repository -> entity/database
 - Prefer constructor injection.
 - Use enums for closed sets of values.
 - Return stable API error objects through the global exception handler.
+- Preserve `404` for unmapped routes and `400` for missing request parameters;
+  the catch-all handler must not turn normal client errors into `500` responses.
 - Do not expose stack traces, provider responses, secrets, or internal exception messages to clients.
 
 When updating or deleting a user-owned resource, query or validate using both its ID and the authenticated user. Never trust a user ID, owner ID, or resource ID supplied only in a request body.
