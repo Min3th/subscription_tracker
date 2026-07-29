@@ -96,7 +96,9 @@ Before enabling the SES consumers or changing inbound MX, use the stricter mode:
 ```
 
 The strict mode additionally requires SES production sending access, account
-sending, and `subtrak-production-inbound` to be the active receipt rule set.
+sending, `subtrak-production-inbound` to be the active receipt rule set, and
+both dead-letter queues to be empty. Source-queue backlog is reported as a
+warning because queued traffic may legitimately exist before consumers start.
 Passing this check establishes infrastructure readiness; it does not replace
 the outbound, bounce, complaint, inbound-forwarding, deduplication, and
 retention acceptance tests in the migration runbook.

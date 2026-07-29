@@ -153,10 +153,10 @@ try {
         "at least one lifecycle rule is enabled" -Required
 
     $queueChecks = @(
-        @{ Name = "Inbound"; Output = "SesInboundQueueUrl" },
-        @{ Name = "Event"; Output = "SesEventQueueUrl" },
-        @{ Name = "Inbound DLQ"; Output = "InboundDeadLetterQueueUrl" },
-        @{ Name = "Event DLQ"; Output = "OutboundEventDeadLetterQueueUrl" }
+        @{ Name = "Inbound"; Output = "SesInboundQueueUrl"; IsDlq = $false },
+        @{ Name = "Event"; Output = "SesEventQueueUrl"; IsDlq = $false },
+        @{ Name = "Inbound DLQ"; Output = "InboundDeadLetterQueueUrl"; IsDlq = $true },
+        @{ Name = "Event DLQ"; Output = "OutboundEventDeadLetterQueueUrl"; IsDlq = $true }
     )
     foreach ($queueCheck in $queueChecks) {
         $queueUrl = Get-OutputValue $stack $queueCheck.Output
@@ -170,6 +170,16 @@ try {
         $inFlight = $attributes.Attributes.ApproximateNumberOfMessagesNotVisible
         Write-Check "$($queueCheck.Name) queue access" $true `
             "readable; visible=$visible, in-flight=$inFlight" -Required
+
+        $messageCount = [int64]$visible + [int64]$inFlight
+        if ($queueCheck.IsDlq) {
+            Write-Check "$($queueCheck.Name) empty" ($messageCount -eq 0) `
+                "message count is $messageCount" `
+                -Required:$RequireCutoverReady
+        } elseif ($messageCount -gt 0) {
+            Write-Check "$($queueCheck.Name) backlog" $false `
+                "$messageCount message(s) will be processed when consumers are enabled"
+        }
     }
 
     Write-Host ""

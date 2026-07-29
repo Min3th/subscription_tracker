@@ -163,6 +163,8 @@ and reviewable.
 - Keep automated SES readiness checks read-only. Discover deployed resource names
   from CloudFormation outputs, never print credentials or raw MIME, and clearly
   distinguish infrastructure checks from end-to-end delivery acceptance tests.
+- Require empty SES dead-letter queues before cutover, and surface source-queue
+  backlog without reading or logging message bodies.
 - Keep SendGrid webhook controllers behind the rollback-window feature flag. Disabling
   SendGrid inbound acceptance must remove both public SendGrid webhook mappings without
   disabling provider-neutral unsubscribe endpoints.
