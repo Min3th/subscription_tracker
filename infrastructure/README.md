@@ -79,6 +79,28 @@ staged rollout begins.
 The `InboundMxRecordName` and `InboundMxRecordValue` outputs are for the later
 controlled inbound cutover. Publishing that MX record routes new mail to SES.
 
+## Read-only readiness check
+
+After authenticating the AWS CLI, run the repository checker from the project
+root. It discovers resource names from CloudFormation and does not modify AWS:
+
+```powershell
+aws login
+.\scripts\Test-SesReadiness.ps1
+```
+
+Before enabling the SES consumers or changing inbound MX, use the stricter mode:
+
+```powershell
+.\scripts\Test-SesReadiness.ps1 -RequireCutoverReady
+```
+
+The strict mode additionally requires SES production sending access, account
+sending, and `subtrak-production-inbound` to be the active receipt rule set.
+Passing this check establishes infrastructure readiness; it does not replace
+the outbound, bounce, complaint, inbound-forwarding, deduplication, and
+retention acceptance tests in the migration runbook.
+
 ## Retained resources
 
 The raw MIME bucket has both `DeletionPolicy: Retain` and

@@ -160,6 +160,9 @@ and reviewable.
   CloudFormation stack. Keep queue publication source-account/source-ARN constrained,
   block public S3 access, require TLS, and grant the EC2 role only queue consumption,
   inbound object reads, and verified-identity sending.
+- Keep automated SES readiness checks read-only. Discover deployed resource names
+  from CloudFormation outputs, never print credentials or raw MIME, and clearly
+  distinguish infrastructure checks from end-to-end delivery acceptance tests.
 - Keep SendGrid webhook controllers behind the rollback-window feature flag. Disabling
   SendGrid inbound acceptance must remove both public SendGrid webhook mappings without
   disabling provider-neutral unsubscribe endpoints.

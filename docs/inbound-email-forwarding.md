@@ -41,6 +41,23 @@ INBOUND_EMAIL_DOMAIN=inbound.subtrak.xyz
 The backend uses the EC2 instance role and AWS default credential chain. Never
 configure static AWS access keys for the service.
 
+Run the read-only infrastructure check from the repository root:
+
+```powershell
+.\scripts\Test-SesReadiness.ps1
+```
+
+Immediately before enabling consumers or changing MX, require all cutover
+prerequisites:
+
+```powershell
+.\scripts\Test-SesReadiness.ps1 -RequireCutoverReady
+```
+
+Do not treat a successful readiness check as an end-to-end acceptance result.
+It does not send an email, inject a bounce or complaint, publish DNS, consume a
+queue message, or inspect application/database state.
+
 ## 3. Test SES outbound while SendGrid remains available
 
 Start with internal or verified test recipients:
