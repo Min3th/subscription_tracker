@@ -1,4 +1,4 @@
-# Subtrak AWS SES infrastructure
+3# Subtrak AWS SES infrastructure
 
 `ses-email.yaml` provisions the SES migration resources in one CloudFormation
 stack. It does not change DNS and does not enable the application's SES feature
@@ -26,7 +26,7 @@ an existing role, deployment requires `CAPABILITY_NAMED_IAM`.
 
 ```bash
 aws cloudformation validate-template \
-  --region ap-south-1 \
+  --region ap-southeast-1 \
   --template-body file://infrastructure/ses-email.yaml
 ```
 
@@ -34,7 +34,7 @@ aws cloudformation validate-template \
 
 ```bash
 aws cloudformation deploy \
-  --region ap-south-1 \
+  --region ap-southeast-1 \
   --stack-name subtrak-production-email \
   --template-file infrastructure/ses-email.yaml \
   --capabilities CAPABILITY_NAMED_IAM \
@@ -43,18 +43,13 @@ aws cloudformation deploy \
     DomainName=subtrak.me \
     InboundSubdomain=inbound \
     AwsAccountId=123456789012 \
-    SesRegion=ap-south-1 \
+    SesRegion=ap-southeast-1 \
     Ec2InstanceRoleName=replace-with-existing-role-name \
     RawMimeRetentionDays=31
 ```
 
 Do not publish the MX record during this initial deployment. Existing SendGrid
 inbound delivery remains active.
-
-Before the inbound cutover, confirm in the Amazon SES console that
-`subtrak-production-inbound` is the active receipt rule set. If it is not active,
-select it under **Email receiving → Rule sets** and choose **Set as active**.
-Only one receipt rule set can be active in an AWS Region.
 
 ## Stack outputs
 
@@ -64,13 +59,13 @@ selected region.
 
 Use these outputs for the application:
 
-| Output | Environment variable |
-| --- | --- |
-| `SesRegion` | `SES_REGION` |
+| Output                | Environment variable    |
+| --------------------- | ----------------------- |
+| `SesRegion`           | `SES_REGION`            |
 | `SesConfigurationSet` | `SES_CONFIGURATION_SET` |
-| `SesInboundQueueUrl` | `SES_INBOUND_QUEUE_URL` |
-| `SesEventQueueUrl` | `SES_EVENT_QUEUE_URL` |
-| `SesInboundBucket` | `SES_INBOUND_BUCKET` |
+| `SesInboundQueueUrl`  | `SES_INBOUND_QUEUE_URL` |
+| `SesEventQueueUrl`    | `SES_EVENT_QUEUE_URL`   |
+| `SesInboundBucket`    | `SES_INBOUND_BUCKET`    |
 
 Configure `SES_FROM_EMAIL` and `SES_FROM_NAME` separately. Keep
 `EMAIL_OUTBOUND_PROVIDER=sendgrid` and `SES_CONSUMERS_ENABLED=false` until the
@@ -78,30 +73,6 @@ staged rollout begins.
 
 The `InboundMxRecordName` and `InboundMxRecordValue` outputs are for the later
 controlled inbound cutover. Publishing that MX record routes new mail to SES.
-
-## Read-only readiness check
-
-After authenticating the AWS CLI, run the repository checker from the project
-root. It discovers resource names from CloudFormation and does not modify AWS:
-
-```powershell
-aws login
-.\scripts\Test-SesReadiness.ps1
-```
-
-Before enabling the SES consumers or changing inbound MX, use the stricter mode:
-
-```powershell
-.\scripts\Test-SesReadiness.ps1 -RequireCutoverReady
-```
-
-The strict mode additionally requires SES production sending access, account
-sending, `subtrak-production-inbound` to be the active receipt rule set, and
-both dead-letter queues to be empty. Source-queue backlog is reported as a
-warning because queued traffic may legitimately exist before consumers start.
-Passing this check establishes infrastructure readiness; it does not replace
-the outbound, bounce, complaint, inbound-forwarding, deduplication, and
-retention acceptance tests in the migration runbook.
 
 ## Retained resources
 

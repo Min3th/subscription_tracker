@@ -165,6 +165,9 @@ and reviewable.
   distinguish infrastructure checks from end-to-end delivery acceptance tests.
 - Require empty SES dead-letter queues before cutover, and surface source-queue
   backlog without reading or logging message bodies.
+- Use the SES mailbox simulator for automated delivery, bounce, and complaint
+  acceptance checks. Do not direct automated negative-path tests at real recipients,
+  and do not consume pre-existing queue payloads merely to prove event delivery.
 - Keep SendGrid webhook controllers behind the rollback-window feature flag. Disabling
   SendGrid inbound acceptance must remove both public SendGrid webhook mappings without
   disabling provider-neutral unsubscribe endpoints.

@@ -77,6 +77,19 @@ Restart the service and verify:
 
 Return `EMAIL_OUTBOUND_PROVIDER` to `sendgrid` for immediate outbound rollback.
 
+Before enabling application consumers, verify the SES lifecycle path with the
+mailbox simulator:
+
+```powershell
+.\scripts\Test-SesOutboundAcceptance.ps1
+```
+
+The script sends one success, one hard-bounce, and one complaint scenario
+through the deployed configuration set. It verifies that the event queue grows
+without reading or consuming queued payloads. Simulator messages do not affect
+the account's sending quota or reputation metrics, but AWS bills them as normal
+SES messages.
+
 ## 4. Validate lifecycle event processing
 
 Set:
