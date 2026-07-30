@@ -58,6 +58,21 @@ Do not treat a successful readiness check as an end-to-end acceptance result.
 It does not send an email, inject a bounce or complaint, publish DNS, consume a
 queue message, or inspect application/database state.
 
+Configure the production systemd service through SSM from the repository root.
+The command discovers SES values from CloudFormation and performs a dry run
+unless `-Apply` is supplied:
+
+```powershell
+.\scripts\Set-SesRuntime.ps1
+.\scripts\Set-SesRuntime.ps1 -EnableSesOutbound -EnableConsumers -Apply
+```
+
+The script installs a dedicated systemd drop-in, keeps SendGrid inbound enabled
+for rollback, restarts the service, and restores the previous drop-in
+automatically if startup fails. The application region and SES region are
+independent parameters; production currently uses `eu-north-1` and
+`ap-south-1`, respectively.
+
 ## 3. Test SES outbound while SendGrid remains available
 
 Start with internal or verified test recipients:

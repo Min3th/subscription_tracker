@@ -168,6 +168,9 @@ and reviewable.
 - Use the SES mailbox simulator for automated delivery, bounce, and complaint
   acceptance checks. Do not direct automated negative-path tests at real recipients,
   and do not consume pre-existing queue payloads merely to prove event delivery.
+- Keep production SES runtime changes explicit, reversible, and independent of the
+  EC2 deployment region. Discover non-secret resource identifiers from CloudFormation,
+  require an apply flag, and restore the previous systemd configuration if restart fails.
 - Keep SendGrid webhook controllers behind the rollback-window feature flag. Disabling
   SendGrid inbound acceptance must remove both public SendGrid webhook mappings without
   disabling provider-neutral unsubscribe endpoints.
