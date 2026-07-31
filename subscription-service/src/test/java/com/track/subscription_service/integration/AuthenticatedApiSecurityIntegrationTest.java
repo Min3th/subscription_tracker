@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.crypto.SecretKey;
@@ -16,6 +17,7 @@ import java.util.Date;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -50,6 +52,17 @@ class AuthenticatedApiSecurityIntegrationTest extends PostgresIntegrationTest {
         mockMvc.perform(get("/subscriptions")
                         .header("Authorization", bearer(jwtService.generateAccessToken(user))))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void inboundEmailWebhookIsPublicButRequiresItsProviderSignature() throws Exception {
+        mockMvc.perform(post("/webhooks/inbound-email")
+                        .contentType(MediaType.parseMediaType(
+                                "multipart/form-data; boundary=test-boundary"))
+                        .content("--test-boundary--\r\n"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.code").value("REQUEST_REJECTED"))
+                .andExpect(jsonPath("$.message").value("Invalid webhook signature"));
     }
 
     @Test

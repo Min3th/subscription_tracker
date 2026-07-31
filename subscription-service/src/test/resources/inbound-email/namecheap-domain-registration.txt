@@ -1,0 +1,10 @@
+Thank you for choosing Namecheap. Here's a summary of your order.
+
+Order Details
+Order Date: Jul 28, 2026
+Initial Charge: $2.20
+Final Cost: $2.20
+
+Title                              Qty    Duration    Price
+Domain Registration example.test  1      1 year      $2.00
+Domain Privacy                     1      1 year      $0.00

@@ -3,6 +3,7 @@ import counterReducer from "../features/counter/counterSlice";
 import authReducer from "./authSlice";
 import preferencesReducer from "../features/preferences/preferencesSlice";
 import subscriptionReducer from "./subscriptionSlice";
+import suggestionsReducer from "../features/suggestions/suggestionsSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     auth: authReducer,
     preferences: preferencesReducer,
     subscriptions: subscriptionReducer,
+    suggestions: suggestionsReducer,
   },
 });
 

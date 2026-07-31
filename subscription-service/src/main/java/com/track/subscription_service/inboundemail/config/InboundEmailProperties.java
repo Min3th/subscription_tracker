@@ -1,0 +1,130 @@
+package com.track.subscription_service.inboundemail.config;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
+import org.springframework.validation.annotation.Validated;
+
+@Validated
+@Component
+@ConfigurationProperties(prefix = "app.inbound-email")
+public class InboundEmailProperties {
+
+    @NotBlank
+    @Pattern(regexp = "^(?=.{1,253}$)(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\\.)+[A-Za-z]{2,63}$")
+    private String domain;
+
+    private String tokenEncryptionKey;
+    private String webhookPublicKey;
+
+    @Min(1024)
+    @Max(25 * 1024 * 1024)
+    private long maxRequestBytes = 10 * 1024 * 1024;
+
+    @Min(1)
+    @Max(5 * 1024 * 1024)
+    private int maxFieldBytes = 1024 * 1024;
+
+    @Min(1)
+    @Max(100)
+    private int maxParts = 30;
+
+    @Min(1)
+    @Max(365)
+    private int contentRetentionDays = 30;
+
+    @Min(1)
+    @Max(1000)
+    private int retentionBatchSize = 100;
+
+    @Min(1)
+    @Max(500)
+    private int processingBatchSize = 50;
+
+    @Min(1)
+    @Max(20)
+    private int processingMaxAttempts = 5;
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
+
+    public String getTokenEncryptionKey() {
+        return tokenEncryptionKey;
+    }
+
+    public void setTokenEncryptionKey(String tokenEncryptionKey) {
+        this.tokenEncryptionKey = tokenEncryptionKey;
+    }
+
+    public String getWebhookPublicKey() {
+        return webhookPublicKey;
+    }
+
+    public void setWebhookPublicKey(String webhookPublicKey) {
+        this.webhookPublicKey = webhookPublicKey;
+    }
+
+    public long getMaxRequestBytes() {
+        return maxRequestBytes;
+    }
+
+    public void setMaxRequestBytes(long maxRequestBytes) {
+        this.maxRequestBytes = maxRequestBytes;
+    }
+
+    public int getMaxFieldBytes() {
+        return maxFieldBytes;
+    }
+
+    public void setMaxFieldBytes(int maxFieldBytes) {
+        this.maxFieldBytes = maxFieldBytes;
+    }
+
+    public int getMaxParts() {
+        return maxParts;
+    }
+
+    public void setMaxParts(int maxParts) {
+        this.maxParts = maxParts;
+    }
+
+    public int getContentRetentionDays() {
+        return contentRetentionDays;
+    }
+
+    public void setContentRetentionDays(int contentRetentionDays) {
+        this.contentRetentionDays = contentRetentionDays;
+    }
+
+    public int getRetentionBatchSize() {
+        return retentionBatchSize;
+    }
+
+    public void setRetentionBatchSize(int retentionBatchSize) {
+        this.retentionBatchSize = retentionBatchSize;
+    }
+
+    public int getProcessingBatchSize() {
+        return processingBatchSize;
+    }
+
+    public void setProcessingBatchSize(int processingBatchSize) {
+        this.processingBatchSize = processingBatchSize;
+    }
+
+    public int getProcessingMaxAttempts() {
+        return processingMaxAttempts;
+    }
+
+    public void setProcessingMaxAttempts(int processingMaxAttempts) {
+        this.processingMaxAttempts = processingMaxAttempts;
+    }
+}

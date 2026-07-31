@@ -1,0 +1,3 @@
+Your grocery order is ready for pickup.
+Order total: $50.00
+Collect it before 6 PM today.

@@ -23,7 +23,8 @@ public class OpenApiConfig {
             "/auth/refresh",
             "/auth/logout",
             "/notifications/unsubscribe",
-            "/notifications/webhooks/sendgrid"
+            "/notifications/webhooks/sendgrid",
+            "/webhooks/inbound-email"
     );
 
     @Bean

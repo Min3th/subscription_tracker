@@ -20,6 +20,7 @@ import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import { Link } from "react-router-dom";
 import SettingsIcon from "@mui/icons-material/Settings";
+import RateReviewOutlinedIcon from "@mui/icons-material/RateReviewOutlined";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import Dialog from "@mui/material/Dialog";
@@ -148,6 +149,22 @@ export default function MiniDrawer({ mobileOpen, onMobileClose }: SideDrawerProp
             </ListItemIcon>
             <ListItemText
               primary={t("sidebar.subscriptions", "Subscriptions")}
+              sx={{ opacity: 1, whiteSpace: "nowrap" }}
+            />
+          </ListItemButton>
+        </ListItem>
+        <ListItem disablePadding sx={{ display: "block" }}>
+          <ListItemButton
+            component={Link}
+            to="/suggestions"
+            onClick={onMobileClose}
+            sx={{ minHeight: 48, px: 2.5 }}
+          >
+            <ListItemIcon sx={{ minWidth: 0, justifyContent: "center", mr: 3 }}>
+              <RateReviewOutlinedIcon />
+            </ListItemIcon>
+            <ListItemText
+              primary={t("sidebar.suggestions", "Review suggestions")}
               sx={{ opacity: 1, whiteSpace: "nowrap" }}
             />
           </ListItemButton>
@@ -294,6 +311,26 @@ export default function MiniDrawer({ mobileOpen, onMobileClose }: SideDrawerProp
                       ? theme.transitions.duration.enteringScreen
                       : theme.transitions.duration.leavingScreen,
                   }),
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
+
+          <ListItem disablePadding sx={{ display: "block" }}>
+            <ListItemButton
+              component={Link}
+              to="/suggestions"
+              sx={{ minHeight: 48, px: 2.5 }}
+            >
+              <ListItemIcon sx={{ minWidth: 0, justifyContent: "center", mr: 3 }}>
+                <RateReviewOutlinedIcon />
+              </ListItemIcon>
+              <ListItemText
+                primary={t("sidebar.suggestions", "Review suggestions")}
+                sx={{
+                  opacity: open ? 1 : 0,
+                  whiteSpace: "nowrap",
+                  transition: theme.transitions.create("opacity"),
                 }}
               />
             </ListItemButton>
