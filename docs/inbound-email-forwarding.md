@@ -4,6 +4,18 @@ This runbook covers the staged move from SendGrid to Amazon SES. Infrastructure
 is defined in `infrastructure/ses-email.yaml`. DNS changes and the SES production
 access request remain controlled deployment actions.
 
+At any point, run the aggregate read-only status command from the repository
+root:
+
+```powershell
+.\scripts\Get-SesMigrationStatus.ps1
+```
+
+It reports public DNS, SES identity/readiness, all four queue depths, production
+service/HTTP health, the active outbound provider, consumer flags, and deployed
+worker presence. It never prints credentials, queue payloads, or email content,
+and exits nonzero unless the migration is ready.
+
 ## 1. Deploy infrastructure without changing DNS
 
 Follow `infrastructure/README.md` to validate and deploy the stack in the chosen

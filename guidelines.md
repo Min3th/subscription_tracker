@@ -184,6 +184,9 @@ and reviewable.
   only the inbound subdomain to a separately managed hosted zone. Make hosted-zone
   creation explicit because it incurs a recurring charge, and keep parent NS and
   root MX records unchanged.
+- Migration status tooling must be read-only apart from transient SSM command records,
+  report DNS, SES, queue/DLQ depth, service health, provider flags, and deployed worker
+  presence, and never print credentials, environment secrets, or message content.
 - Keep SendGrid webhook controllers behind the rollback-window feature flag. Disabling
   SendGrid inbound acceptance must remove both public SendGrid webhook mappings without
   disabling provider-neutral unsubscribe endpoints.
