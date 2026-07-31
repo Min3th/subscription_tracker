@@ -44,6 +44,10 @@ public class DeterministicSubscriptionExtractor {
             "(?i)\\b(?:renews?|renewal date|next (?:billing|payment)(?: date)?)"
                     + "\\s*(?:on|:)?\\s*"
                     + "([A-Z][a-z]{2,8}\\s+\\d{1,2},?\\s+\\d{4}|\\d{4}-\\d{2}-\\d{2})");
+    private static final Pattern EXPLICIT_START_DATE = Pattern.compile(
+            "(?i)\\b(?:order date|subscription start(?: date)?|started)"
+                    + "\\s*(?:on|:)?\\s*"
+                    + "([A-Z][a-z]{2,8}\\s+\\d{1,2},?\\s+\\d{4}|\\d{4}-\\d{2}-\\d{2})");
     private static final List<DateTimeFormatter> DATE_FORMATS = List.of(
             DateTimeFormatter.ISO_LOCAL_DATE,
             DateTimeFormatter.ofPattern("MMMM d, uuuu", Locale.ENGLISH),
@@ -78,6 +82,7 @@ public class DeterministicSubscriptionExtractor {
         String provider = provider(lower, email.senderDomain(), classification);
         Money money = money(text, classification, provider);
         Billing billing = billing(lower);
+        LocalDate startDate = date(EXPLICIT_START_DATE, text);
         LocalDate renewalDate = renewalDate(text);
         String planName = planName(text, lower);
 
@@ -103,6 +108,10 @@ public class DeterministicSubscriptionExtractor {
             confidence = confidence.add(new BigDecimal("0.1000"));
             evidence.add("explicit-renewal-date");
         }
+        if (startDate != null) {
+            confidence = confidence.add(new BigDecimal("0.0500"));
+            evidence.add("explicit-start-date");
+        }
         if (planName != null) {
             confidence = confidence.add(new BigDecimal("0.0500"));
             evidence.add("labeled-plan");
@@ -116,6 +125,7 @@ public class DeterministicSubscriptionExtractor {
                 money == null ? null : money.currency(),
                 billing == null ? null : billing.unit(),
                 billing == null ? null : billing.count(),
+                startDate,
                 renewalDate,
                 confidence.min(BigDecimal.ONE).setScale(4),
                 String.join(",", evidence),
@@ -290,7 +300,11 @@ public class DeterministicSubscriptionExtractor {
     }
 
     private LocalDate renewalDate(String text) {
-        String value = captured(EXPLICIT_DATE, text);
+        return date(EXPLICIT_DATE, text);
+    }
+
+    private LocalDate date(Pattern pattern, String text) {
+        String value = captured(pattern, text);
         if (value == null) {
             return null;
         }

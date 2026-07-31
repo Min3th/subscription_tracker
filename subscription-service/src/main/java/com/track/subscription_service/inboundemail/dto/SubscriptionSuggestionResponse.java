@@ -17,6 +17,7 @@ public record SubscriptionSuggestionResponse(
         String currency,
         BillingUnit billingIntervalUnit,
         Integer billingIntervalCount,
+        LocalDate startDate,
         LocalDate renewalDate,
         SuggestionEventType eventType,
         BigDecimal confidence,

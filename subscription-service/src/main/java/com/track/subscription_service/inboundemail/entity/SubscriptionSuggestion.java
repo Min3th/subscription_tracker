@@ -72,6 +72,9 @@ public class SubscriptionSuggestion {
     @Column(name = "renewal_date")
     private LocalDate renewalDate;
 
+    @Column(name = "start_date")
+    private LocalDate startDate;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "event_type", nullable = false, length = 30)
     private SuggestionEventType eventType;
@@ -129,6 +132,8 @@ public class SubscriptionSuggestion {
     }
     public LocalDate getRenewalDate() { return renewalDate; }
     public void setRenewalDate(LocalDate renewalDate) { this.renewalDate = renewalDate; }
+    public LocalDate getStartDate() { return startDate; }
+    public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
     public SuggestionEventType getEventType() { return eventType; }
     public void setEventType(SuggestionEventType eventType) { this.eventType = eventType; }
     public BigDecimal getConfidence() { return confidence; }

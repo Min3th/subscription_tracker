@@ -71,6 +71,7 @@ class DeterministicSubscriptionExtractorTest {
         assertEquals("USD", result.currency());
         assertEquals(BillingUnit.MONTH, result.billingIntervalUnit());
         assertEquals(1, result.billingIntervalCount());
+        assertEquals(LocalDate.of(2026, 7, 17), result.startDate());
         assertTrue(result.isSuggestionCandidate());
     }
 
@@ -89,6 +90,7 @@ class DeterministicSubscriptionExtractorTest {
         assertEquals("USD", result.currency());
         assertEquals(BillingUnit.YEAR, result.billingIntervalUnit());
         assertEquals(1, result.billingIntervalCount());
+        assertEquals(LocalDate.of(2026, 7, 28), result.startDate());
         assertTrue(result.isSuggestionCandidate());
     }
 

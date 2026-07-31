@@ -125,6 +125,7 @@ public class SubscriptionSuggestionService {
                 suggestion.getCurrency(),
                 suggestion.getBillingIntervalUnit(),
                 suggestion.getBillingIntervalCount(),
+                suggestion.getStartDate(),
                 suggestion.getRenewalDate(),
                 suggestion.getEventType(),
                 suggestion.getConfidence(),

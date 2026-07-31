@@ -25,6 +25,7 @@ export interface SubscriptionSuggestion {
   currency: string | null;
   billingIntervalUnit: BillingUnit | null;
   billingIntervalCount: number | null;
+  startDate: string | null;
   renewalDate: string | null;
   eventType: SuggestionEventType;
   confidence: number;

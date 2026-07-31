@@ -14,6 +14,7 @@ public record SubscriptionExtraction(
         String currency,
         BillingUnit billingIntervalUnit,
         Integer billingIntervalCount,
+        LocalDate startDate,
         LocalDate renewalDate,
         BigDecimal confidence,
         String evidenceSummary,
@@ -31,7 +32,7 @@ public record SubscriptionExtraction(
             BigDecimal confidence,
             String evidenceSummary) {
         this(classification, provider, planName, amount, currency,
-                billingIntervalUnit, billingIntervalCount, renewalDate,
+                billingIntervalUnit, billingIntervalCount, null, renewalDate,
                 confidence, evidenceSummary, null);
     }
 

@@ -49,7 +49,7 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
                 String.class);
 
         assertEquals(0, failedMigrations);
-        assertEquals("16", currentVersion);
+        assertEquals("17", currentVersion);
         assertNotNull(regclass("users"));
         assertNotNull(regclass("subscription"));
         assertNotNull(regclass("notification_delivery"));
@@ -58,6 +58,12 @@ class DatabaseMigrationIntegrationTest extends PostgresIntegrationTest {
         assertNotNull(regclass("inbound_email_address"));
         assertNotNull(regclass("inbound_email"));
         assertNotNull(regclass("subscription_suggestion"));
+        assertEquals(1, jdbc.queryForObject(
+                "SELECT COUNT(*) FROM information_schema.columns "
+                        + "WHERE table_schema = 'public' "
+                        + "AND table_name = 'subscription_suggestion' "
+                        + "AND column_name = 'start_date'",
+                Integer.class));
     }
 
     @Test

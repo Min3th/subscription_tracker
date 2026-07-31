@@ -281,6 +281,9 @@ and reviewable.
 - Build inbound-email extraction fixtures from sanitized examples only. Replace names,
   addresses, account/order/transaction identifiers, card details, forwarding addresses,
   and live URLs while preserving only the wording and layout needed by deterministic rules.
+- Keep extracted start dates distinct from receipt timestamps and renewal dates. Populate
+  review forms only from explicit evidence; require user input when no start date was found
+  instead of silently substituting the processing date.
 - Validate forms on the frontend for usability, while retaining backend validation as authoritative.
 - Do not expose switches, payment details, alerts, reports, or other capabilities that are not implemented.
 - If an unfinished capability must be visible, label it clearly as “Coming soon” and ensure it cannot imply that data is being processed.

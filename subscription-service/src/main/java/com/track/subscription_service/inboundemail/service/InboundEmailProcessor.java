@@ -64,6 +64,7 @@ public class InboundEmailProcessor {
         suggestion.setCurrency(extraction.currency());
         suggestion.setBillingIntervalUnit(extraction.billingIntervalUnit());
         suggestion.setBillingIntervalCount(extraction.billingIntervalCount());
+        suggestion.setStartDate(extraction.startDate());
         suggestion.setRenewalDate(extraction.renewalDate());
         suggestion.setEventType(SuggestionEventType.valueOf(
                 extraction.classification().name()));

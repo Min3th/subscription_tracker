@@ -29,6 +29,7 @@ const suggestion: SubscriptionSuggestion = {
   currency: "USD",
   billingIntervalUnit: "month",
   billingIntervalCount: 1,
+  startDate: "2026-07-28",
   renewalDate: "2026-08-01",
   eventType: "NEW_SUBSCRIPTION",
   confidence: 0.93,

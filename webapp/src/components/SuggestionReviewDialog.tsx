@@ -50,7 +50,7 @@ const initialForm = (suggestion: SubscriptionSuggestion): FormState => ({
   cost: suggestion.amount === null ? "" : String(suggestion.amount),
   currency: suggestion.currency ?? "USD",
   category: "Other",
-  startDate: suggestion.receivedAt.slice(0, 10),
+  startDate: suggestion.startDate ?? "",
   billingIntervalUnit: suggestion.billingIntervalUnit ?? "month",
   billingIntervalCount: String(suggestion.billingIntervalCount ?? 1),
   description: suggestion.evidenceSummary,
@@ -82,13 +82,16 @@ export default function SuggestionReviewDialog({ suggestion, open, onClose }: Pr
         Number.isInteger(intervalCount) && intervalCount > 0
           ? ""
           : t("suggestions.validation_interval", "Enter a positive whole number"),
+      startDate: form.startDate
+        ? ""
+        : t("suggestions.validation_start_date", "Start date is required"),
     };
   }, [form, t]);
 
   if (!suggestion || !form) return null;
 
   const submit = async () => {
-    if (errors.name || errors.cost || errors.interval) return;
+    if (errors.name || errors.cost || errors.interval || errors.startDate) return;
     setSubmitting(true);
     try {
       await dispatch(
@@ -213,6 +216,8 @@ export default function SuggestionReviewDialog({ suggestion, open, onClose }: Pr
             label={t("suggestions.start_date", "Start date")}
             value={form.startDate}
             onChange={(event) => setForm({ ...form, startDate: event.target.value })}
+            error={Boolean(errors.startDate)}
+            helperText={errors.startDate}
             InputLabelProps={{ shrink: true }}
           />
           <TextField
