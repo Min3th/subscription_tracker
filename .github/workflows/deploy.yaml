@@ -7,6 +7,7 @@ on:
     paths:
       - "subscription-service/**"
       - ".github/workflows/deploy.yaml"
+      - ".github/scripts/deploy-backend.sh"
 
 permissions:
   id-token: write
@@ -45,6 +46,8 @@ jobs:
       - name: Prepare deployment JAR
         shell: bash
         run: |
+          set -euo pipefail
+
           JAR_FILE=$(find target -maxdepth 1 -type f -name "*.jar" \
             ! -name "*-sources.jar" \
             ! -name "*-javadoc.jar" | head -n 1)
@@ -55,6 +58,17 @@ jobs:
           fi
 
           cp "$JAR_FILE" ../subscription-service.jar
+          jar tf "$JAR_FILE" | grep -Fqx \
+            "BOOT-INF/classes/com/track/subscription_service/notification/service/SesEventQueueWorker.class"
+          jar tf "$JAR_FILE" | grep -Fqx \
+            "BOOT-INF/classes/com/track/subscription_service/inboundemail/service/SesInboundQueueWorker.class"
+          jar tf "$JAR_FILE" | grep -Fqx \
+            "BOOT-INF/classes/db/migration/V16__add_inbound_email_security_verdicts.sql"
+
+          cd ..
+          sha256sum subscription-service.jar | awk '{print $1}' \
+            > subscription-service.jar.sha256
+          test "$(wc -c < subscription-service.jar.sha256)" -eq 65
 
       - name: Authenticate to AWS using GitHub OIDC
         uses: aws-actions/configure-aws-credentials@v4
@@ -77,28 +91,35 @@ jobs:
       - name: Upload JAR to S3
         working-directory: .
         run: |
+          set -euo pipefail
+
           aws s3 cp subscription-service.jar \
             "s3://${{ secrets.S3_DEPLOY_BUCKET }}/subscription-service.jar" \
-            --region "$AWS_REGION"
+            --region "$AWS_REGION" \
+            --only-show-errors
+          aws s3 cp subscription-service.jar.sha256 \
+            "s3://${{ secrets.S3_DEPLOY_BUCKET }}/subscription-service.jar.sha256" \
+            --region "$AWS_REGION" \
+            --only-show-errors
 
       - name: Deploy through Systems Manager
         id: deploy
         shell: bash
         working-directory: .
         run: |
+          set -euo pipefail
+
+          DEPLOY_SCRIPT_B64=$(base64 -w 0 .github/scripts/deploy-backend.sh)
+          REMOTE_COMMAND="echo '$DEPLOY_SCRIPT_B64' | base64 -d | bash -s -- '${{ secrets.S3_DEPLOY_BUCKET }}' '$AWS_REGION'"
+          PARAMETERS=$(jq -cn --arg command "$REMOTE_COMMAND" \
+            '{commands: [$command]}')
+
           COMMAND_ID=$(aws ssm send-command \
             --region "$AWS_REGION" \
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
             --comment "Deploy Subscription Tracker backend" \
-            --parameters 'commands=[
-              "set -e",
-              "aws s3 cp s3://${{ secrets.S3_DEPLOY_BUCKET }}/subscription-service.jar /home/ec2-user/subscription-service.jar.new --region ${{ secrets.AWS_REGION }}",
-              "sudo systemctl stop subscription-tracker",
-              "sudo mv /home/ec2-user/subscription-service.jar.new /home/ec2-user/subscription-service.jar",
-              "sudo systemctl start subscription-tracker",
-              "sudo systemctl is-active --quiet subscription-tracker"
-            ]' \
+            --parameters "$PARAMETERS" \
             --query "Command.CommandId" \
             --output text)
 
@@ -113,6 +134,8 @@ jobs:
       - name: Wait for deployment
         working-directory: .
         run: |
+          set -euo pipefail
+
           aws ssm wait command-executed \
             --region "$AWS_REGION" \
             --command-id "${{ steps.deploy.outputs.command_id }}" \
