@@ -57,6 +57,42 @@ class DeterministicSubscriptionExtractorTest {
     }
 
     @Test
+    void extractsASanitizedChatGptPlusNewPlanReceipt() throws IOException {
+        SubscriptionExtraction result = extractor.extract(new NormalizedInboundEmail(
+                "ChatGPT - Your new plan",
+                "openai.com",
+                fixture("chatgpt-plus-new-plan.txt")
+        ));
+
+        assertEquals(InboundEmailClassification.NEW_SUBSCRIPTION, result.classification());
+        assertEquals("OpenAI", result.provider());
+        assertEquals("ChatGPT Plus", result.planName());
+        assertEquals(new BigDecimal("20.00"), result.amount());
+        assertEquals("USD", result.currency());
+        assertEquals(BillingUnit.MONTH, result.billingIntervalUnit());
+        assertEquals(1, result.billingIntervalCount());
+        assertTrue(result.isSuggestionCandidate());
+    }
+
+    @Test
+    void extractsASanitizedNamecheapDomainRegistrationOrder() throws IOException {
+        SubscriptionExtraction result = extractor.extract(new NormalizedInboundEmail(
+                "Namecheap order summary",
+                "namecheap.com",
+                fixture("namecheap-domain-registration.txt")
+        ));
+
+        assertEquals(InboundEmailClassification.NEW_SUBSCRIPTION, result.classification());
+        assertEquals("Namecheap", result.provider());
+        assertEquals("Domain Registration", result.planName());
+        assertEquals(new BigDecimal("2.20"), result.amount());
+        assertEquals("USD", result.currency());
+        assertEquals(BillingUnit.YEAR, result.billingIntervalUnit());
+        assertEquals(1, result.billingIntervalCount());
+        assertTrue(result.isSuggestionCandidate());
+    }
+
+    @Test
     void doesNotTurnAnUnrelatedPurchaseOrAmbiguousDollarSymbolIntoASuggestion()
             throws IOException {
         SubscriptionExtraction result = extractor.extract(new NormalizedInboundEmail(

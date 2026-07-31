@@ -278,6 +278,9 @@ and reviewable.
 - Treat Gmail verification URLs as short-lived secrets: clear them immediately on any user decision
   and include undecided URLs in the bounded inbound-content retention job. Retain only the
   non-sensitive suggestion metadata needed for review history and deduplication.
+- Build inbound-email extraction fixtures from sanitized examples only. Replace names,
+  addresses, account/order/transaction identifiers, card details, forwarding addresses,
+  and live URLs while preserving only the wording and layout needed by deterministic rules.
 - Validate forms on the frontend for usability, while retaining backend validation as authoritative.
 - Do not expose switches, payment details, alerts, reports, or other capabilities that are not implemented.
 - If an unfinished capability must be visible, label it clearly as “Coming soon” and ensure it cannot imply that data is being processed.

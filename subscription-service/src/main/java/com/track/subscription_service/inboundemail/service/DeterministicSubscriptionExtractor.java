@@ -36,6 +36,8 @@ public class DeterministicSubscriptionExtractor {
                     + "\\b(USD|EUR|GBP|LKR|JPY|CAD|AUD|INR)\\b");
     private static final Pattern SYMBOL_MONEY = Pattern.compile(
             "([€£₹])\\s*([0-9][0-9,]*(?:\\.[0-9]{1,4})?)\\b");
+    private static final Pattern DOLLAR_MONEY = Pattern.compile(
+            "\\$\\s*([0-9][0-9,]*(?:\\.[0-9]{1,4})?)\\b");
     private static final Pattern PLAN = Pattern.compile(
             "(?im)\\b(?:plan|membership)\\s*:\\s*([^\\n]{1,120})$");
     private static final Pattern EXPLICIT_DATE = Pattern.compile(
@@ -61,6 +63,9 @@ public class DeterministicSubscriptionExtractor {
         PROVIDERS.put("youtube premium", "YouTube Premium");
         PROVIDERS.put("disney+", "Disney+");
         PROVIDERS.put("dropbox", "Dropbox");
+        PROVIDERS.put("chatgpt", "OpenAI");
+        PROVIDERS.put("openai", "OpenAI");
+        PROVIDERS.put("namecheap", "Namecheap");
     }
 
     public SubscriptionExtraction extract(NormalizedInboundEmail email) {
@@ -71,10 +76,10 @@ public class DeterministicSubscriptionExtractor {
                 ? gmailVerificationUrl(text)
                 : null;
         String provider = provider(lower, email.senderDomain(), classification);
-        Money money = money(text);
+        Money money = money(text, classification, provider);
         Billing billing = billing(lower);
         LocalDate renewalDate = renewalDate(text);
-        String planName = captured(PLAN, text);
+        String planName = planName(text, lower);
 
         List<String> evidence = new ArrayList<>();
         BigDecimal confidence = BigDecimal.ZERO;
@@ -139,7 +144,11 @@ public class DeterministicSubscriptionExtractor {
             return InboundEmailClassification.UPCOMING_RENEWAL;
         }
         if (containsAny(text, "subscription confirmed", "welcome to your subscription",
-                "membership confirmed", "you subscribed")) {
+                "membership confirmed", "you subscribed", "successfully subscribed")) {
+            return InboundEmailClassification.NEW_SUBSCRIPTION;
+        }
+        if (text.contains("domain registration")
+                && containsAny(text, "initial charge", "final cost", "order details")) {
             return InboundEmailClassification.NEW_SUBSCRIPTION;
         }
         return InboundEmailClassification.NOT_SUBSCRIPTION;
@@ -199,10 +208,12 @@ public class DeterministicSubscriptionExtractor {
                 .orElse(null);
     }
 
-    private Money money(String text) {
+    private Money money(String text, InboundEmailClassification classification,
+                        String provider) {
         for (String line : text.split("\\n")) {
             String lower = line.toLowerCase(Locale.ROOT);
-            if (!containsAny(lower, "total", "charged", "paid", "payment", "amount", "price")) {
+            if (!containsAny(lower, "total", "charge", "charged", "cost",
+                    "paid", "payment", "amount", "price")) {
                 continue;
             }
             Matcher coded = CODE_MONEY.matcher(line);
@@ -226,6 +237,13 @@ public class DeterministicSubscriptionExtractor {
                     return new Money(decimal(symbol.group(2)), currency);
                 }
             }
+            if (classification != InboundEmailClassification.NOT_SUBSCRIPTION
+                    && provider != null) {
+                Matcher dollar = DOLLAR_MONEY.matcher(line);
+                if (dollar.find()) {
+                    return new Money(decimal(dollar.group(1)), "USD");
+                }
+            }
         }
         return null;
     }
@@ -245,6 +263,28 @@ public class DeterministicSubscriptionExtractor {
         }
         if (containsAny(text, "per week", "weekly")) {
             return new Billing(BillingUnit.WEEK, 1);
+        }
+        Matcher duration = Pattern.compile(
+                "(?i)\\b(?:duration\\s*:?\\s*)?(\\d{1,3})\\s+"
+                        + "(day|week|month|year)s?\\b").matcher(text);
+        if (duration.find()) {
+            return new Billing(BillingUnit.fromValue(duration.group(2)),
+                    Integer.parseInt(duration.group(1)));
+        }
+        return null;
+    }
+
+    private String planName(String text, String lower) {
+        String labeled = captured(PLAN, text);
+        if (labeled != null) {
+            return labeled;
+        }
+        if (lower.contains("chatgpt plus subscription")
+                || lower.contains("subscribed to chatgpt plus")) {
+            return "ChatGPT Plus";
+        }
+        if (lower.contains("domain registration")) {
+            return "Domain Registration";
         }
         return null;
     }
