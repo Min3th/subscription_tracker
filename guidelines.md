@@ -391,3 +391,18 @@ A change is complete only when:
 - Configuration and documentation are updated when required.
 - No placeholder UI or unsupported claim was introduced.
 - Remaining risks or deployment actions are clearly documented.
+
+## 14. Retiring an Email Provider
+
+- Maintain an exact, repository-derived provider inventory before removal.
+- Do not remove a rollback provider until the replacement passes real inbound
+  and outbound acceptance tests, queues and DLQs are healthy, and no legacy
+  webhook traffic is observed for at least twice the previous MX TTL.
+- Disable legacy endpoints through their feature flag and observe the deployed
+  result before deleting their implementation.
+- Remove provider code and deploy it successfully before revoking provider
+  credentials or external webhook configuration. Revoke API keys last.
+- Never delete historical notification, suppression, or inbound-email records
+  solely because they name the retired provider.
+- Inventory and readiness tools may report secret names and whether settings are
+  present, but must never print secret values.

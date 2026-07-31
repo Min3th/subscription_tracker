@@ -209,6 +209,10 @@ hostname has exactly the expected SES MX record and no competing MX records.
 
 ## 7. Disable SendGrid after the rollback window
 
+Use the complete inventory, gates, and ordered cleanup procedure in
+[`sendgrid-removal-checklist.md`](sendgrid-removal-checklist.md). Do not remove
+code or revoke secrets merely because the MX record has changed.
+
 After no SendGrid traffic is observed for at least twice the previous MX TTL:
 
 ```text
