@@ -164,6 +164,29 @@ Do not change the root-domain MX record.
 Monitor SES, SendGrid, both queues, both DLQs, application ingestion, and
 suggestion creation throughout the previous DNS TTL and queue-drain window.
 
+For the current production domain, DNS is authoritative at Namecheap. The
+inbound hostname had no public MX record before SES cutover, so add this as a
+new **Custom DNS** record:
+
+| Namecheap field | Value |
+| --- | --- |
+| Type | `MX Record` |
+| Host | `inbound` |
+| Value | `inbound-smtp.ap-south-1.amazonaws.com` |
+| Priority | `10` |
+| TTL | `30 min` or the lowest available controlled value |
+
+Do not edit the `@` host records pointing to
+`eforward*.registrar-servers.com`; those are unrelated root-domain forwarding
+records. Before and after publication, run:
+
+```powershell
+.\scripts\Test-SesDnsCutover.ps1
+```
+
+The check must fail before publication and pass only when the inbound hostname
+has exactly the expected SES MX record and no competing MX records.
+
 ## 7. Disable SendGrid after the rollback window
 
 After no SendGrid traffic is observed for at least twice the previous MX TTL:

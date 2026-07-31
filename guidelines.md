@@ -171,6 +171,9 @@ and reviewable.
 - Keep production SES runtime changes explicit, reversible, and independent of the
   EC2 deployment region. Discover non-secret resource identifiers from CloudFormation,
   require an apply flag, and restore the previous systemd configuration if restart fails.
+- Scope inbound DNS changes to the dedicated forwarding hostname. Verify the exact
+  MX target and priority after publication, and never replace root-domain mail or
+  forwarding MX records as part of the SES inbound cutover.
 - Keep SendGrid webhook controllers behind the rollback-window feature flag. Disabling
   SendGrid inbound acceptance must remove both public SendGrid webhook mappings without
   disabling provider-neutral unsubscribe endpoints.
