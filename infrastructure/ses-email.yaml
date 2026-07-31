@@ -29,6 +29,16 @@ Parameters:
     Description: Database content retention period plus one safety day.
     MinValue: 2
     MaxValue: 366
+  CreateInboundHostedZone:
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - "true"
+      - "false"
+    Description: Create a Route 53 hosted zone and SES MX record for the inbound subdomain.
+
+Conditions:
+  ShouldCreateInboundHostedZone: !Equals [!Ref CreateInboundHostedZone, "true"]
 
 Rules:
   StackAccountMustMatchParameter:
@@ -41,6 +51,30 @@ Rules:
         AssertDescription: SesRegion must match the region deploying this stack.
 
 Resources:
+  InboundHostedZone:
+    Type: AWS::Route53::HostedZone
+    Condition: ShouldCreateInboundHostedZone
+    Properties:
+      Name: !Sub "${InboundSubdomain}.${DomainName}"
+      HostedZoneConfig:
+        Comment: !Sub "Delegated SES inbound email zone for ${EnvironmentName}"
+      HostedZoneTags:
+        - Key: Environment
+          Value: !Ref EnvironmentName
+        - Key: Application
+          Value: subtrak
+
+  InboundMxRecord:
+    Type: AWS::Route53::RecordSet
+    Condition: ShouldCreateInboundHostedZone
+    Properties:
+      HostedZoneId: !Ref InboundHostedZone
+      Name: !Sub "${InboundSubdomain}.${DomainName}"
+      Type: MX
+      TTL: 300
+      ResourceRecords:
+        - !Sub "10 inbound-smtp.${SesRegion}.amazonaws.com"
+
   SesDomainIdentity:
     Type: AWS::SES::EmailIdentity
     Properties:
@@ -414,6 +448,14 @@ Outputs:
     Value: !Sub "${InboundSubdomain}.${DomainName}"
   InboundMxRecordValue:
     Value: !Sub "10 inbound-smtp.${SesRegion}.amazonaws.com"
+  InboundHostedZoneId:
+    Condition: ShouldCreateInboundHostedZone
+    Description: Route 53 hosted zone ID for the delegated inbound subdomain.
+    Value: !Ref InboundHostedZone
+  InboundDelegationNameServers:
+    Condition: ShouldCreateInboundHostedZone
+    Description: Add each name server as an NS record for the inbound host at the parent DNS provider.
+    Value: !Join [",", !GetAtt InboundHostedZone.NameServers]
   SesConfigurationSet:
     Description: Set SES_CONFIGURATION_SET to this value.
     Value: !Ref SesConfigurationSet

@@ -174,6 +174,10 @@ and reviewable.
 - Scope inbound DNS changes to the dedicated forwarding hostname. Verify the exact
   MX target and priority after publication, and never replace root-domain mail or
   forwarding MX records as part of the SES inbound cutover.
+- When the parent provider couples MX records to root-domain mail settings, delegate
+  only the inbound subdomain to a separately managed hosted zone. Make hosted-zone
+  creation explicit because it incurs a recurring charge, and keep parent NS and
+  root MX records unchanged.
 - Keep SendGrid webhook controllers behind the rollback-window feature flag. Disabling
   SendGrid inbound acceptance must remove both public SendGrid webhook mappings without
   disabling provider-neutral unsubscribe endpoints.

@@ -164,28 +164,36 @@ Do not change the root-domain MX record.
 Monitor SES, SendGrid, both queues, both DLQs, application ingestion, and
 suggestion creation throughout the previous DNS TTL and queue-drain window.
 
-For the current production domain, DNS is authoritative at Namecheap. The
-inbound hostname had no public MX record before SES cutover, so add this as a
-new **Custom DNS** record:
+For the current production domain, DNS is authoritative at Namecheap and its
+Mail Settings manage the root-domain forwarding MX records. Enable
+`CreateInboundHostedZone=true` on the CloudFormation stack instead of switching
+Namecheap Mail Settings to Custom MX. The stack creates a Route 53 zone and SES
+MX record for the inbound-only subdomain.
+
+Add each of the four values from the `InboundDelegationNameServers` stack output
+to Namecheap **Advanced DNS -> Host Records**:
 
 | Namecheap field | Value |
 | --- | --- |
-| Type | `MX Record` |
+| Type | `NS Record` |
 | Host | `inbound` |
-| Value | `inbound-smtp.ap-south-1.amazonaws.com` |
-| Priority | `10` |
-| TTL | `30 min` or the lowest available controlled value |
+| Value | one Route 53 name server, without changing it |
+| TTL | `30 min` or Automatic |
 
-Do not edit the `@` host records pointing to
-`eforward*.registrar-servers.com`; those are unrelated root-domain forwarding
-records. Before and after publication, run:
+Create four records with the same host and one distinct Route 53 name server
+per record. Do not edit the `@` host MX records pointing to
+`eforward*.registrar-servers.com`, and do not change the domain's main name
+servers.
+
+Verify the Route 53 zone directly before delegation, then verify public DNS:
 
 ```powershell
+.\scripts\Test-SesDnsCutover.ps1 -NameServer <one-route53-name-server>
 .\scripts\Test-SesDnsCutover.ps1
 ```
 
-The check must fail before publication and pass only when the inbound hostname
-has exactly the expected SES MX record and no competing MX records.
+The public check must fail before delegation and pass only when the inbound
+hostname has exactly the expected SES MX record and no competing MX records.
 
 ## 7. Disable SendGrid after the rollback window
 

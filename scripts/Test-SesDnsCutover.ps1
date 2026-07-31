@@ -3,14 +3,23 @@ param(
     [string]$InboundDomain = "inbound.subtrak.xyz",
     [string]$ExpectedExchange = "inbound-smtp.ap-south-1.amazonaws.com",
     [ValidateRange(0, 65535)]
-    [int]$ExpectedPreference = 10
+    [int]$ExpectedPreference = 10,
+    [string]$NameServer
 )
 
 $ErrorActionPreference = "Stop"
 
 try {
+    $resolveArguments = @{
+        Name = $InboundDomain
+        Type = "MX"
+        DnsOnly = $true
+    }
+    if (-not [string]::IsNullOrWhiteSpace($NameServer)) {
+        $resolveArguments.Server = $NameServer
+    }
     $records = @(
-        Resolve-DnsName -Name $InboundDomain -Type MX -DnsOnly |
+        Resolve-DnsName @resolveArguments |
             Where-Object Type -eq "MX"
     )
 } catch {
