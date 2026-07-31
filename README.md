@@ -127,6 +127,11 @@ The backend reads the following environment variables:
 | `INBOUND_EMAIL_CONTENT_RETENTION_DAYS` | Days to retain inbound bodies and headers; defaults to 30 |
 | `INBOUND_EMAIL_RETENTION_BATCH_SIZE` | Maximum content records purged per retention run; defaults to 100 |
 | `INBOUND_EMAIL_RETENTION_CRON` | Spring cron expression for content retention; defaults to hourly at minute 15 |
+| `JPA_SHOW_SQL` | Prints SQL directly when `true`; defaults to `false` |
+| `HIBERNATE_SQL_LOG_LEVEL` | Hibernate SQL logger level; defaults to `WARN` |
+| `HIBERNATE_BIND_LOG_LEVEL` | JDBC bind-value logger level; defaults to `WARN`; do not enable in production |
+| `SPRING_SECURITY_LOG_LEVEL` | Spring Security logger level; defaults to `INFO` |
+| `SPRING_WEB_LOG_LEVEL` | Spring Web logger level; defaults to `INFO` |
 
 You can export these variables in your shell or provide them through your IDE's run configuration.
 
