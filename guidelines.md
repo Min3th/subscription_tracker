@@ -256,6 +256,10 @@ and reviewable.
 ## 9. Frontend Conventions
 
 - Keep TypeScript types aligned with backend response DTOs.
+- For local frontend testing against a deployed API, use the configurable Vite
+  proxy target. Keep provider URLs and OAuth client IDs in ignored local
+  environment files, and never connect a local worker to production queues or
+  databases merely to exercise frontend behavior.
 - Use the shared Axios client rather than creating isolated clients.
 - Keep global server-backed state in the established Redux slices.
 - Model review decisions as server-confirmed state transitions: keep a pending suggestion visible

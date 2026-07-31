@@ -163,6 +163,7 @@ Create `webapp/.env.local`:
 ```env
 VITE_GOOGLE_CLIENT_ID=your-google-client-id
 VITE_API_BASE_URL=/api
+VITE_API_PROXY_TARGET=http://localhost:8080
 ```
 
 The Google client ID must match the one configured for the backend. Add `https://localhost:5173` as an authorized JavaScript origin in the Google Cloud Console.
@@ -178,6 +179,22 @@ npm run dev
 Vite serves the application over HTTPS at `https://localhost:5173` and proxies `/api` requests to the backend at `http://localhost:8080`.
 
 Because local HTTPS uses a development certificate, your browser may ask you to accept the certificate the first time you open the site.
+
+To test branch frontend changes against the live backend, keep
+`VITE_API_BASE_URL=/api` and set `VITE_API_PROXY_TARGET` to the production API
+origin, without a trailing API path:
+
+```env
+VITE_GOOGLE_CLIENT_ID=your-production-google-client-id
+VITE_API_BASE_URL=/api
+VITE_API_PROXY_TARGET=https://your-production-api.example.com
+```
+
+This routes browser requests through the local Vite proxy, so production CORS
+does not need to allow every preview deployment. Add `https://localhost:5173`
+to the Google OAuth client's authorized JavaScript origins. Do not connect a
+local backend worker to production SES queues or the production database for
+this test.
 
 ## Available Scripts
 
