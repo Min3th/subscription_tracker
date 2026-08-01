@@ -1,0 +1,3 @@
+# Private AWS inventory: contains internal resource identifiers and topology.
+/docs/aws-infrastructure-inventory.md
+/docs/aws-environment-mapping.csv

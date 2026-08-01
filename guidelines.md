@@ -416,3 +416,18 @@ A change is complete only when:
   solely because they name the retired provider.
 - Inventory and readiness tools may report secret names and whether settings are
   present, but must never print secret values.
+
+## 15. Environment Inventory
+
+- Keep `docs/aws-infrastructure-inventory.md` and the environment mapping sheet
+  current when AWS resources or GitHub deployment environments change.
+- Classify resources from explicit names and tags; leave ambiguous resources
+  shared or unassigned until ownership is confirmed.
+- Never map dev or staging configuration to production instances, databases,
+  queues, buckets, encryption keys, or inbound domains.
+- Inventory resource identifiers and secret names only. Never copy secret,
+  parameter, database credential, OAuth credential, or message values into the
+  repository.
+- Treat inventory findings as read-only evidence. Security remediation and
+  resource deletion require separate review, exact target verification, and
+  independently reversible changes where possible.
