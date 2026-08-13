@@ -1,3 +1,11 @@
 # Private AWS inventory: contains internal resource identifiers and topology.
 /docs/aws-infrastructure-inventory.md
 /docs/aws-environment-mapping.csv
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+!*.tfvars.example
+crash.log
+crash.*.log
