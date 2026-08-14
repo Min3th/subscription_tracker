@@ -1,0 +1,29 @@
+aws_region = "eu-north-1"
+ses_region = "ap-south-1"
+
+project_name = "subtrak"
+environment  = "dev"
+
+vpc_cidr = "10.10.0.0/16"
+
+availability_zones = [
+  "eu-north-1a",
+  "eu-north-1b"
+]
+
+public_subnet_cidrs = [
+  "10.10.10.0/24",
+  "10.10.11.0/24"
+]
+
+private_subnet_cidrs = [
+  "10.10.20.0/24",
+  "10.10.21.0/24"
+]
+
+application_instance_type = "t3.micro"
+database_instance_class   = "db.t4g.micro"
+
+database_name          = "subtrak"
+inbound_subdomain      = "inbound.dev.subtrak.xyz"
+inbound_retention_days = 8
