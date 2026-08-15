@@ -1,15 +1,23 @@
 provider "aws" {
-    region = var.aws_region
+  region = var.aws_region
 
-    default_tags {
-      tags = local.common_tags
-    }
-  
+  allowed_account_ids = [
+    "594559484604"
+  ]
+
+  default_tags {
+    tags = local.common_tags
+  }
+
 }
 
 provider "aws" {
-  alias = "ses"
+  alias  = "ses"
   region = var.ses_region
+
+  allowed_account_ids = [
+    "594559484604"
+  ]
 
   default_tags {
     tags = local.common_tags
