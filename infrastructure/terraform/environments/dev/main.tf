@@ -54,3 +54,23 @@ resource "aws_security_group" "application" {
     create_before_destroy = true
   }
 }
+
+module "application" {
+  source = "../../modules/application"
+
+  name_prefix = local.name_prefix
+
+  subnet_id         = module.network.public_subnet_ids[0]
+  security_group_id = aws_security_group.application.id
+
+  database_security_group_id = module.database.security_group_id
+  database_secret_arn        = module.database.master_user_secret_arn
+
+  instance_type    = var.application_instance_type
+  root_volume_size = 8
+
+  public_ingress_cidrs = ["0.0.0.0/0"]
+
+  deployment_artifact_retention_days = 30
+  deployment_bucket_force_destroy    = false
+}

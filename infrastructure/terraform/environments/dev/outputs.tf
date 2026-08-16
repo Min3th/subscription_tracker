@@ -12,3 +12,18 @@ output "database_secret_arn" {
   description = "ARN of the RDS-managed database credential secret"
   value       = module.database.master_user_secret_arn
 }
+
+output "application_instance_id" {
+  description = "ID of the dev backend EC2 instance"
+  value       = module.application.instance_id
+}
+
+output "application_public_ip" {
+  description = "Public IP of the dev backend"
+  value       = module.application.public_ip
+}
+
+output "deployment_bucket_name" {
+  description = "Name of the dev deployment bucket"
+  value       = module.application.deployment_bucket_name
+}
