@@ -15,15 +15,30 @@ new_jar="$current_jar.new"
 previous_jar="$current_jar.previous"
 checksum_file="$new_jar.sha256"
 replacement_started=false
+previous_jar_available=false
+
 
 rollback() {
   exit_code=$?
   trap - ERR
-  echo "Deployment failed; restoring the previous JAR." >&2
-  if [[ "$replacement_started" = true ]] && sudo test -f "$previous_jar"; then
-    sudo mv "$previous_jar" "$current_jar"
-    sudo systemctl restart "$service_name"
+  echo "Deployment failed; restoring the previous application state." >&2
+
+  if [[ "$replacement_started" = true ]]; then
+    sudo systemctl stop "$service_name" || true
+
+    if [[ "$previous_jar_available" == true ]] \
+      && sudo test -f "$previous_jar"; then
+      sudo mv -f "$previous_jar" "$current_jar"
+      sudo chown ec2-user:ec2-user "$current_jar"
+      sudo chmod 0644 "$current_jar"
+      sudo systemctl start "$service_name"
+      echo "Previous JAR restored." >&2
+    else
+      sudo rm -f "$current_jar"
+      echo "Failed first-deployment JAR removed." >&2
+    fi
   fi
+
   sudo rm -f "$new_jar" "$checksum_file"
   exit "$exit_code"
 }
@@ -53,10 +68,28 @@ jar tf "$new_jar" | grep -Fqx \
   "BOOT-INF/classes/db/migration/V16__add_inbound_email_security_verdicts.sql"
 
 sudo rm -f "$previous_jar"
-sudo cp "$current_jar" "$previous_jar"
+
+if sudo test -f "$current_jar"; then
+  sudo cp -p "$current_jar" "$previous_jar"
+  previous_jar_available=true
+  echo "Existing JAR backed up."
+else
+  echo "No existing JAR found; performing first deployment."
+fi
+
 replacement_started=true
-sudo systemctl stop "$service_name"
-sudo mv "$new_jar" "$current_jar"
+
+sudo systemctl stop "$service_name" || true
+
+sudo install \
+  -o ec2-user \
+  -g ec2-user \
+  -m 0644 \
+  "$new_jar" \
+  "$current_jar"
+
+sudo rm -f "$new_jar"
+
 sudo systemctl start "$service_name"
 
 consecutive_healthy=0
@@ -83,12 +116,18 @@ for _ in {1..12}; do
 done
 
 test "$consecutive_healthy" -ge 3
+
+sudo systemctl is-active --quiet "$service_name"
+sudo systemctl is-enabled --quiet "$service_name"
+
 test "$(sha256sum "$current_jar" | awk '{print $1}')" = "$expected_sha"
 jar tf "$current_jar" | grep -Fqx \
   "BOOT-INF/classes/com/track/subscription_service/notification/service/SesEventQueueWorker.class"
 jar tf "$current_jar" | grep -Fqx \
   "BOOT-INF/classes/com/track/subscription_service/inboundemail/service/SesInboundQueueWorker.class"
 
-trap - ERR
 sudo rm -f "$previous_jar" "$checksum_file"
+replacement_started=false
+trap - ERR
+
 echo "Deployment verified: service active, HTTP responsive, checksum matched, SES workers present."
