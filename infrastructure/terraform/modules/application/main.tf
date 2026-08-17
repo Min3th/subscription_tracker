@@ -113,7 +113,7 @@ data "aws_iam_policy_document" "application_runtime" {
     ]
 
     resources = [
-      var.database_secret_arn
+      var.database_secret_arn,
     ]
   }
 
@@ -141,6 +141,21 @@ data "aws_iam_policy_document" "application_runtime" {
     ]
 
     resources = ["${aws_s3_bucket.deployments.arn}/*"]
+  }
+
+
+  statement {
+    sid    = "ReadApplicationSecret"
+    effect = "Allow"
+
+    actions = [
+      "secretsmanager:DescribeSecret",
+      "secretsmanager:GetSecretValue"
+    ]
+
+    resources = [
+      aws_secretsmanager_secret.application.arn
+    ]
   }
 
 }
@@ -303,6 +318,7 @@ data "aws_iam_policy_document" "deployment_bucket" {
       values   = ["false"]
     }
   }
+
 }
 
 resource "aws_s3_bucket_policy" "deployments" {
@@ -311,4 +327,13 @@ resource "aws_s3_bucket_policy" "deployments" {
 
   depends_on = [aws_s3_bucket_public_access_block.deployments]
 
+}
+
+resource "aws_secretsmanager_secret" "application" {
+  name                    = "${var.name_prefix}/application"
+  recovery_window_in_days = 7
+
+  tags = {
+    Name = "${var.name_prefix}-application-secret"
+  }
 }

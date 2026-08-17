@@ -42,3 +42,8 @@ output "deployment_bucket_arn" {
   description = "ARN of the deployment artifact bucket"
   value       = aws_s3_bucket.deployments.arn
 }
+
+output "application_secret_arn" {
+  description = "ARN of the dev application secret"
+  value       = aws_secretsmanager_secret.application.arn
+}

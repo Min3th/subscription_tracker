@@ -27,3 +27,8 @@ output "deployment_bucket_name" {
   description = "Name of the dev deployment bucket"
   value       = module.application.deployment_bucket_name
 }
+
+output "application_secret_arn" {
+  description = "ARN of the dev application runtime secret"
+  value       = module.application.application_secret_arn
+}
