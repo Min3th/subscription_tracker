@@ -1,0 +1,33 @@
+[Unit]
+Description=SubTrak backend
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/home/ec2-user
+ExecStartPre=/usr/bin/test -r /home/ec2-user/subscription-service.jar
+ExecStart=/usr/local/bin/run-subtrak
+Restart=on-failure
+RestartSec=10
+SuccessExitStatus=143
+TimeoutStopSec=30
+UMask=0077
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectControlGroups=true
+ProtectHome=read-only
+ProtectKernelLogs=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+ProtectSystem=strict
+RestrictSUIDSGID=true
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

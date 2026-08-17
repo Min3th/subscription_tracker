@@ -174,6 +174,10 @@ and reviewable.
 - Production deployments must verify the artifact checksum and required worker/migration
   entries before replacement, retain the previous JAR until stable service and local
   HTTP checks pass repeatedly, and restore that JAR automatically on any failure.
+- Runtime launchers must retrieve secrets through the EC2 instance role, keep secret
+  values in process memory, disable shell tracing, and never persist retrieved values
+  in Terraform, GitHub, user data, systemd units, or environment files. Persist only
+  validated non-secret resource identifiers needed to locate those values.
 - Keep SQL, JDBC bind values, Spring Security, and Spring Web debug logging disabled
   by default. Enable targeted diagnostics only for a bounded investigation, never log
   bind values in production, and restore production-safe levels immediately afterward.
