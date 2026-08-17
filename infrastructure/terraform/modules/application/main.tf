@@ -158,6 +158,15 @@ data "aws_iam_policy_document" "application_runtime" {
     ]
   }
 
+  statement {
+    sid = "ReadRuntimeConfiguration"
+    effect = "Allow"
+
+    actions = ["ssm:GetParameter"]
+
+    resources = ["arn:aws:ssm:ap-south-1:594559484604:parameter/subtrak/dev/runtime"]
+  }
+
 }
 
 resource "aws_iam_role_policy" "application_runtime" {
