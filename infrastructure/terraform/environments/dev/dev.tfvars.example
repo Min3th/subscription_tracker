@@ -1,4 +1,4 @@
-aws_region = "eu-north-1"
+aws_region = "ap-south-1"
 ses_region = "ap-south-1"
 
 project_name = "subtrak"
@@ -7,8 +7,8 @@ environment  = "dev"
 vpc_cidr = "10.10.0.0/16"
 
 availability_zones = [
-  "eu-north-1a",
-  "eu-north-1b"
+  "ap-south-1a",
+  "ap-south-1b"
 ]
 
 public_subnet_cidrs = [
@@ -27,3 +27,8 @@ database_instance_class   = "db.t4g.micro"
 database_name          = "subtrak"
 inbound_subdomain      = "inbound.dev.subtrak.xyz"
 inbound_retention_days = 8
+
+github_repository_owner       = "Min3th"
+github_repository_name        = "subscription_tracker"
+github_deployment_environment = "development"
+github_deployment_branch      = "dev"

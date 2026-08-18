@@ -12,6 +12,13 @@ systemd unit, or a persistent environment file.
 - `/subtrak/dev/runtime` in SSM Parameter Store: the non-secret database host,
   port, database name, URLs, identifiers, feature flags, and provider selection.
 
+When `EMAIL_OUTBOUND_PROVIDER` is `ses`, the runtime parameter must include
+non-empty `SES_REGION`, `SES_FROM_EMAIL`, `SES_FROM_NAME`, and
+`SES_CONFIGURATION_SET` values. The launcher exports these values to Spring;
+their presence allows startup but does not imply that SES identities,
+configuration sets, or sending permissions have already been provisioned in
+the dev account.
+
 The EC2 instance role must have `secretsmanager:DescribeSecret` and
 `secretsmanager:GetSecretValue` for the two exact secret ARNs, plus
 `ssm:GetParameter` for the exact runtime parameter ARN.

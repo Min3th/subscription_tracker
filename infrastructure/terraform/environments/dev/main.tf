@@ -74,3 +74,18 @@ module "application" {
   deployment_artifact_retention_days = 30
   deployment_bucket_force_destroy    = false
 }
+
+module "github_oidc" {
+  source = "../../modules/github_oidc"
+
+  name_prefix = local.name_prefix
+  aws_region  = var.aws_region
+
+  github_repository_owner = var.github_repository_owner
+  github_repository_name  = var.github_repository_name
+  github_environment      = var.github_deployment_environment
+  github_branch           = var.github_deployment_branch
+
+  deployment_bucket_arn    = module.application.deployment_bucket_arn
+  application_instance_arn = module.application.instance_arn
+}

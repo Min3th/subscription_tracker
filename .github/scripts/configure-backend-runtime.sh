@@ -78,7 +78,11 @@ aws ssm get-parameter \
   --output text \
   | jq -e \
     '.DB_HOST and .DB_PORT and .DB_NAME and .GOOGLE_CLIENT_ID and
-      .FRONTEND_BASE_URL and .FRONTEND_ORIGINS' \
+      .JWT_ISSUER and .JWT_AUDIENCE and .PUBLIC_API_URL and
+      .FRONTEND_BASE_URL and .FRONTEND_ORIGINS and .INBOUND_EMAIL_DOMAIN and
+      ((.EMAIL_OUTBOUND_PROVIDER // "ses") != "ses" or
+        (.SES_REGION and .SES_FROM_EMAIL and .SES_FROM_NAME and
+          .SES_CONFIGURATION_SET))' \
     >/dev/null
 
 install -d -o root -g root -m 0755 "$config_dir"

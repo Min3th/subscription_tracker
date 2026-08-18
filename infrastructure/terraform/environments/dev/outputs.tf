@@ -32,3 +32,13 @@ output "application_secret_arn" {
   description = "ARN of the dev application runtime secret"
   value       = module.application.application_secret_arn
 }
+
+output "github_oidc_provider_arn" {
+  description = "ARN of the GitHub Actions OIDC provider in the dev account"
+  value       = module.github_oidc.provider_arn
+}
+
+output "github_deployment_role_arn" {
+  description = "Role ARN to configure as the dev GitHub environment AWS_ROLE_ARN variable"
+  value       = module.github_oidc.deployment_role_arn
+}

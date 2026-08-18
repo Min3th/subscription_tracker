@@ -1,0 +1,217 @@
+name: Build and Deploy Dev Backend
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+    paths:
+      - "subscription-service/**"
+      - ".github/scripts/configure-backend-runtime.sh"
+      - ".github/scripts/deploy-backend.sh"
+      - ".github/scripts/install-runtime-from-s3.sh"
+      - ".github/scripts/run-backend.sh"
+      - ".github/scripts/tests/**"
+      - ".github/systemd/subscription-tracker.service"
+      - ".github/workflows/deploy-dev.yaml"
+
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: dev-backend-deployment
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: development
+
+    env:
+      AWS_REGION: ${{ vars.AWS_REGION }}
+      AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+      DEPLOYMENT_BUCKET: ${{ vars.S3_DEPLOY_BUCKET }}
+      EC2_INSTANCE_ID: ${{ vars.EC2_INSTANCE_ID }}
+      DATABASE_SECRET_ARN: ${{ vars.DATABASE_SECRET_ARN }}
+      APPLICATION_SECRET_ID: subtrak-dev/application
+      RUNTIME_PARAMETER_NAME: /subtrak/dev/runtime
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate deployment configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          required_names=(
+            AWS_REGION
+            AWS_ROLE_ARN
+            DEPLOYMENT_BUCKET
+            EC2_INSTANCE_ID
+            DATABASE_SECRET_ARN
+          )
+
+          for name in "${required_names[@]}"; do
+            if [[ -z "${!name}" ]]; then
+              echo "Required GitHub development environment variable is missing: $name" >&2
+              exit 1
+            fi
+          done
+
+          [[ "$AWS_REGION" =~ ^[a-z]{2}(-gov)?-[a-z]+-[0-9]+$ ]]
+          [[ "$DEPLOYMENT_BUCKET" =~ ^[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]$ ]]
+          [[ "$EC2_INSTANCE_ID" =~ ^i-[a-f0-9]+$ ]]
+          [[ "$AWS_ROLE_ARN" =~ ^arn:aws[a-zA-Z-]*:iam::[0-9]{12}:role/[A-Za-z0-9_+=,.@/-]+$ ]]
+          [[ "$DATABASE_SECRET_ARN" =~ ^arn:aws[a-zA-Z-]*:secretsmanager:[a-z0-9-]+:[0-9]{12}:secret:[A-Za-z0-9/_+=.@!-]+$ ]]
+
+      - name: Test backend deployment behavior
+        run: bash .github/scripts/tests/deploy-backend-test.sh
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+          cache-dependency-path: subscription-service/pom.xml
+
+      - name: Build and test backend
+        working-directory: subscription-service
+        env:
+          JWT_SECRET: github-actions-test-secret-key-that-is-longer-than-32-bytes
+          GOOGLE_CLIENT_ID: test-google-client-id
+          SENDGRID_API_KEY: SGaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          SENDGRID_FROM_EMAIL: test@example.com
+          SENDGRID_FROM_NAME: Subscription Tracker Tests
+          FRONTEND_BASE_URL: http://localhost:5173
+        run: ./mvnw clean package
+
+      - name: Prepare deployment artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          jar_file="$(find subscription-service/target -maxdepth 1 -type f \
+            -name '*.jar' \
+            ! -name '*-sources.jar' \
+            ! -name '*-javadoc.jar' | head -n 1)"
+          test -n "$jar_file"
+
+          cp "$jar_file" subscription-service.jar
+          jar tf subscription-service.jar | grep -Fqx \
+            'BOOT-INF/classes/com/track/subscription_service/notification/service/SesEventQueueWorker.class'
+          jar tf subscription-service.jar | grep -Fqx \
+            'BOOT-INF/classes/com/track/subscription_service/inboundemail/service/SesInboundQueueWorker.class'
+          jar tf subscription-service.jar | grep -Fqx \
+            'BOOT-INF/classes/db/migration/V16__add_inbound_email_security_verdicts.sql'
+          sha256sum subscription-service.jar | awk '{print $1}' \
+            >subscription-service.jar.sha256
+
+          tar --create --gzip --file runtime-assets.tar.gz \
+            .github/scripts/configure-backend-runtime.sh \
+            .github/scripts/run-backend.sh \
+            .github/systemd/subscription-tracker.service
+          sha256sum runtime-assets.tar.gz >runtime-assets.tar.gz.sha256
+
+      - name: Authenticate to dev AWS account
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Verify dev AWS identity
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          expected_account="$(cut -d: -f5 <<<"$AWS_ROLE_ARN")"
+          actual_account="$(aws sts get-caller-identity --query Account --output text)"
+          test "$actual_account" = "$expected_account"
+          echo "Authenticated to expected dev AWS account: $actual_account"
+
+      - name: Upload dev deployment artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          aws s3 cp subscription-service.jar \
+            "s3://$DEPLOYMENT_BUCKET/subscription-service.jar" \
+            --region "$AWS_REGION" --only-show-errors
+          aws s3 cp subscription-service.jar.sha256 \
+            "s3://$DEPLOYMENT_BUCKET/subscription-service.jar.sha256" \
+            --region "$AWS_REGION" --only-show-errors
+          aws s3 cp .github/scripts/install-runtime-from-s3.sh \
+            "s3://$DEPLOYMENT_BUCKET/runtime/install-runtime-from-s3.sh" \
+            --region "$AWS_REGION" --only-show-errors
+          aws s3 cp runtime-assets.tar.gz \
+            "s3://$DEPLOYMENT_BUCKET/runtime/runtime-assets.tar.gz" \
+            --region "$AWS_REGION" --only-show-errors
+          aws s3 cp runtime-assets.tar.gz.sha256 \
+            "s3://$DEPLOYMENT_BUCKET/runtime/runtime-assets.tar.gz.sha256" \
+            --region "$AWS_REGION" --only-show-errors
+
+      - name: Install runtime and deploy through Systems Manager
+        id: deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          deploy_script_b64="$(base64 -w 0 .github/scripts/deploy-backend.sh)"
+          runtime_installer_uri="s3://$DEPLOYMENT_BUCKET/runtime/install-runtime-from-s3.sh"
+
+          printf -v install_command '%q ' \
+            bash /tmp/install-subtrak-runtime \
+            "$DEPLOYMENT_BUCKET" \
+            "$AWS_REGION" \
+            "$DATABASE_SECRET_ARN" \
+            "$APPLICATION_SECRET_ID" \
+            "$RUNTIME_PARAMETER_NAME"
+          printf -v deploy_command '%q ' \
+            bash -s -- "$DEPLOYMENT_BUCKET" "$AWS_REGION"
+
+          remote_command="set -Eeuo pipefail; set +x; \
+          trap 'rm -f /tmp/install-subtrak-runtime' EXIT; \
+          aws s3 cp '$runtime_installer_uri' /tmp/install-subtrak-runtime \
+            --region '$AWS_REGION' --only-show-errors; \
+          test -s /tmp/install-subtrak-runtime; \
+          $install_command; \
+          printf '%s' '$deploy_script_b64' | base64 -d | $deploy_command"
+
+          parameters="$(jq -cn --arg command "$remote_command" \
+            '{commands: [$command]}')"
+
+          command_id="$(aws ssm send-command \
+            --region "$AWS_REGION" \
+            --instance-ids "$EC2_INSTANCE_ID" \
+            --document-name AWS-RunShellScript \
+            --comment 'Deploy SubTrak dev backend' \
+            --parameters "$parameters" \
+            --query Command.CommandId \
+            --output text)"
+          test -n "$command_id"
+          test "$command_id" != "None"
+          echo "command_id=$command_id" >>"$GITHUB_OUTPUT"
+          echo "SSM command submitted: $command_id"
+
+      - name: Wait for dev deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          aws ssm wait command-executed \
+            --region "$AWS_REGION" \
+            --command-id "${{ steps.deploy.outputs.command_id }}" \
+            --instance-id "$EC2_INSTANCE_ID"
+
+      - name: Show dev deployment result
+        if: ${{ always() && steps.deploy.outputs.command_id != '' }}
+        shell: bash
+        run: |
+          aws ssm get-command-invocation \
+            --region "$AWS_REGION" \
+            --command-id "${{ steps.deploy.outputs.command_id }}" \
+            --instance-id "$EC2_INSTANCE_ID" \
+            --query '{Status:Status,StdOut:StandardOutputContent,StdErr:StandardErrorContent}' \
+            --output json

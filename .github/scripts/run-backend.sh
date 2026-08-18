@@ -134,6 +134,13 @@ export SES_CONSUMERS_ENABLED="$(
   json_optional "$runtime_json" SES_CONSUMERS_ENABLED false
 )"
 export SES_REGION="$(json_optional "$runtime_json" SES_REGION "$AWS_REGION")"
+if [[ "$EMAIL_OUTBOUND_PROVIDER" == "ses" ]]; then
+  export SES_FROM_EMAIL="$(json_required "$runtime_json" SES_FROM_EMAIL)"
+  export SES_FROM_NAME="$(json_required "$runtime_json" SES_FROM_NAME)"
+  export SES_CONFIGURATION_SET="$(
+    json_required "$runtime_json" SES_CONFIGURATION_SET
+  )"
+fi
 export INBOUND_EMAIL_DOMAIN="$(
   json_required "$runtime_json" INBOUND_EMAIL_DOMAIN
 )"

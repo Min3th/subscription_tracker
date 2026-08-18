@@ -78,3 +78,27 @@ variable "inbound_retention_days" {
     error_message = "Inbound retention must be at least one day"
   }
 }
+
+variable "github_repository_owner" {
+  description = "GitHub user or organization that owns the deployment repository"
+  type        = string
+  default     = "Min3th"
+}
+
+variable "github_repository_name" {
+  description = "GitHub repository name without the .git suffix"
+  type        = string
+  default     = "subscription_tracker"
+}
+
+variable "github_deployment_environment" {
+  description = "GitHub environment authorized to deploy dev"
+  type        = string
+  default     = "development"
+}
+
+variable "github_deployment_branch" {
+  description = "Git branch authorized to deploy dev"
+  type        = string
+  default     = "dev"
+}

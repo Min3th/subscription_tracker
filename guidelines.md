@@ -373,6 +373,13 @@ Before handing off work:
 Deployment-script changes must retain hermetic coverage for first deployment,
 successful upgrade, failed first-deployment cleanup, and failed-upgrade rollback.
 Run those tests before packaging or sending a deployment command to an instance.
+GitHub deployments must use environment-scoped OIDC roles with repository,
+environment, and branch trust conditions. Grant artifact upload and SSM command
+permissions only for the matching environment bucket and application instance;
+never store long-lived AWS access keys in GitHub.
+Treat a change to a moving `latest` AMI parameter as a separate instance-upgrade
+operation. IAM, workflow, or application deployments must not silently replace a
+configured EC2 instance merely because the upstream AMI pointer changed.
 
 ## 12. Commit and Review Guidance
 

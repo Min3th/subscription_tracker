@@ -159,7 +159,7 @@ data "aws_iam_policy_document" "application_runtime" {
   }
 
   statement {
-    sid = "ReadRuntimeConfiguration"
+    sid    = "ReadRuntimeConfiguration"
     effect = "Allow"
 
     actions = ["ssm:GetParameter"]
@@ -287,6 +287,12 @@ resource "aws_instance" "application" {
 
   tags = {
     Name = "${var.name_prefix}-application"
+  }
+
+  lifecycle {
+    # The public SSM parameter points to a moving "latest" AMI. Replacing a
+    # configured application instance must be an explicit, reviewed rollout.
+    ignore_changes = [ami]
   }
 
   depends_on = [
