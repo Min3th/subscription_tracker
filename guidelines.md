@@ -370,6 +370,10 @@ Before handing off work:
 4. Run the relevant tests, lint, and build.
 5. Report what changed, why it changed, verification performed, and any remaining limitation.
 
+Deployment-script changes must retain hermetic coverage for first deployment,
+successful upgrade, failed first-deployment cleanup, and failed-upgrade rollback.
+Run those tests before packaging or sending a deployment command to an instance.
+
 ## 12. Commit and Review Guidance
 
 Keep commits small and coherent. A commit should represent one reviewable behavior or migration step.

@@ -9,7 +9,7 @@ fi
 deployment_bucket="$1"
 deployment_region="$2"
 service_name="subscription-tracker"
-app_dir="/home/ec2-user"
+app_dir="${SUBTRAK_APP_DIR:-/home/ec2-user}"
 current_jar="$app_dir/subscription-service.jar"
 new_jar="$current_jar.new"
 previous_jar="$current_jar.previous"

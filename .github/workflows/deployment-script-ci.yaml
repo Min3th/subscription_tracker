@@ -1,0 +1,29 @@
+name: Test Backend Deployment Scripts
+
+on:
+  pull_request:
+    paths:
+      - ".github/scripts/deploy-backend.sh"
+      - ".github/scripts/tests/**"
+      - ".github/workflows/deployment-script-ci.yaml"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/scripts/deploy-backend.sh"
+      - ".github/scripts/tests/**"
+      - ".github/workflows/deployment-script-ci.yaml"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Test first deployment and rollback behavior
+        run: bash .github/scripts/tests/deploy-backend-test.sh

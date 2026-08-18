@@ -25,6 +25,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Test backend deployment script
+        working-directory: .
+        run: bash .github/scripts/tests/deploy-backend-test.sh
+
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
