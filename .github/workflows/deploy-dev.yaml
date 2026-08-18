@@ -87,7 +87,7 @@ jobs:
           SENDGRID_FROM_EMAIL: test@example.com
           SENDGRID_FROM_NAME: Subscription Tracker Tests
           FRONTEND_BASE_URL: http://localhost:5173
-        run: ./mvnw clean package
+        run: bash ./mvnw clean package
 
       - name: Prepare deployment artifacts
         shell: bash
