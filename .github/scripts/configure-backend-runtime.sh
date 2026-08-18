@@ -59,7 +59,7 @@ aws secretsmanager get-secret-value \
   --query SecretString \
   --output text \
   | jq -e \
-    '.host and .port and .username and .password' \
+    '.username and .password' \
     >/dev/null
 
 aws secretsmanager get-secret-value \
@@ -77,7 +77,8 @@ aws ssm get-parameter \
   --query Parameter.Value \
   --output text \
   | jq -e \
-    '.DB_NAME and .GOOGLE_CLIENT_ID and .FRONTEND_BASE_URL and .FRONTEND_ORIGINS' \
+    '.DB_HOST and .DB_PORT and .DB_NAME and .GOOGLE_CLIENT_ID and
+      .FRONTEND_BASE_URL and .FRONTEND_ORIGINS' \
     >/dev/null
 
 install -d -o root -g root -m 0755 "$config_dir"

@@ -11,3 +11,7 @@
 !*.backend.hcl.example
 crash.log
 crash.*.log
+
+# Generated deployment archives and checksums.
+*.tar.gz
+*.tar.gz.sha256

@@ -78,8 +78,8 @@ json_optional() {
   fi
 }
 
-db_host="$(json_required "$db_secret_json" host)"
-db_port="$(json_optional "$db_secret_json" port 5432)"
+db_host="$(json_required "$runtime_json" DB_HOST)"
+db_port="$(json_required "$runtime_json" DB_PORT)"
 db_username="$(json_required "$db_secret_json" username)"
 db_password="$(json_required "$db_secret_json" password)"
 db_name="$(json_required "$runtime_json" DB_NAME)"
