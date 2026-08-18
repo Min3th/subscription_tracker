@@ -40,6 +40,9 @@ branches to `dev`, then add these environment variables using Terraform outputs:
 | `S3_DEPLOY_BUCKET` | `deployment_bucket_name` |
 | `EC2_INSTANCE_ID` | `application_instance_id` |
 | `DATABASE_SECRET_ARN` | `database_secret_arn` |
+| `API_DOMAIN` | `api.dev.subtrak.xyz` |
+| `ENABLE_TLS` | initially `false` |
+| `LETSENCRYPT_EMAIL` | certificate expiry-notification email |
 
 These are resource identifiers, not secret values. Do not copy the RDS secret
 contents or application secret contents into GitHub.
@@ -54,6 +57,8 @@ started manually from that branch. It:
 3. Installs the current runtime assets through SSM.
 4. Deploys the JAR using the checksum-verified rollback script.
 5. Waits for the service and local HTTP verification to pass.
+6. Configures and verifies the Nginx reverse proxy. TLS issuance remains gated
+   by the `ENABLE_TLS` environment variable.
 
 Keep the GitHub environment branch restriction aligned with the IAM trust
 policy. Changing the environment, repository, or branch requires a reviewed

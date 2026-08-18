@@ -383,6 +383,10 @@ configured EC2 instance merely because the upstream AMI pointer changed.
 Runtime provisioning must install and verify every command used by deployment
 validation. A fresh instance must not depend on an unrecorded manual package
 installation before it can validate and deploy its first JAR.
+Public backend traffic must terminate at Nginx and proxy only to the application
+loopback port. Keep the ACME HTTP-01 path reachable on port 80, enable TLS only
+after the exact environment hostname resolves to its Elastic IP, and keep
+certificate issuance and renewal non-interactive and idempotent.
 
 ## 12. Commit and Review Guidance
 
