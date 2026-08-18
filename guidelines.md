@@ -6,9 +6,15 @@ This document is the working reference for anyone changing this repository. Read
 
 Subtrak is a subscription-tracking SaaS with:
 
-- `subscription-service/`: Java 17, Spring Boot, Spring Security, JPA, PostgreSQL, Flyway, JWT, and SendGrid.
+- `subscription-service/`: Java 17, Spring Boot, Spring Security, JPA, PostgreSQL, Flyway,
+  JWT, provider-neutral email boundaries, AWS SES as the primary email provider, and
+  SendGrid retained temporarily as a rollback adapter.
 - `webapp/`: React 19, TypeScript, Vite, Redux Toolkit, Axios, Material UI, Formik, and Yup.
 - `.github/workflows/`: backend build and deployment automation.
+- `infrastructure/ses-email.yaml`: the production SES messaging stack managed by CloudFormation.
+- `infrastructure/terraform/`: isolated environment infrastructure, including remote-state
+  bootstrap, networking, database, application compute, environment email resources,
+  monitoring, and GitHub OIDC deployment roles.
 
 Keep changes scoped to the requested behavior. Preserve unrelated user changes and avoid broad refactors unless they are necessary for correctness.
 
@@ -129,7 +135,10 @@ Reminder delivery is durable and idempotent. Do not replace it with a full-table
 - Calculate due instants using the user's saved timezone.
 - Respect both account-level and per-subscription notification preferences.
 - Create a durable delivery record with a unique idempotency key.
-- Treat every non-2xx SendGrid response as a failure.
+- Treat provider API acceptance as `SENT`, while preserving the provider message ID for
+  operational correlation. Map throttling and temporary network/service failures to the
+  existing retry schedule, and map permanent request, identity, or message failures to `DEAD`.
+- While the SendGrid rollback adapter remains, treat every non-2xx SendGrid response as a failure.
 - Isolate failures so one notification cannot stop a batch.
 - Retry with bounded exponential backoff.
 - Move exhausted deliveries to the `DEAD` state.
@@ -154,10 +163,13 @@ and reviewable.
   persistence, extraction, and review behavior must not depend on a provider SDK.
 - Authenticate AWS access with the default credential chain and an EC2 instance role in production.
   Never add static AWS access keys to application properties, source control, or deployment secrets.
-- Keep the application's default SES region aligned with the CloudFormation default,
-  while allowing `SES_REGION` to override a different general deployment region.
-- Provision SES, S3, SNS, SQS, DLQs, and runtime IAM grants through the repository
-  CloudFormation stack. Keep queue publication source-account/source-ARN constrained,
+- Keep the application's default SES region aligned with the deployed email infrastructure
+  (`ap-south-1` at present), while allowing `SES_REGION` to differ from the region where
+  the application process runs.
+- Provision production SES, S3, SNS, SQS, DLQs, and runtime IAM grants through the repository
+  CloudFormation stack. Environment-specific equivalents may be managed by the Terraform
+  email module, but a resource must have only one infrastructure owner. Keep queue publication
+  source-account/source-ARN constrained,
   block public S3 access, require TLS, and grant the EC2 role only queue consumption,
   inbound object reads, and verified-identity sending.
 - Keep automated SES readiness checks read-only. Discover deployed resource names
@@ -388,6 +400,11 @@ loopback port. Keep the ACME HTTP-01 path reachable on port 80, enable TLS only
 after the exact environment hostname resolves to its Elastic IP, and keep
 certificate issuance and renewal non-interactive and idempotent.
 
+Infrastructure changes must also run `terraform fmt -recursive`, `terraform validate`,
+and a saved-plan review from the intended environment root. Inspect every replacement
+and destroy action before applying; an unexplained destructive action is a blocker, not
+an acceptable side effect of an unrelated change.
+
 ## 12. Commit and Review Guidance
 
 Keep commits small and coherent. A commit should represent one reviewable behavior or migration step.
@@ -439,7 +456,80 @@ A change is complete only when:
 - Inventory and readiness tools may report secret names and whether settings are
   present, but must never print secret values.
 
-## 15. Environment Inventory
+## 15. Infrastructure and Environment Management
+
+Infrastructure ownership must remain explicit:
+
+- CloudFormation owns the production SES identity, receipt rules, S3 inbound storage,
+  SNS topics, SQS queues and DLQs, configuration set, and their resource policies.
+- Terraform owns the environment foundations represented under
+  `infrastructure/terraform`: network, database, application compute, deployment bucket,
+  runtime configuration containers, monitoring, environment email resources, and GitHub
+  OIDC roles. Do not import or recreate a CloudFormation-owned production resource in
+  Terraform without a separately reviewed migration of ownership.
+- Use a separate Terraform environment root, remote state, AWS account, runtime resources,
+  DNS names, and deployment identity for development, staging, and production. Never share
+  a database, queue, bucket, inbound domain, encryption key, or application secret between
+  environments.
+- The current development deployment mapping is branch `dev` -> GitHub environment
+  `development` -> the development AWS account. Branch `main` remains the production
+  deployment path, but its workflow must not be described as environment-scoped until it
+  explicitly declares and uses the GitHub `production` environment. Treat staging as
+  unavailable until its infrastructure and deployment mapping have been explicitly created
+  and verified; do not silently point it at development or production.
+
+Terraform state and plan rules:
+
+- Bootstrap each account's remote state deliberately. Store state in a private, encrypted,
+  versioned S3 bucket with public access blocked and least-privilege access. Migrating local
+  state to S3 changes Terraform's state storage; it is not a Git commit and does not deploy
+  application code.
+- Commit backend and variable examples, but ignore concrete backend configuration, `.tfvars`,
+  state, saved plans, generated archives, and inventory exports that contain environment-specific
+  identifiers. Never commit `.terraform/` or a local state file.
+- Authenticate with the intended non-root AWS IAM Identity Center profile and verify the account
+  and role with STS before initialization, planning, or applying. Do not use root credentials or
+  static AWS keys for routine Terraform and deployment work.
+- Run Terraform from the relevant root such as `bootstrap/` or `environments/dev/`, not from the
+  parent directory that contains no root configuration. Supply the matching backend configuration
+  and variable file explicitly.
+- Review and apply the saved plan that was inspected. Re-plan after configuration, credentials,
+  state, or provider inputs change. Do not use `-target` as a routine way to hide unrelated drift.
+- Treat a replacement caused only by a moving AMI lookup as a separate compute-upgrade change.
+  Pin or ignore the moving value according to the module contract; never accept an incidental
+  instance replacement while adding IAM or another unrelated resource.
+- Production databases require deliberate deletion protection, backup retention, and recovery
+  planning. Any lower-environment `force_destroy` or reduced-retention choice must be explicit,
+  environment-scoped, and must never leak into production defaults.
+
+Runtime configuration and deployment rules:
+
+- Terraform may create secret containers and grant access, but secret values must be populated
+  outside Terraform so they do not enter configuration, plans, or state.
+- Keep the RDS-managed secret limited to database credentials (`username` and `password`). Store
+  application secrets such as `JWT_SECRET` and `INBOUND_EMAIL_TOKEN_ENCRYPTION_KEY` in the
+  environment application secret. Store non-secret runtime values such as `DB_HOST`, `DB_PORT`,
+  `DB_NAME`, regions, URLs, OAuth client IDs, and feature flags in the environment SSM parameter.
+- `DB_HOST` must be a hostname only, `DB_PORT` must be the numeric port value, and `DB_NAME` must
+  match the provisioned database. Do not embed schemes, ports, paths, or credentials in `DB_HOST`.
+- EC2 retrieves runtime values with its instance role. Persist only identifiers needed to locate
+  Secrets Manager and Parameter Store values; never write resolved secrets to user data, systemd
+  units, deployment artifacts, GitHub variables, Terraform, logs, or this repository.
+- Keep SES consumers disabled in an environment until that environment's inbound and event queues,
+  bucket, IAM permissions, and DLQs exist and pass readiness checks.
+- Package the runtime launcher and systemd unit as a checksummed archive with an exact allowlist of
+  members. Install and validate runtime assets before deploying the first JAR.
+- Deployment automation must distinguish a first deployment from an upgrade. A failed first
+  deployment stops the service and removes the failed JAR; a failed upgrade restores and restarts
+  the previously healthy JAR. Verify both the systemd service and the loopback HTTP endpoint.
+- GitHub deployments must use environment-scoped OIDC rather than access keys. The IAM trust policy,
+  workflow branch trigger, and GitHub environment name must match exactly, and permissions must be
+  limited to the matching deployment bucket and application instance.
+- Public traffic terminates at Nginx, which proxies to the Spring service on loopback port 8080.
+  Publish the exact environment API DNS record before enabling TLS; preserve the ACME HTTP path and
+  keep certificate installation and renewal idempotent.
+
+## 16. Environment Inventory
 
 - Keep `docs/aws-infrastructure-inventory.md` and the environment mapping sheet
   current when AWS resources or GitHub deployment environments change.
