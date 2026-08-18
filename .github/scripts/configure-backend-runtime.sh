@@ -86,7 +86,9 @@ aws ssm get-parameter \
   --query Parameter.Value \
   --output text \
   | jq -e \
-    '.DB_HOST and .DB_PORT and .DB_NAME and .GOOGLE_CLIENT_ID and
+    '(.DB_HOST | type == "string" and test("^[A-Za-z0-9.-]+$")) and
+      (.DB_PORT | type == "string" and test("^[0-9]{1,5}$")) and
+      .DB_NAME and .GOOGLE_CLIENT_ID and
       .JWT_ISSUER and .JWT_AUDIENCE and .PUBLIC_API_URL and
       .FRONTEND_BASE_URL and .FRONTEND_ORIGINS and .INBOUND_EMAIL_DOMAIN and
       ((.EMAIL_OUTBOUND_PROVIDER // "ses") != "ses" or

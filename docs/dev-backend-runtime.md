@@ -12,6 +12,10 @@ systemd unit, or a persistent environment file.
 - `/subtrak/dev/runtime` in SSM Parameter Store: the non-secret database host,
   port, database name, URLs, identifiers, feature flags, and provider selection.
 
+`DB_HOST` must contain only the RDS hostname, without `jdbc:postgresql://`, a
+port, or a path. Store the PostgreSQL port separately as the string `DB_PORT`
+(normally `"5432"`).
+
 When `EMAIL_OUTBOUND_PROVIDER` is `ses`, the runtime parameter must include
 non-empty `SES_REGION`, `SES_FROM_EMAIL`, `SES_FROM_NAME`, and
 `SES_CONFIGURATION_SET` values. The launcher exports these values to Spring;

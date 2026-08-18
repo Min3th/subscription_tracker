@@ -84,6 +84,16 @@ db_username="$(json_required "$db_secret_json" username)"
 db_password="$(json_required "$db_secret_json" password)"
 db_name="$(json_required "$runtime_json" DB_NAME)"
 
+if [[ ! "$db_host" =~ ^[A-Za-z0-9.-]+$ ]]; then
+  echo "Database host must not include a scheme, port, or path." >&2
+  exit 1
+fi
+if [[ ! "$db_port" =~ ^[0-9]{1,5}$ ]] \
+  || ((10#$db_port < 1 || 10#$db_port > 65535)); then
+  echo "Database port is invalid." >&2
+  exit 1
+fi
+
 jwt_secret="$(json_required "$application_secret_json" JWT_SECRET)"
 inbound_encryption_key="$(
   json_required "$application_secret_json" \
