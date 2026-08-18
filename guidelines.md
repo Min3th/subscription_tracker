@@ -380,6 +380,9 @@ never store long-lived AWS access keys in GitHub.
 Treat a change to a moving `latest` AMI parameter as a separate instance-upgrade
 operation. IAM, workflow, or application deployments must not silently replace a
 configured EC2 instance merely because the upstream AMI pointer changed.
+Runtime provisioning must install and verify every command used by deployment
+validation. A fresh instance must not depend on an unrecorded manual package
+installation before it can validate and deploy its first JAR.
 
 ## 12. Commit and Review Guidance
 

@@ -42,7 +42,16 @@ if [[ ! "$runtime_parameter_name" =~ ^/[A-Za-z0-9_./-]+$ ]]; then
   exit 1
 fi
 
-for command_name in aws install jq systemctl; do
+if ! command -v jar >/dev/null 2>&1; then
+  if ! command -v dnf >/dev/null 2>&1; then
+    echo "The JAR inspection tool is unavailable and dnf cannot install it." >&2
+    exit 1
+  fi
+
+  dnf install -y java-17-amazon-corretto-devel
+fi
+
+for command_name in aws install jar jq systemctl; do
   if ! command -v "$command_name" >/dev/null 2>&1; then
     echo "Required command is unavailable: $command_name" >&2
     exit 1

@@ -61,6 +61,11 @@ identifiers to `/etc/subtrak/runtime-identifiers`, installs the launcher at
 enables the service but leaves it stopped until
 `/home/ec2-user/subscription-service.jar` exists.
 
+The configurator also installs the Amazon Corretto 17 development package when
+the `jar` inspection command is absent. Deployment validation requires this
+tool to inspect worker classes and Flyway migrations before replacing the
+running artifact.
+
 ## Verify
 
 After the first JAR deployment:
