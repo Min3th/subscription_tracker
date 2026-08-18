@@ -24,9 +24,31 @@ At the authoritative DNS provider for `subtrak.xyz`, create an `A` record:
 | --- | --- | --- | --- |
 | `A` | `api.dev` | dev Terraform output `application_public_ip` | automatic or 5 minutes |
 
+In Namecheap Advanced DNS, add this under **Host Records** using **Add New
+Record** -> **A Record**. Enter only `api.dev` in the Host field; Namecheap
+appends `subtrak.xyz`. Use the dev Elastic IP as the Value. Do not create a URL
+redirect or use the EC2 instance ID.
+
 Do not change root-domain records, production API records, or inbound-email MX
 records. Wait until public DNS resolves `api.dev.subtrak.xyz` to the dev Elastic
 IP and plain HTTP reaches Nginx.
+
+Obtain the expected Elastic IP from the dev Terraform state, then run the
+read-only readiness check from the repository root:
+
+```powershell
+$expectedIp = terraform `
+  -chdir=infrastructure/terraform/environments/dev `
+  output -raw application_public_ip
+
+.\scripts\Test-DevApiDns.ps1 -ExpectedIpv4Address $expectedIp
+```
+
+The check requires the public A record to resolve only to that Elastic IP and
+requires `http://api.dev.subtrak.xyz/v3/api-docs` to return HTTP 200 through
+Nginx. A failure means DNS or HTTP is not ready; leave `ENABLE_TLS=false` and
+retry after the DNS TTL. Do not bypass this check by issuing a certificate
+against an unverified address.
 
 ## Enable TLS
 

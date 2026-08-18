@@ -63,3 +63,7 @@ started manually from that branch. It:
 Keep the GitHub environment branch restriction aligned with the IAM trust
 policy. Changing the environment, repository, or branch requires a reviewed
 Terraform change before the workflow can assume the AWS role.
+
+After the first workflow succeeds with `ENABLE_TLS=false`, create the
+`api.dev.subtrak.xyz` A record and run `scripts/Test-DevApiDns.ps1` as described
+in `docs/dev-api-proxy.md`. Enable TLS only after that check passes.

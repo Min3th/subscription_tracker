@@ -527,7 +527,9 @@ Runtime configuration and deployment rules:
   limited to the matching deployment bucket and application instance.
 - Public traffic terminates at Nginx, which proxies to the Spring service on loopback port 8080.
   Publish the exact environment API DNS record before enabling TLS; preserve the ACME HTTP path and
-  keep certificate installation and renewal idempotent.
+  keep certificate installation and renewal idempotent. DNS readiness checks must compare every
+  returned address with the environment Elastic IP and verify the public HTTP endpoint; do not
+  enable TLS based only on the presence of any DNS answer.
 
 ## 16. Environment Inventory
 
