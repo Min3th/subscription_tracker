@@ -281,6 +281,9 @@ and reviewable.
   redeploy after changing them, and keep the frontend Google client ID identical
   to the backend environment's configured client ID. Never place secrets in a
   `VITE_` variable because its value is included in the public browser bundle.
+- Keep retired backend hosts rejected at frontend build time. Build diagnostics
+  may print the selected public API origin, but must never print OAuth credentials,
+  tokens, cookies, secrets, or the complete build environment.
 - Use the shared Axios client rather than creating isolated clients.
 - Keep global server-backed state in the established Redux slices.
 - Model review decisions as server-confirmed state transitions: keep a pending suggestion visible

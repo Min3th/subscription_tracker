@@ -23,6 +23,11 @@ its client secret is not.
 Redeploy the `dev` branch after changing a Vercel build variable. Changing the
 variable does not modify an already built deployment.
 
+The Vite build logs the selected public API base URL and refuses to build with
+the retired `subtrak-api.duckdns.org` endpoint. If Vercel reports that failure,
+inspect duplicate project, Preview, and branch-scoped values for
+`VITE_API_BASE_URL`; do not bypass the guard or reintroduce the legacy host.
+
 ## Google OAuth configuration
 
 Open the Google Cloud project that owns the development OAuth web client and add
