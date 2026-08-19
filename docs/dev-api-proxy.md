@@ -56,7 +56,9 @@ Set `ENABLE_TLS=true` in the GitHub `development` environment and manually run
 the dev backend workflow from the `dev` branch. The Nginx configurator obtains a
 certificate using Certbot's webroot HTTP-01 flow, keeps the challenge path on
 port 80, redirects other HTTP requests to HTTPS, and installs a deploy hook that
-reloads Nginx after renewal.
+reloads Nginx after renewal. Its local HTTPS verification bypasses host proxy
+settings and allows a bounded period for reloaded Nginx workers to begin accepting
+connections on port 443.
 
 Verify externally:
 

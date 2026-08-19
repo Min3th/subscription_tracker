@@ -213,10 +213,32 @@ if systemctl list-unit-files certbot-renew.timer --no-legend 2>/dev/null \
 fi
 
 systemctl reload nginx
-curl --fail --silent --show-error \
-  --resolve "$api_domain:443:127.0.0.1" \
-  --max-time 10 \
-  "https://$api_domain/v3/api-docs" \
-  >/dev/null
+
+# systemctl may report a successful reload before the new workers have started
+# accepting connections on a newly introduced TLS listener. Bypass any host
+# proxy configuration and allow a bounded startup window before failing the
+# deployment.
+https_ready=false
+for attempt in {1..12}; do
+  if curl --fail --silent --show-error \
+    --noproxy '*' \
+    --resolve "$api_domain:443:127.0.0.1" \
+    --connect-timeout 2 \
+    --max-time 10 \
+    "https://$api_domain/v3/api-docs" \
+    >/dev/null; then
+    https_ready=true
+    break
+  fi
+
+  if [[ "$attempt" -lt 12 ]]; then
+    sleep 2
+  fi
+done
+
+if [[ "$https_ready" != "true" ]]; then
+  echo "Nginx HTTPS endpoint did not become ready within the verification window." >&2
+  exit 1
+fi
 
 echo "Nginx HTTPS proxy configured for $api_domain."
