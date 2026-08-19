@@ -276,6 +276,11 @@ and reviewable.
   proxy target. Keep provider URLs and OAuth client IDs in ignored local
   environment files, and never connect a local worker to production queues or
   databases merely to exercise frontend behavior.
+- Deployed frontends must receive `VITE_API_BASE_URL` and `VITE_GOOGLE_CLIENT_ID`
+  as build-time environment values. Scope preview values to the intended branch,
+  redeploy after changing them, and keep the frontend Google client ID identical
+  to the backend environment's configured client ID. Never place secrets in a
+  `VITE_` variable because its value is included in the public browser bundle.
 - Use the shared Axios client rather than creating isolated clients.
 - Keep global server-backed state in the established Redux slices.
 - Model review decisions as server-confirmed state transitions: keep a pending suggestion visible

@@ -166,6 +166,10 @@ VITE_API_BASE_URL=/api
 VITE_API_PROXY_TARGET=http://localhost:8080
 ```
 
+Use `webapp/.env.example` as the non-secret template. For the deployed development
+frontend and its matching backend runtime configuration, follow
+`docs/dev-frontend-deployment.md`; do not commit environment-specific `.env` files.
+
 The Google client ID must match the one configured for the backend. Add `https://localhost:5173` as an authorized JavaScript origin in the Google Cloud Console.
 
 Install dependencies and start the frontend:

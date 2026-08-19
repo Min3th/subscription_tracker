@@ -67,3 +67,7 @@ Terraform change before the workflow can assume the AWS role.
 After the first workflow succeeds with `ENABLE_TLS=false`, create the
 `api.dev.subtrak.xyz` A record and run `scripts/Test-DevApiDns.ps1` as described
 in `docs/dev-api-proxy.md`. Enable TLS only after that check passes.
+
+Once HTTPS is healthy, configure the Vercel development frontend, Google OAuth
+origin, and matching backend runtime values using
+`docs/dev-frontend-deployment.md` before performing authenticated acceptance tests.
