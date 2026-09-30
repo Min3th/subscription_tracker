@@ -39,7 +39,7 @@ The application uses Google Sign-In for authentication, a responsive React inter
 
 ### Backend
 
-- Java 25
+- JDK 25 (Maven enforces Java 25; both `JAVA_HOME` and `PATH` must select it)
 - Spring Boot 4
 - Spring Security and stateless JWT authentication
 - Spring Data JPA / Hibernate

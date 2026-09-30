@@ -42,14 +42,21 @@ if [[ ! "$runtime_parameter_name" =~ ^/[A-Za-z0-9_./-]+$ ]]; then
   exit 1
 fi
 
-if ! command -v jar >/dev/null 2>&1; then
+export JAVA_HOME="/usr/lib/jvm/java-25-amazon-corretto.$(uname -m)"
+export PATH="$JAVA_HOME/bin:$PATH"
+
+if [[ ! -x "$JAVA_HOME/bin/java" || ! -x "$JAVA_HOME/bin/jar" ]]; then
   if ! command -v dnf >/dev/null 2>&1; then
-    echo "The JAR inspection tool is unavailable and dnf cannot install it." >&2
+    echo "Corretto JDK 25 is unavailable and dnf cannot install it." >&2
     exit 1
   fi
 
-  dnf install -y java-17-amazon-corretto-devel
+  dnf install -y java-25-amazon-corretto-devel
 fi
+
+"$JAVA_HOME/bin/java" -version
+alternatives --set java "$JAVA_HOME/bin/java"
+alternatives --set javac "$JAVA_HOME/bin/javac"
 
 for command_name in aws install jar jq systemctl; do
   if ! command -v "$command_name" >/dev/null 2>&1; then

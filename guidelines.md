@@ -6,7 +6,7 @@ This document is the working reference for anyone changing this repository. Read
 
 Subtrak is a subscription-tracking SaaS with:
 
-- `subscription-service/`: Java 17, Spring Boot, Spring Security, JPA, PostgreSQL, Flyway,
+- `subscription-service/`: Java 25, Spring Boot, Spring Security, JPA, PostgreSQL, Flyway,
   JWT, provider-neutral email boundaries, AWS SES as the primary email provider, and
   SendGrid retained temporarily as a rollback adapter.
 - `webapp/`: React 19, TypeScript, Vite, Redux Toolkit, Axios, Material UI, Formik, and Yup.

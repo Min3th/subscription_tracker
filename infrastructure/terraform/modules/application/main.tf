@@ -254,7 +254,8 @@ resource "aws_instance" "application" {
     #!/bin/bash
     set -euxo pipefail
 
-    dnf install -y java-17-amazon-corretto-headless jq nginx
+    dnf install -y java-25-amazon-corretto-headless jq nginx
+    alternatives --set java /usr/lib/jvm/java-25-amazon-corretto.$(uname -m)/bin/java
 
     install -d \
        -o ec2-user \

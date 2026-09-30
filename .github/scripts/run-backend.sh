@@ -4,6 +4,13 @@ set +x
 
 readonly identifiers_file="/etc/subtrak/runtime-identifiers"
 readonly application_jar="/home/ec2-user/subscription-service.jar"
+export JAVA_HOME="/usr/lib/jvm/java-25-amazon-corretto.$(uname -m)"
+export PATH="$JAVA_HOME/bin:$PATH"
+
+if [[ ! -x "$JAVA_HOME/bin/java" ]]; then
+  echo "Corretto Java 25 is required. Run configure-backend-runtime.sh first." >&2
+  exit 1
+fi
 
 if [[ ! -r "$identifiers_file" ]]; then
   echo "Runtime identifiers are not installed." >&2
@@ -166,4 +173,4 @@ unset db_secret_json application_secret_json runtime_json
 unset db_host db_port db_username db_password db_name
 unset jwt_secret inbound_encryption_key decoded_key_length
 
-exec /usr/bin/java -jar "$application_jar"
+exec "$JAVA_HOME/bin/java" -jar "$application_jar"
