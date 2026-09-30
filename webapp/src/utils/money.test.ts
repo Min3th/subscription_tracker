@@ -32,9 +32,9 @@ describe("money utilities", () => {
   });
 
   it("formats exact values and only converts to number at the chart boundary", () => {
-    expect(formatDecimal(123456n)).toBe("12.34");
+    expect(formatDecimal(123456n)).toBe("12.35");
     expect(formatDecimal(-123456n, 4)).toBe("-12.3456");
-    expect(formatMoney("19.9999", "LKR")).toBe("LKR 19.99");
+    expect(formatMoney("19.9999", "LKR")).toBe("LKR 20.00");
     expect(toChartNumber(123456n)).toBe(12.3456);
   });
 });

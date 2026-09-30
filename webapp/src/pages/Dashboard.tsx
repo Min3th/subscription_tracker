@@ -24,18 +24,9 @@ import type { AppDispatch, RootState } from "../app/store";
 import { fetchSubscriptions } from "../app/subscriptionSlice";
 import { formatDate } from "../utils/DateFunctions";
 import type { DetailedSubscription } from "../types/subscription";
-import { divideRounded, formatDecimal, parseDecimal, toChartNumber } from "../utils/money";
+import { formatDecimal, parseDecimal, toChartNumber } from "../utils/money";
+import { getRecurringCost } from "../utils/subscriptionCosts";
 import MoneyIcon from "@mui/icons-material/Money";
-
-const getMonthlyCost = (cost: string, unit: string, count: number): bigint => {
-  if (!cost || !unit || !count) return 0n;
-  const amount = parseDecimal(cost);
-  if (unit === "day") return divideRounded(amount * 30416n, BigInt(count) * 1000n);
-  if (unit === "week") return divideRounded(amount * 4333n, BigInt(count) * 1000n);
-  if (unit === "month") return divideRounded(amount, BigInt(count));
-  if (unit === "year") return divideRounded(amount, BigInt(count) * 12n);
-  return 0n;
-};
 
 const generatePast6MonthsSpending = (subscriptions: DetailedSubscription[]) => {
   const monthsData = [];
@@ -94,7 +85,7 @@ export default function Dashboard() {
     () =>
       moneySubscriptions.reduce((sum, sub) => {
         if (sub.type === "one-time") return sum;
-        return sum + getMonthlyCost(sub.cost, sub.billingIntervalUnit, sub.billingIntervalCount);
+        return sum + getRecurringCost(sub, "month");
       }, 0n),
     [moneySubscriptions],
   );
@@ -103,7 +94,7 @@ export default function Dashboard() {
     () =>
       moneySubscriptions.reduce((sum, sub) => {
         if (sub.type === "one-time") return sum;
-        return sum + getMonthlyCost(sub.cost, sub.billingIntervalUnit, sub.billingIntervalCount) * 12n;
+        return sum + getRecurringCost(sub, "year");
       }, 0n),
     [moneySubscriptions],
   );
@@ -129,7 +120,7 @@ export default function Dashboard() {
           (acc, sub) => {
             let cost = 0n;
             if (sub.type !== "one-time") {
-              cost = getMonthlyCost(sub.cost, sub.billingIntervalUnit, sub.billingIntervalCount);
+              cost = getRecurringCost(sub, "month");
             }
             if (cost > 0n) {
               acc[sub.category] = (acc[sub.category] || 0n) + cost;

@@ -1,0 +1,40 @@
+name: subtrak-memory-test
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: subtrak_memory_test
+      POSTGRES_USER: subtrak_test
+      POSTGRES_PASSWORD: local-memory-test-only
+    volumes:
+      - memory-test-db:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U subtrak_test -d subtrak_memory_test"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    image: eclipse-temurin:25-jdk
+    mem_limit: 500m
+    memswap_limit: 500m
+    cpus: 1.0
+    env_file:
+      - .env.memory-test
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./target:/app:ro
+    command:
+      - java
+      - -Xms64m
+      - -Xmx192m
+      - -jar
+      - /app/subscription-service-0.0.1-SNAPSHOT.jar
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  memory-test-db:

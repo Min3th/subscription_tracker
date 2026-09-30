@@ -21,7 +21,8 @@ export const divideRounded = (amount: bigint, divisor: bigint): bigint => {
 
 export const formatDecimal = (amount: bigint, fractionDigits = 2): string => {
   const negative = amount < 0n;
-  const absolute = negative ? -amount : amount;
+  const roundingFactor = 10n ** BigInt(MONEY_SCALE - fractionDigits);
+  const absolute = divideRounded(negative ? -amount : amount, roundingFactor) * roundingFactor;
   const whole = absolute / SCALE_FACTOR;
   const fraction = (absolute % SCALE_FACTOR).toString().padStart(MONEY_SCALE, "0").slice(0, fractionDigits);
   return `${negative ? "-" : ""}${whole}.${fraction}`;
