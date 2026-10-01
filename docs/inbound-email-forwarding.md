@@ -50,8 +50,9 @@ SES_FROM_NAME=SubTrak
 INBOUND_EMAIL_DOMAIN=inbound.subtrak.xyz
 ```
 
-The backend uses the EC2 instance role and AWS default credential chain. Never
-configure static AWS access keys for the service.
+On EC2, the backend uses its instance role and the AWS default credential chain.
+For DigitalOcean App Platform, follow [external-hosting SES access](app-platform-ses.md)
+to configure a dedicated runtime identity without changing the email infrastructure.
 
 Run the read-only infrastructure check from the repository root:
 

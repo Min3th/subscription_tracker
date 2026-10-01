@@ -161,8 +161,10 @@ and reviewable.
 - Keep outbound sending and inbound transport behind provider-neutral application boundaries.
   Provider adapters may translate SES or SendGrid payloads, but notification retries, inbound
   persistence, extraction, and review behavior must not depend on a provider SDK.
-- Authenticate AWS access with the default credential chain and an EC2 instance role in production.
-  Never add static AWS access keys to application properties, source control, or deployment secrets.
+- Authenticate AWS access with the default credential chain; use an instance role on EC2.
+  For the DigitalOcean migration, use a dedicated least-privilege runtime identity and
+  encrypted RUN_TIME secrets as described in `docs/app-platform-ses.md`. Never put keys
+  in application properties, source control, build arguments, or infrastructure state.
 - Keep the application's default SES region aligned with the deployed email infrastructure
   (`ap-south-1` at present), while allowing `SES_REGION` to differ from the region where
   the application process runs.

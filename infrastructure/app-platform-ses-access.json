@@ -1,0 +1,60 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "Dedicated App Platform runtime access to existing SES resources. Creates no access keys or email infrastructure.",
+  "Parameters": {
+    "RuntimeUserName": { "Type": "String", "AllowedPattern": "[A-Za-z0-9+=,.@_-]{1,64}" },
+    "SesRegion": { "Type": "String", "AllowedPattern": "[a-z]{2}(-gov)?-[a-z]+-[0-9]+" },
+    "SendingDomain": { "Type": "String", "AllowedPattern": "[a-z0-9][a-z0-9.-]+" },
+    "SenderEmail": { "Type": "String", "AllowedPattern": "[A-Za-z0-9._%+-]+@[a-z0-9.-]+" },
+    "ConfigurationSetName": { "Type": "String", "AllowedPattern": "[A-Za-z0-9_-]+" },
+    "InboundQueueName": { "Type": "String", "AllowedPattern": "[A-Za-z0-9_-]+(\\.fifo)?" },
+    "EventQueueName": { "Type": "String", "AllowedPattern": "[A-Za-z0-9_-]+(\\.fifo)?" },
+    "InboundBucketName": { "Type": "String", "AllowedPattern": "[a-z0-9][a-z0-9.-]{1,61}[a-z0-9]" }
+  },
+  "Resources": {
+    "RuntimeUser": {
+      "Type": "AWS::IAM::User",
+      "Properties": {
+        "UserName": { "Ref": "RuntimeUserName" },
+        "Tags": [ { "Key": "Application", "Value": "SubTrak" }, { "Key": "Runtime", "Value": "DigitalOceanAppPlatform" } ],
+        "Policies": [ {
+          "PolicyName": "ExistingSesRuntimeAccess",
+          "PolicyDocument": {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Sid": "SendFromApprovedAddress",
+                "Effect": "Allow",
+                "Action": "ses:SendEmail",
+                "Resource": [
+                  { "Fn::Sub": "arn:${AWS::Partition}:ses:${SesRegion}:${AWS::AccountId}:identity/${SendingDomain}" },
+                  { "Fn::Sub": "arn:${AWS::Partition}:ses:${SesRegion}:${AWS::AccountId}:configuration-set/${ConfigurationSetName}" }
+                ],
+                "Condition": { "StringEquals": { "ses:FromAddress": { "Ref": "SenderEmail" } } }
+              },
+              {
+                "Sid": "ConsumeOnlyExistingSourceQueues",
+                "Effect": "Allow",
+                "Action": [ "sqs:ReceiveMessage", "sqs:DeleteMessage", "sqs:ChangeMessageVisibility", "sqs:GetQueueAttributes" ],
+                "Resource": [
+                  { "Fn::Sub": "arn:${AWS::Partition}:sqs:${SesRegion}:${AWS::AccountId}:${InboundQueueName}" },
+                  { "Fn::Sub": "arn:${AWS::Partition}:sqs:${SesRegion}:${AWS::AccountId}:${EventQueueName}" }
+                ]
+              },
+              {
+                "Sid": "ReadOnlyInboundMimeObjects",
+                "Effect": "Allow",
+                "Action": "s3:GetObject",
+                "Resource": { "Fn::Sub": "arn:${AWS::Partition}:s3:::${InboundBucketName}/incoming/*" }
+              }
+            ]
+          }
+        } ]
+      }
+    }
+  },
+  "Outputs": {
+    "RuntimeUserName": { "Value": { "Ref": "RuntimeUser" } },
+    "RuntimeUserArn": { "Value": { "Fn::GetAtt": [ "RuntimeUser", "Arn" ] } }
+  }
+}

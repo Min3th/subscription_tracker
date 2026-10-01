@@ -15,3 +15,6 @@ crash.*.log
 # Generated deployment archives and checksums.
 *.tar.gz
 *.tar.gz.sha256
+
+# Local cloud configuration exports (never commit credentials here).
+/.local/
