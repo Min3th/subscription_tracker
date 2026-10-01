@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -15,6 +16,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Service
+@ConditionalOnProperty(name = "app.inbound-email.processing-enabled", havingValue = "true", matchIfMissing = true)
 public class InboundEmailProcessingWorker {
     private static final Logger log =
             LoggerFactory.getLogger(InboundEmailProcessingWorker.class);

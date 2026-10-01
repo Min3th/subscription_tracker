@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -13,6 +14,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Service
+@ConditionalOnProperty(name = "app.notification-retry.enabled", havingValue = "true", matchIfMissing = true)
 public class NotificationRetryWorker {
 
     private static final Logger log = LoggerFactory.getLogger(NotificationRetryWorker.class);
@@ -30,7 +32,8 @@ public class NotificationRetryWorker {
         this.clock = clock;
     }
 
-    @Scheduled(fixedDelay = 60_000, initialDelay = 30_000)
+    @Scheduled(fixedDelayString = "${app.notification-retry.delay-ms:60000}",
+            initialDelayString = "${app.notification-retry.initial-delay-ms:30000}")
     public void retryDueDeliveries() {
         Instant now = clock.instant();
         String claimToken = UUID.randomUUID().toString();

@@ -41,6 +41,8 @@ public class SecurityConfig {
                         .accessDeniedHandler(securityErrorHandler)
                 )
                 .authorizeHttpRequests(auth ->auth
+                        .requestMatchers(org.springframework.http.HttpMethod.GET,
+                                "/health/live", "/health/ready").permitAll()
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**",
                                 "/v3/api-docs", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/auth/google", "/auth/refresh", "/auth/logout",

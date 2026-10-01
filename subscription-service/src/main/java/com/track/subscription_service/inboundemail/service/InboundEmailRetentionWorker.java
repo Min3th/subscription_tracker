@@ -5,12 +5,14 @@ import com.track.subscription_service.inboundemail.repository.InboundEmailReposi
 import com.track.subscription_service.inboundemail.repository.SubscriptionSuggestionRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.temporal.ChronoUnit;
 
 @Component
+@ConditionalOnProperty(name = "app.inbound-email.retention-enabled", havingValue = "true", matchIfMissing = true)
 public class InboundEmailRetentionWorker {
     private final InboundEmailRepository emailRepository;
     private final SubscriptionSuggestionRepository suggestionRepository;

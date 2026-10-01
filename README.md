@@ -344,6 +344,9 @@ The backend checks subscriptions every five minutes. When a recurring subscripti
 
 ## Production Notes
 
+Backend deployment settings are documented in [health checks and database pooling](docs/backend-health.md)
+and [background worker controls](docs/background-workers.md).
+
 Before deploying the project:
 
 - Replace the frontend URL in the backend configuration with your production domain.
