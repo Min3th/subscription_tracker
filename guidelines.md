@@ -555,3 +555,47 @@ Runtime configuration and deployment rules:
 - Treat inventory findings as read-only evidence. Security remediation and
   resource deletion require separate review, exact target verification, and
   independently reversible changes where possible.
+
+## 17. Health Checks and Background Resource Usage
+
+- Keep `GET /health/live` and `GET /health/ready` unauthenticated. Only those exact
+  GET routes are public; do not expose a wildcard health or diagnostics namespace.
+- Return only `{"status":"UP"}` with HTTP 200 or `{"status":"DOWN"}` with HTTP 503,
+  and `Cache-Control: no-store`. Never expose hosts, credentials, exception messages,
+  versions, or detailed internal diagnostics through these endpoints.
+- Liveness uses Spring application availability and must not query Neon, SES, or
+  another dependency. A database outage must not turn a live process into a failed
+  liveness probe. Readiness also requires accepting traffic and a valid database
+  connection. Startup still requires the database for Flyway and Hibernate.
+- Reuse the application connection pool for readiness; bound connection acquisition
+  and JDBC validation, close borrowed connections, and limit concurrent probes.
+  Do not create per-request pools or unbounded background timeout tasks.
+- Frequent readiness polling can prevent Neon suspension. Use liveness for routine
+  uptime checks when suspension is desired, and readiness for deployment acceptance
+  or intentional dependency monitoring. Do not confuse liveness with successful
+  database-backed business operations.
+- Keep database pool sizing, acquisition/validation timeouts, idle retirement, and
+  keepalive configurable. Defaults target the small App Platform backend: maximum
+  five connections, zero minimum idle, 2-second acquisition, 1-second pool validation,
+  60-second idle timeout, and disabled keepalive pings. Pool timeouts affect ordinary
+  requests too; measure cold-start/reconnection behavior before adjusting them.
+- Enable scheduling centrally in `SchedulingConfig`, not on an individual worker.
+  `BACKGROUND_WORKERS_ENABLED=false` disables all scheduled tasks, including SES
+  polling. It does not disable startup migrations, reminder backfill, or HTTP traffic.
+- Reminder, notification-retry, inbound-processing, and retention workers have
+  independent enable flags. Keep their schedules externally configurable and preserve
+  current defaults unless a deliberate latency/cost tradeoff is requested.
+- Disabling one worker must not disable unrelated workers. Preserve atomic claims,
+  idempotency, suppression, bounded batches, and retry semantics when changing cadence.
+- Slower processing increases delivery/suggestion latency and may cause backlog.
+  Disabling retention suspends content cleanup; disabling consumers leaves messages
+  subject to SQS retention. Do not silently apply idle/preview settings to production.
+- Empty SQS long polls do not query Neon, but message handling, retry polling,
+  reminder polling, HTTP requests, and startup jobs do. Longer intervals alone are
+  not proof that Neon will suspend; verify actual database compute activity.
+- Test public health/security boundaries, database failure and recovery, connection
+  release, and actual scheduling registration when changing these controls. Use
+  disposable databases for integration tests, not restored production Neon data.
+
+Runtime variable names, defaults, and examples are maintained in
+`docs/backend-health.md` and `docs/background-workers.md`.
